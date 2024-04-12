@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">MeetMyPet</string>
+    <string name="crear">Crear carta</string>
+    <string name="ver">Ver cartas</string>
+    <string name="volver">Volver</string>
+    <string name="editar">Editar carta</string>
+    <string name="login">Iniciar Sesión</string>
+    <string name="facebook_app_id">767762741988075</string>
+    <string name="fb_login_protocol_scheme">fb767762741988075</string>
+    <string name="facebook_client_token">5f1c772bac50368870f1d0ae27e1d40a</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="crearEvento">Crear Evento</string>
+    <string name="verEventos">Ver Eventos</string>
+    <string name="email">Introduce tu email</string>
+    <string name="password">Introduce tu contraseña</string>
+    <string name="nombreEvento">Introduce el nombre del evento</string>
+    <string name="fechaEvento">Introduce la fecha del evento</string>
+    <string name="aforoMaxEvento">Introduce el aforo máximo del evento</string>
+    <string name="precioEvento">Introduce el precio del evento</string>
+    <string name="editarEvento">Editar evento</string>
+    <string name="default_web_client_id">AIzaSyCDynTeF--6mfB_QdPg4--Gzzgniwkn13I</string>
+    <string-array name="stock_options">
+        <item>Seleccione stock</item>
+        <item>Sí</item>
+        <item>No</item>
+    </string-array>
+    <string-array name="currency_options">
+        <item>Euro</item>
+        <item>Dólar</item>
+    </string-array>
+</resources>
