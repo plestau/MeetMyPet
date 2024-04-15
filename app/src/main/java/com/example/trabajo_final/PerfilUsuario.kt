@@ -115,7 +115,11 @@ class PerfilUsuario : AppCompatActivity() {
         }
 
         verMascotas.setOnClickListener {
-            val fragmentVerMisMascotas = FragmentVerMisMascotas()
+            val fragmentVerMisMascotas = FragmentVerMisMascotas().apply {
+                arguments = Bundle().apply {
+                    putBoolean("mascotasClicables", false)
+                }
+            }
             supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragmentVerMisMascotas).addToBackStack(null).commit()
 
             val fragmentSuperiorPerfil = supportFragmentManager.findFragmentById(R.id.fragment_superior_perfil)

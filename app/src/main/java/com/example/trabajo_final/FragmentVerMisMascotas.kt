@@ -1,6 +1,8 @@
 package com.example.trabajo_final
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,9 +10,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -23,6 +28,11 @@ import com.google.firebase.database.ValueEventListener
 class FragmentVerMisMascotas : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var recyclerView: RecyclerView
+
+    interface OnMascotaAddedListener {
+        fun onMascotaAdded(mascota: Mascota)
+    }
+    private var listener: OnMascotaAddedListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,22 +55,72 @@ class FragmentVerMisMascotas : Fragment() {
 
         mascotaAdapter.setOnItemClickListener(object : MascotaAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                val mascota = mascotas[position]
-                val mascotasAñadidas = activity?.findViewById<View>(R.id.mascotasAñadidas) as TextView
-                val mascotasAñadidasList = mascotasAñadidas.text.toString().split("\n").filter { it.isNotEmpty() }
-
-                // Comprueba si la mascota ya ha sido añadida
-                if ("mascotas añadidas: ${mascota.nombre}" in mascotasAñadidasList || mascota.nombre in mascotasAñadidasList) {
-                    Toast.makeText(context, "Esta mascota ya ha sido añadida", Toast.LENGTH_SHORT).show()
+                val fromPublicarAnuncio = arguments?.getBoolean("fromPublicarAnuncio", false) ?: false
+                if (!fromPublicarAnuncio) {
                     return
                 }
+                val mascota = mascotas[position]
 
-                val intent = Intent()
-                intent.putExtra("mascota", mascota)
-                activity?.setResult(Activity.RESULT_OK, intent)
-                activity?.findViewById<ScrollView>(R.id.scrollView)?.visibility = View.VISIBLE
-                parentFragmentManager.beginTransaction().hide(this@FragmentVerMisMascotas).commit()
-                mascotasAñadidas.text = mascotasAñadidas.text.toString() + "\n" + mascota.nombre
+                // Comprueba si la mascota ya ha sido añadida
+                val mascotasAñadidasLayout = activity?.findViewById<LinearLayout>(R.id.mascotasAñadidasLayout)
+                mascotasAñadidasLayout?.forEach { view ->
+                    if (view is LinearLayout) {
+                        val textView = view.getChildAt(0) as TextView
+                        if (textView.text == mascota.nombre) {
+                            Toast.makeText(context, "La mascota ya ha sido añadida", Toast.LENGTH_SHORT).show()
+                            return
+                        }
+                    }
+                }
+
+                AlertDialog.Builder(context)
+                    .setTitle("Confirmación")
+                    .setMessage("¿Seguro que quieres añadir a ${mascota.nombre}?")
+                    .setPositiveButton("Sí") { _, _ ->
+                        Log.d("MascotasAñadidasList", mascota.nombre.toString())
+                        listener?.onMascotaAdded(mascota)
+                        val intent = Intent()
+                        intent.putExtra("mascota", mascota)
+                        activity?.setResult(Activity.RESULT_OK, intent)
+                        activity?.findViewById<ScrollView>(R.id.scrollView)?.visibility = View.VISIBLE
+                        parentFragmentManager.beginTransaction().hide(this@FragmentVerMisMascotas).commit()
+
+                        // Crea un nuevo TextView para el nombre de la mascota
+                        val mascotaTextView = TextView(context)
+                        mascotaTextView.text = mascota.nombre
+                        mascotaTextView.textSize = 20f
+
+                        // Crea un nuevo LinearLayout para contener el nombre de la mascota y el icono de borrar
+                        val mascotaLayout = LinearLayout(context)
+                        mascotaLayout.orientation = LinearLayout.HORIZONTAL
+                        mascotaLayout.addView(mascotaTextView)
+
+                        // Crea un nuevo ImageView para el icono de borrar
+                        val borrarImageView = ImageView(context)
+                        borrarImageView.setImageResource(R.drawable.baseline_delete_forever_24) // Reemplaza 'ic_delete' con el nombre de tu icono de borrar
+                        borrarImageView.setOnClickListener {
+                            // elimina a la mascota elegida del mascotasAñadidasLayout despues de confirmarlo
+                            AlertDialog.Builder(context)
+                                .setTitle("Confirmación")
+                                .setMessage("¿Estás seguro de que quieres borrar a ${mascota.nombre}?")
+                                .setPositiveButton("Sí") { _, _ ->
+                                    // elimina a la mascota elegida del mascotasAñadidasList
+                                    (activity as? PublicarAnuncio)?.mascotasAñadidasList?.removeAll { it.nombre == mascota.nombre }
+                                    mascotasAñadidasLayout?.removeView(mascotaLayout)
+                                    Log.d("MascotasAñadidasList", (activity as? PublicarAnuncio)?.mascotasAñadidasList.toString())
+                                }
+                                .setNegativeButton("No", null)
+                                .show()
+                        }
+
+                        mascotaLayout.addView(borrarImageView)
+
+                        // Añade el LinearLayout al layout de mascotas añadidas
+                        val mascotasAñadidasLayout = activity?.findViewById<LinearLayout>(R.id.mascotasAñadidasLayout)
+                        mascotasAñadidasLayout?.addView(mascotaLayout)
+                    }
+                    .setNegativeButton("No", null)
+                    .show()
             }
         })
 
@@ -103,5 +163,19 @@ class FragmentVerMisMascotas : Fragment() {
     override fun onStart() {
         super.onStart()
         activity?.findViewById<ScrollView>(R.id.scrollView)?.visibility = View.GONE
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnMascotaAddedListener) {
+            listener = context
+        } else {
+            throw RuntimeException("$context must implement OnMascotaAddedListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 }

@@ -1,5 +1,6 @@
 package com.example.trabajo_final
 
+import FragmentInferior
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -29,6 +30,14 @@ class MisAnuncios : AppCompatActivity() {
         anunciosRecyclerView.adapter = anunciosAdapter
 
         mostrarAnunciosUsuario()
+
+        val fragmentInferior = FragmentInferior()
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_inferior, fragmentInferior)
+            commit()
+        }
+
+        FragmentInferior.actividadActual = "MisAnuncios"
     }
 
     private fun mostrarAnunciosUsuario() {

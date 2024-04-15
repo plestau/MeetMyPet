@@ -139,7 +139,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                android:id="@+id/mascotasAñadidas"
+                android:id="@+id/mascotasAñadidasTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mascotas añadidas: "
@@ -148,6 +148,17 @@
                 android:layout_marginTop="20dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/hora_layout" />
+
+            <LinearLayout
+                android:id="@+id/mascotasAñadidasLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:textSize="20sp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mascotasAñadidasTitle" />
 
             <Button
                 android:id="@+id/btnPublicarAnuncio"
@@ -169,7 +180,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mascotasAñadidas">
+                app:layout_constraintTop_toBottomOf="@id/mascotasAñadidasLayout">
 
                 <ImageView
                     android:layout_width="50dp"

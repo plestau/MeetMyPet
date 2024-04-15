@@ -219,6 +219,26 @@ class FragmentInferior : Fragment() {
             }
         }
 
+        if (actividadActual == "MisAnuncios") {
+            val imgMisAnuncios: ImageView = cardMisAnuncios.findViewById(R.id.img_tus_anuncios)
+            val txtMisAnuncios: TextView = cardMisAnuncios.findViewById(R.id.txt_tus_anuncios)
+            val color = ContextCompat.getColor(requireContext(), R.color.texto)
+            imgMisAnuncios.setColorFilter(color)
+            txtMisAnuncios.setTextColor(color)
+            selectedCard = cardMisAnuncios
+            selectedImage = imgMisAnuncios
+            selectedText = txtMisAnuncios
+            selectedCardId = R.id.card_tus_anuncios
+
+            // Restablece el color de la tarjeta "Publicar" a su color original
+            val imgPublicar: ImageView = cardPublicar.findViewById(R.id.img_publicar)
+            val txtPublicar: TextView = cardPublicar.findViewById(R.id.txt_publicar)
+            val originalColor = ContextCompat.getColor(requireContext(), R.color.black)
+            imgPublicar.setColorFilter(originalColor)
+            txtPublicar.setTextColor(originalColor)
+        }
+
         return view
     }
+
 }

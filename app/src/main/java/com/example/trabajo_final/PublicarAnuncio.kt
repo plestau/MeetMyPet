@@ -23,10 +23,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PublicarAnuncio : AppCompatActivity() {
+class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedListener {
     private lateinit var auth: FirebaseAuth
-    private lateinit var mascotasAñadidas: TextView
-    private val REQUEST_CODE = 1
+    private lateinit var mascotasAñadidas: LinearLayout
+    val mascotasAñadidasList = mutableListOf<Mascota>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +38,6 @@ class PublicarAnuncio : AppCompatActivity() {
             commit()
         }
 
-        val fragment = FragmentVerMisMascotas().apply {
-            arguments = Bundle().apply {
-                putBoolean("fromPublicarAnuncio", true)
-            }
-        }
-
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
 
@@ -53,13 +47,14 @@ class PublicarAnuncio : AppCompatActivity() {
         val lugar = findViewById<EditText>(R.id.lugar)
         val fecha = findViewById<EditText>(R.id.fecha)
         val hora = findViewById<EditText>(R.id.hora)
-        mascotasAñadidas = findViewById(R.id.mascotasAñadidas)
+        mascotasAñadidas = findViewById(R.id.mascotasAñadidasLayout)
 
         val verMisMascotas = findViewById<LinearLayout>(R.id.verMisMascotas)
         verMisMascotas.setOnClickListener {
             val fragment = FragmentVerMisMascotas().apply {
                 arguments = Bundle().apply {
                     putBoolean("fromPublicarAnuncio", true)
+                    putBoolean("mascotasClicables", true)
                 }
             }
             val transaction = supportFragmentManager.beginTransaction()
@@ -150,14 +145,7 @@ class PublicarAnuncio : AppCompatActivity() {
 
             myRef.orderByChild("usuarioId").equalTo(currentUser.uid).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val mascotasIdList = mutableListOf<String>()
-                    for (mascotaSnapshot in dataSnapshot.children) {
-                        val mascota = mascotaSnapshot.getValue(Mascota::class.java)
-                        if (mascota != null) {
-                            mascotasIdList.add(mascota.id!!)
-                        }
-                    }
-
+                    val mascotasIdList = mascotasAñadidasList.map { it.id!! }
                     if (mascotasIdList.isEmpty()) {
                         Toast.makeText(
                             this@PublicarAnuncio,
@@ -188,7 +176,7 @@ class PublicarAnuncio : AppCompatActivity() {
                                 "Anuncio publicado con éxito",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            val intent = Intent(this@PublicarAnuncio, MainActivity::class.java)
+                            val intent = Intent(this@PublicarAnuncio, MisAnuncios::class.java)
                             startActivity(intent)
                         } else {
                             Toast.makeText(
@@ -210,4 +198,15 @@ class PublicarAnuncio : AppCompatActivity() {
             })
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        val scrollView = findViewById<ScrollView>(R.id.scrollView)
+        scrollView.visibility = View.VISIBLE
+    }
+
+    override fun onMascotaAdded(mascota: Mascota) {
+        mascotasAñadidasList.add(mascota)
+    }
+
 }

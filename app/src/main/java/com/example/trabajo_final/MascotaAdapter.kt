@@ -1,5 +1,6 @@
 package com.example.trabajo_final
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -88,7 +90,23 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
 
                 val fragmentManager = fragmentManager
                 val fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.fragment_container, fragmentEditarMascota)
+
+                // Oculta todos los demás fragmentos
+                fragmentManager.fragments.forEach { fragment ->
+                    if (fragment.isVisible) {
+                        fragmentTransaction.hide(fragment)
+                    }
+                }
+
+                // Oculta todas las demás vistas
+                (fragmentManager as? Activity)?.findViewById<ViewGroup>(android.R.id.content)?.forEach { view ->
+                    if (view is ViewGroup) {
+                        view.visibility = View.GONE
+                    }
+                }
+
+                // Agrega el fragmento de edición de mascota
+                fragmentTransaction.add(R.id.fragment_container, fragmentEditarMascota)
                 fragmentTransaction.addToBackStack(null)
                 fragmentTransaction.commit()
             }
