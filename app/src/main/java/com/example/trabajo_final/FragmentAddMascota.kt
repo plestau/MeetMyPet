@@ -26,7 +26,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class FragmentAddMascota : Fragment() {
+class FragmentAddMascota : Fragment(), OnBackPressedInFragmentListener {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var mascotaImageView: ImageView
@@ -103,7 +103,8 @@ class FragmentAddMascota : Fragment() {
                     esterilizado = esterilizado,
                     biografia = biografia,
                     valoracion = 0f,
-                    usuarioId = user?.uid
+                    usuarioId = user?.uid,
+                    borrable = true
                 )
 
                 dbRef.child(mascota.id!!).setValue(mascota)
@@ -164,5 +165,18 @@ class FragmentAddMascota : Fragment() {
 
     private fun seleccionarDeGaleria() {
         accesoGaleria.launch("image/*")
+    }
+
+    override fun onBackPressedInFragment(): Boolean {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Confirmación")
+            .setMessage("¿Estás seguro de que quieres salir?")
+            .setPositiveButton("Sí") { _, _ ->
+                parentFragmentManager.popBackStack()
+            }
+            .setNegativeButton("No", null)
+            .show()
+        // Devuelve true para indicar que has manejado el evento de retroceso
+        return true
     }
 }

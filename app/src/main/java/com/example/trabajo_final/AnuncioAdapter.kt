@@ -11,10 +11,14 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class AnuncioAdapter(private var listaAnuncios: List<Anuncio>) : RecyclerView.Adapter<AnuncioAdapter.AnuncioViewHolder>() {
     private val database = FirebaseDatabase.getInstance()
-    private val mascotasRef = database.getReference("app/mascotas")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnuncioViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_anuncio, parent, false)
@@ -52,26 +56,6 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>) : RecyclerView.Ad
             tvFechaAnuncio.text = anuncio.fecha
             tvHoraAnuncio.text = anuncio.hora
             tvLugarAnuncio.text = anuncio.lugar
-
-            // Itera sobre la lista de mascotas en el anuncio
-            anuncio.mascotas?.forEach { mascota ->
-                // Recupera los detalles de la mascota
-                mascotasRef.child(mascota.id!!).addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val mascotaDetalles = snapshot.getValue(Mascota::class.java)
-                        if (mascotaDetalles != null) {
-                            tvNombreMascotaAnuncio.text = mascotaDetalles.nombre
-                            tvRazaMascotaAnuncio.text = mascotaDetalles.raza
-                            tvEdadMascotaAnuncio.text = mascotaDetalles.edad.toString()
-                            tvSexoMascotaAnuncio.text = mascotaDetalles.sexo
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.e(TAG, "Error al recuperar los detalles de la mascota: $error")
-                    }
-                })
-            }
         }
     }
 }

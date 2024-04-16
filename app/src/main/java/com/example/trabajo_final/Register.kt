@@ -207,4 +207,15 @@ class Register : AppCompatActivity() {
     private fun seleccionarDeGaleria() {
         accesoGaleria.launch("image/*")
     }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("Confirmación")
+            .setMessage("¿Estás seguro de que quieres salir?")
+            .setPositiveButton("Sí") { _, _ ->
+                super.onBackPressed()
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
 }

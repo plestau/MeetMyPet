@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedListener {
     private lateinit var auth: FirebaseAuth
@@ -72,6 +75,15 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
             val lugarText = lugar.text.toString()
             val fechaText = fecha.text.toString()
             val horaText = hora.text.toString()
+
+            if (!fechaText.matches(Regex("^\\d{2}/\\d{2}/\\d{4}$"))) {
+                Toast.makeText(
+                    this@PublicarAnuncio,
+                    "La fecha debe tener el formato DD/MM/AAAA",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
 
             if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty()) {
                 Toast.makeText(
@@ -167,8 +179,14 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                         "usuarioPaseador" to ""
                     )
 
-                    val myRefAnuncios = database.getReference("app/anuncios")
+                    // cambia el atributo borrable de las mascotas a false
+                    for (mascota in mascotasAñadidasList) {
+                        val mascotaRef = FirebaseDatabase.getInstance()
+                            .getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
+                        mascotaRef.child("borrable").setValue(false)
+                    }
 
+                    val myRefAnuncios = database.getReference("app/anuncios")
                     myRefAnuncios.push().setValue(anuncio).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(
@@ -195,6 +213,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
             })
         }
     }
@@ -203,6 +222,17 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
         super.onResume()
         val scrollView = findViewById<ScrollView>(R.id.scrollView)
         scrollView.visibility = View.VISIBLE
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("Confirmación")
+            .setMessage("¿Estás seguro de que quieres salir?")
+            .setPositiveButton("Sí") { _, _ ->
+                super.onBackPressed()
+            }
+            .setNegativeButton("No", null)
+            .show()
     }
 
     override fun onMascotaAdded(mascota: Mascota) {

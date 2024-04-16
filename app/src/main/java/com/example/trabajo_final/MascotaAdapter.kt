@@ -124,24 +124,44 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
         }
     }
     private fun borrarMascota(mascota: Mascota, context: Context) {
-        // FALTA CONFIRMAR QUE LA MASCOTA NO ESTÉ EN NINGÚN ANUNCIO PUBLICADO PERO COMO AUN NO HAY ANUNCIOS SESIENTE
-        val mascotaRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
-        mascotaRef.removeValue().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                if (mascota.foto != null && mascota.foto!!.isNotEmpty()) {
-                    val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(mascota.foto!!)
-                    storageRef.delete().addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(context, "Mascota borrada correctamente", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "Error al borrar la foto de la mascota", Toast.LENGTH_SHORT).show()
+        // si el atributo borrable de la mascota es falso, no se puede borrar
+        if (!mascota.borrable!!) {
+            Toast.makeText(
+                context,
+                "La mascota está en un anuncio y no se puede borrar",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        } else {
+            val mascotaRef = FirebaseDatabase.getInstance()
+                .getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
+            mascotaRef.removeValue().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    if (mascota.foto != null && mascota.foto!!.isNotEmpty()) {
+                        val storageRef =
+                            FirebaseStorage.getInstance().getReferenceFromUrl(mascota.foto!!)
+                        storageRef.delete().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(
+                                    context,
+                                    "Mascota borrada correctamente",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Error al borrar la foto de la mascota",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
+                    } else {
+                        Toast.makeText(context, "Mascota borrada correctamente", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } else {
-                    Toast.makeText(context, "Mascota borrada correctamente", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Error al borrar la mascota", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(context, "Error al borrar la mascota", Toast.LENGTH_SHORT).show()
             }
         }
     }

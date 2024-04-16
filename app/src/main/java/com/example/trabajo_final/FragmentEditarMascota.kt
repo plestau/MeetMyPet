@@ -26,7 +26,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class FragmentEditarMascota : Fragment() {
+class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
 
     private lateinit var mascota: Mascota
     private lateinit var mascotaImageView: ImageView
@@ -171,6 +171,18 @@ class FragmentEditarMascota : Fragment() {
             return false
         }
 
+        return true
+    }
+
+    override fun onBackPressedInFragment(): Boolean {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Confirmación")
+            .setMessage("¿Estás seguro de que quieres salir?")
+            .setPositiveButton("Sí") { _, _ ->
+                parentFragmentManager.popBackStack()
+            }
+            .setNegativeButton("No", null)
+            .show()
         return true
     }
 }

@@ -22,7 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 
-class PerfilUsuario : AppCompatActivity() {
+class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedListener {
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,13 +131,16 @@ class PerfilUsuario : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        val fragmentVerMisMascotas = supportFragmentManager.findFragmentById(R.id.fragment_container)
-        if (fragmentVerMisMascotas != null && fragmentVerMisMascotas.isVisible) {
-            supportFragmentManager.beginTransaction().remove(fragmentVerMisMascotas).commit()
-            val fragmentSuperiorPerfil = supportFragmentManager.findFragmentById(R.id.fragment_superior_perfil) as? FragmentSuperiorPerfil
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        if (fragment is OnBackPressedInFragmentListener && fragment.onBackPressedInFragment()) {
+        } else if (fragment != null && fragment.isVisible) {
+            supportFragmentManager.beginTransaction().remove(fragment).commit()
+
+            // Mostramos los Fragments superior e inferior
+            val fragmentSuperiorPerfil =
+                supportFragmentManager.findFragmentById(R.id.fragment_superior_perfil)
             if (fragmentSuperiorPerfil != null) {
                 supportFragmentManager.beginTransaction().show(fragmentSuperiorPerfil).commit()
-                fragmentSuperiorPerfil.onHiddenChanged(false)
             }
             val fragmentInferior = supportFragmentManager.findFragmentById(R.id.fragment_inferior)
             if (fragmentInferior != null) {
@@ -145,7 +148,13 @@ class PerfilUsuario : AppCompatActivity() {
             }
             findViewById<View>(R.id.scrollView)?.visibility = View.VISIBLE
         } else {
+            // Si no hay ningún Fragment visible en el contenedor, llamamos al onBackPressed de la superclase
             super.onBackPressed()
         }
+    }
+
+    override fun onMascotaAdded(mascota: Mascota) {
+        val mascotasRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${auth.currentUser?.uid}/mascotas")
+        mascotasRef.push().setValue(mascota)
     }
 }

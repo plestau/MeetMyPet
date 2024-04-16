@@ -22,6 +22,7 @@
             android:exported="false" />
         <activity
             android:name=".PublicarAnuncio"
+            android:windowSoftInputMode="adjustNothing"
             android:exported="false" />
         <activity
             android:name=".PerfilUsuario"

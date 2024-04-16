@@ -82,7 +82,7 @@
         android:entries="@array/razas_array"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edad_layout" />
+        app:layout_constraintTop_toBottomOf="@id/biografia_layout" />
 
     <Spinner
         android:id="@+id/sexo"
@@ -114,7 +114,7 @@
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/esterilizado">
+        app:layout_constraintTop_toBottomOf="@id/edad_layout">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/biografia"
             android:layout_width="match_parent"
@@ -134,7 +134,7 @@
         android:text="Editar Mascota"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/biografia_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/esterilizado" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
