@@ -5,8 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -46,9 +48,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>) : RecyclerView.Ad
         private val tvHoraAnuncio: TextView = itemView.findViewById(R.id.tvHoraAnuncio)
         private val tvLugarAnuncio: TextView = itemView.findViewById(R.id.tvLugarAnuncio)
         private val tvNombreMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvNombreMascotaAnuncio)
-        private val tvRazaMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvRazaMascotaAnuncio)
-        private val tvEdadMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvEdadMascotaAnuncio)
-        private val tvSexoMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvSexoMascotaAnuncio)
+        private val tvValoracionMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvValoracionMascotaAnuncio)
+        private val ivImagenMascotaAnuncio = itemView.findViewById<ImageView>(R.id.ivFotoMascotaAnuncio)
 
         fun bind(anuncio: Anuncio) {
             tvTituloAnuncio.text = anuncio.titulo
@@ -56,6 +57,16 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>) : RecyclerView.Ad
             tvFechaAnuncio.text = anuncio.fecha
             tvHoraAnuncio.text = anuncio.hora
             tvLugarAnuncio.text = anuncio.lugar
+            tvNombreMascotaAnuncio.text = anuncio.nombreMascota?.joinToString()
+            tvValoracionMascotaAnuncio.text = anuncio.valoracionMascota?.joinToString()
+            anuncio.imagenMascota?.let { imagenes ->
+                if (imagenes.isNotEmpty()) {
+                    Glide.with(itemView)
+                        .load(imagenes[0])
+                        .centerCrop()
+                        .into(ivImagenMascotaAnuncio)
+                }
+            }
         }
     }
 }

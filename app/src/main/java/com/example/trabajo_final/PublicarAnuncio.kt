@@ -3,6 +3,7 @@ package com.example.trabajo_final
 import FragmentInferior
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -167,6 +168,24 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                         return
                     }
 
+                    val mascotaPicRef = database.getReference("app/usuarios/${currentUser.uid}/mascotas")
+                    mascotaPicRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            for (mascota in mascotasAñadidasList) {
+                                val mascotaPic = dataSnapshot.child(mascota.id!!).child("foto").value.toString()
+                                mascota.foto = mascotaPic
+                            }
+                        }
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Toast.makeText(
+                                this@PublicarAnuncio,
+                                "Error al obtener las fotos de las mascotas",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+
+
                     val anuncio = hashMapOf(
                         "titulo" to tituloText,
                         "descripcion" to descripcionText,
@@ -176,7 +195,11 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                         "usuarioDueño" to currentUser.uid,
                         "mascotasId" to mascotasIdList,
                         "estado" to "creado",
-                        "usuarioPaseador" to ""
+                        "usuarioPaseador" to "",
+                        "nombreMascota" to mascotasAñadidasList.map { it.nombre!! },
+                        "razaMascota" to mascotasAñadidasList.map { it.raza!! },
+                        "valoracionMascota" to mascotasAñadidasList.map { it.valoracion!! },
+                        "imagenMascota" to mascotasAñadidasList.map { it.foto!! }
                     )
 
                     // cambia el atributo borrable de las mascotas a false
