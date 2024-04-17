@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -48,8 +50,9 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>) : RecyclerView.Ad
         private val tvHoraAnuncio: TextView = itemView.findViewById(R.id.tvHoraAnuncio)
         private val tvLugarAnuncio: TextView = itemView.findViewById(R.id.tvLugarAnuncio)
         private val tvNombreMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvNombreMascotaAnuncio)
+        private val tvRazaMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvRazaMascotaAnuncio)
         private val tvValoracionMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvValoracionMascotaAnuncio)
-        private val ivImagenMascotaAnuncio = itemView.findViewById<ImageView>(R.id.ivFotoMascotaAnuncio)
+        private val rvImagenMascotaAnuncio = itemView.findViewById<RecyclerView>(R.id.rvImagenesMascotaAnuncio)
 
         fun bind(anuncio: Anuncio) {
             tvTituloAnuncio.text = anuncio.titulo
@@ -58,14 +61,42 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>) : RecyclerView.Ad
             tvHoraAnuncio.text = anuncio.hora
             tvLugarAnuncio.text = anuncio.lugar
             tvNombreMascotaAnuncio.text = anuncio.nombreMascota?.joinToString()
+            tvRazaMascotaAnuncio.text = anuncio.razaMascota?.joinToString()
             tvValoracionMascotaAnuncio.text = anuncio.valoracionMascota?.joinToString()
-            anuncio.imagenMascota?.let { imagenes ->
-                if (imagenes.isNotEmpty()) {
-                    Glide.with(itemView)
-                        .load(imagenes[0])
-                        .centerCrop()
-                        .into(ivImagenMascotaAnuncio)
-                }
+            // carga la imagen de la mascota o las imagenes de las mascotas en caso de que haya mas de una
+            rvImagenMascotaAnuncio.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+            rvImagenMascotaAnuncio.adapter = ImagenMascotaAdapter(anuncio.imagenMascota!!)
+        }
+    }
+}
+
+class ImagenMascotaAdapter(private var listaImagenes: List<String>) : RecyclerView.Adapter<ImagenMascotaAdapter.ImagenMascotaViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImagenMascotaViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_imagen_mascota, parent, false)
+        return ImagenMascotaViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ImagenMascotaViewHolder, position: Int) {
+        val imagen = listaImagenes[position]
+        holder.bind(imagen)
+    }
+
+    override fun getItemCount(): Int {
+        return listaImagenes.size
+    }
+
+    inner class ImagenMascotaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val ivImagenMascota: ImageView = itemView.findViewById(R.id.ivFotoMascotaAnuncio)
+        fun bind(imagen: String?) {
+            if (imagen != null) {
+                Glide.with(itemView)
+                    .load(imagen)
+                    .centerCrop()
+                    .transform(CircleCrop())
+                    .into(ivImagenMascota)
+            } else {
+                Log.d(TAG, "No se encontró la imagen de la mascota")
             }
         }
     }

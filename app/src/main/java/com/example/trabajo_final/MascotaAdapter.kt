@@ -48,8 +48,8 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
     }
 
     inner class MascotaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvNombreMascota: TextView = itemView.findViewById(R.id.tvNombreMascota)
-        val tvRazaMascota: TextView = itemView.findViewById(R.id.tvRazaMascota)
+        val tvNombreMascota: TextView = itemView.findViewById(R.id.tvNombreMascotaAnuncio)
+        val tvRazaMascota: TextView = itemView.findViewById(R.id.tvRazaMascotaAnuncio)
         val tvEdadMascota: TextView = itemView.findViewById(R.id.tvEdadMascota)
         val tvSexoMascota: TextView = itemView.findViewById(R.id.tvSexoMascota)
         val cbEsterilizadoMascota: CheckBox = itemView.findViewById(R.id.cbEsterilizadoMascota)
