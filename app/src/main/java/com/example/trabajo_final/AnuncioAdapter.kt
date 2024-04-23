@@ -95,8 +95,6 @@ class ImagenMascotaAdapter(private var listaImagenes: List<String>) : RecyclerVi
                     .centerCrop()
                     .transform(CircleCrop())
                     .into(ivImagenMascota)
-            } else {
-                Log.d(TAG, "No se encontró la imagen de la mascota")
             }
         }
     }

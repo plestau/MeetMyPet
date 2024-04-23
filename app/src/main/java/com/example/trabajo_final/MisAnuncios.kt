@@ -1,6 +1,7 @@
 package com.example.trabajo_final
 
 import FragmentInferior
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -41,11 +42,19 @@ class MisAnuncios : AppCompatActivity() {
     }
 
     private fun mostrarAnunciosUsuario() {
-        val currentUser = auth.currentUser
-        val database = FirebaseDatabase.getInstance()
-        val myRef = database.getReference("app/anuncios")
+        // Obtén el rol del usuario de SharedPreferences
+        val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
+        val userRol = sharedPref.getString("role", "user")
 
-        myRef.orderByChild("usuarioDueño").equalTo(currentUser?.uid).addValueEventListener(object : ValueEventListener {
+        // Decide qué referencia usar basándote en el rol del usuario
+        val anunciosRef = if (userRol == "admin") {
+            FirebaseDatabase.getInstance().getReference("app/anuncios")
+        } else {
+            val currentUser = auth.currentUser
+            FirebaseDatabase.getInstance().getReference("app/anuncios").orderByChild("usuarioDueño").equalTo(currentUser?.uid)
+        }
+
+        anunciosRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val anuncios = mutableListOf<Anuncio>()
                 dataSnapshot.children.forEach { anuncio ->

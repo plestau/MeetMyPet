@@ -64,6 +64,13 @@ class Login : AppCompatActivity() {
                             } else {
                                 Intent(this, MainActivity::class.java)
                             }
+                            // si el usuario es de tipo admin, se manda por sharedPreferences el tipo de usuario
+                            if(role == "admin") {
+                                val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
+                                val editor = sharedPref.edit()
+                                editor.putString("role", role)
+                                editor.apply()
+                            }
                             startActivity(intent)
                         }
                     } else {

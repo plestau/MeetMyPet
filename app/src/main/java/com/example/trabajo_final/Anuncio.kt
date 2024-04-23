@@ -12,12 +12,11 @@ data class Anuncio(
     var lugar: String? = null,
     var titulo: String? = null,
     var usuarioDueño: String? = null,
-    var mascotas: List<String>? = null,
     var usuarioPaseador: String? = null,
     var estado: String? = null,
+    var idmascota: List<String>? = null,
     var nombreMascota: List<String>? = null,
     var razaMascota: List<String>? = null,
     var valoracionMascota: List<Float>? = null,
     var imagenMascota: List<String>? = null
-
 ): Parcelable

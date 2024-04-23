@@ -2,6 +2,7 @@ package com.example.trabajo_final
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -80,9 +82,7 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
         }
 
         guardarDatos.setOnClickListener {
-            if (validarDatos()) {
-                guardarDatos()
-            }
+            guardarDatos()
         }
 
         return view
@@ -95,40 +95,126 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
         val sexo = view?.findViewById<Spinner>(R.id.sexo)?.selectedItem.toString()
         val esterilizado = view?.findViewById<CheckBox>(R.id.esterilizado)?.isChecked
         val biografia = view?.findViewById<EditText>(R.id.biografia)?.text.toString()
+        val valoracion = mascota.valoracion
 
-        val mascotaRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
-        val stRef = FirebaseStorage.getInstance().getReference("app/usuarios/${mascota.usuarioId}/mascotas")
+        val mascotaRef = FirebaseDatabase.getInstance()
+            .getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
+        val stRef =
+            FirebaseStorage.getInstance().getReference("app/usuarios/${mascota.usuarioId}/mascotas")
 
         CoroutineScope(Dispatchers.IO).launch {
-            val mascotaPicUrl = if (mascotaPic != null) {
+            val mascotaPicUrl = if (mascotaPic != null && "content" == mascotaPic!!.scheme) {
                 val mascotaPicRef = stRef.child("${mascota.id}.jpg")
                 mascotaPicRef.putFile(mascotaPic!!).await()
                 mascotaPicRef.downloadUrl.await().toString()
             } else {
-                mascota.foto
+                // Si la imagen de la mascota ha sido eliminada, eliminar la imagen de la base de datos
+                if (mascotaPic == null && mascota.foto != null) {
+                    val mascotaPicRef = stRef.child("${mascota.id}.jpg")
+                    try {
+                        mascotaPicRef.metadata.await()
+                        mascotaPicRef.delete().await()
+                    } catch (e: StorageException) {
+                        if (e.errorCode != StorageException.ERROR_OBJECT_NOT_FOUND) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Error al eliminar la imagen de la mascota",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                    null
+                } else {
+                    mascota.foto
+                }
             }
 
-            val mascotaInfoUpdate = mapOf("nombre" to nombre, "edad" to edad, "raza" to raza, "sexo" to sexo, "esterilizado" to esterilizado, "biografia" to biografia, "foto" to mascotaPicUrl)
+            val mascotaInfoUpdate = mapOf(
+                "nombre" to nombre,
+                "edad" to edad,
+                "raza" to raza,
+                "sexo" to sexo,
+                "esterilizado" to esterilizado,
+                "biografia" to biografia,
+                "foto" to mascotaPicUrl,
+                "valoracion" to valoracion
+            )
 
             mascotaRef.updateChildren(mascotaInfoUpdate).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "Datos de la mascota actualizados con éxito", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Datos de la mascota actualizados con éxito",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     parentFragmentManager.popBackStack()
                 } else {
-                    Toast.makeText(requireContext(), "Error al actualizar los datos de la mascota", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Error al actualizar los datos de la mascota",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            // Recorrer todos los anuncios en la base de datos y actualizar los atributos imagenMascota, nombreMascota y razaMascota de la mascota asociada
+            val anunciosRef = FirebaseDatabase.getInstance().getReference("app/anuncios")
+            CoroutineScope(Dispatchers.IO).launch {
+                val anunciosSnapshot = anunciosRef.get().await()
+                for (anuncioSnapshot in anunciosSnapshot.children) {
+                    val anuncio = anuncioSnapshot.getValue(Anuncio::class.java)
+                    if (anuncio?.idmascota?.contains(mascota.id) == true) {
+                        val anuncioId = anuncio.id
+                        if (anuncioId != null) {
+                            val anuncioRef = anunciosRef.child(anuncioId)
+                            val mutableNombreMascota = anuncio.nombreMascota?.toMutableList()
+                            val mutableRazaMascota = anuncio.razaMascota?.toMutableList()
+                            val mutableImagenMascota = anuncio.imagenMascota?.toMutableList()
+
+                            // Buscar la mascota correcta en la lista de mascotas del anuncio
+                            val mascotaIndex = anuncio.idmascota!!.indexOf(mascota.id)
+                            mutableNombreMascota?.set(mascotaIndex, nombre)
+                            mutableRazaMascota?.set(mascotaIndex, raza)
+                            if (mascotaPicUrl != null) {
+                                mutableImagenMascota?.set(mascotaIndex, mascotaPicUrl)
+                            } else {
+                                mutableImagenMascota?.set(mascotaIndex, "")
+                            }
+
+                            val anuncioInfoUpdate = mapOf(
+                                "nombreMascota" to mutableNombreMascota,
+                                "razaMascota" to mutableRazaMascota,
+                                "imagenMascota" to mutableImagenMascota
+                            )
+
+                            anuncioRef.updateChildren(anuncioInfoUpdate)
+                        } else{
+                            Log.e("FragmentEditarMascota", "AnuncioId es null")
+                        }
+                    }
                 }
             }
         }
     }
 
     private fun mostrarDialogoSeleccion() {
-        val opciones = arrayOf("Tomar foto", "Seleccionar de galería")
+        //obtener el tipo de usuario por sharedPreferences
+        val sharedPref = activity?.getSharedPreferences("userRole", 0)
+        val userRole = sharedPref?.getString("role", "usuario")
+        val opciones = if (userRole == "admin") {
+            arrayOf("Tomar foto", "Seleccionar de galería", "Eliminar foto")
+        } else {
+            arrayOf("Tomar foto", "Seleccionar de galería")
+        }
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Elige una opción")
         builder.setItems(opciones) { _, which ->
             when (which) {
                 0 -> tomarFoto()
                 1 -> seleccionarDeGaleria()
+                2 -> eliminarFoto()
             }
         }
         builder.show()
@@ -144,34 +230,9 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
         accesoGaleria.launch("image/*")
     }
 
-    private fun validarDatos(): Boolean {
-        val nombre = view?.findViewById<EditText>(R.id.nombre)?.text.toString()
-        val edadStr = view?.findViewById<EditText>(R.id.edad)?.text.toString()
-        val raza = view?.findViewById<Spinner>(R.id.raza)?.selectedItem.toString()
-        val sexo = view?.findViewById<Spinner>(R.id.sexo)?.selectedItem.toString()
-        val biografia = view?.findViewById<EditText>(R.id.biografia)?.text.toString()
-
-        if (nombre.isEmpty() || edadStr.isEmpty() || raza.isEmpty() || sexo.isEmpty() || biografia.isEmpty()) {
-            Toast.makeText(requireContext(), "Por favor, rellene todos los campos", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        if (mascotaPic == null) {
-            Toast.makeText(requireContext(), "Por favor, seleccione una foto", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        if ( edadStr.toInt() < 0 ) {
-            Toast.makeText(requireContext(), "La edad no puede ser negativa", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        if (!edadStr.all { it.isDigit() }) {
-            Toast.makeText(requireContext(), "La edad debe ser un número entero", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        return true
+    private fun eliminarFoto() {
+        mascotaPic = null
+        mascotaImageView.setImageResource(R.drawable.ic_launcher_background)
     }
 
     override fun onBackPressedInFragment(): Boolean {

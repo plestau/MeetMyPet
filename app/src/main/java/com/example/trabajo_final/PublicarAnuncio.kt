@@ -77,10 +77,10 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
             val fechaText = fecha.text.toString()
             val horaText = hora.text.toString()
 
-            if (!fechaText.matches(Regex("^\\d{2}/\\d{2}/\\d{4}$"))) {
+            if (!fechaText.matches(Regex("^\\d{1,2}/\\d{1,2}/\\d{4}$"))) {
                 Toast.makeText(
                     this@PublicarAnuncio,
-                    "La fecha debe tener el formato DD/MM/AAAA",
+                    "La fecha debe tener el formato D/M/AAAA",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
@@ -169,11 +169,66 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                     }
 
                     val mascotaPicRef = database.getReference("app/usuarios/${currentUser.uid}/mascotas")
+                    var todasLasMascotasTienenFoto = true
+
                     mascotaPicRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for (mascota in mascotasAñadidasList) {
-                                val mascotaPic = dataSnapshot.child(mascota.id!!).child("foto").value.toString()
-                                mascota.foto = mascotaPic
+                                val mascotaPicValue = dataSnapshot.child(mascota.id!!).child("foto").value
+                                if (mascotaPicValue == null || mascotaPicValue.toString().isEmpty()) {
+                                    Toast.makeText(
+                                        this@PublicarAnuncio,
+                                        "La mascota ${mascota.nombre} no tiene foto",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    todasLasMascotasTienenFoto = false
+                                    return
+                                }
+                                mascota.foto = mascotaPicValue.toString()
+                            }
+
+                            if (todasLasMascotasTienenFoto) {
+                                val anuncio = hashMapOf(
+                                    "titulo" to tituloText,
+                                    "descripcion" to descripcionText,
+                                    "lugar" to lugarText,
+                                    "fecha" to fechaText,
+                                    "hora" to horaText,
+                                    "usuarioDueño" to currentUser.uid,
+                                    "estado" to "creado",
+                                    "usuarioPaseador" to "",
+                                    "idmascota" to mascotasIdList,
+                                    "nombreMascota" to mascotasAñadidasList.map { it.nombre!! },
+                                    "razaMascota" to mascotasAñadidasList.map { it.raza!! },
+                                    "valoracionMascota" to mascotasAñadidasList.map { it.valoracion!! },
+                                    "imagenMascota" to mascotasAñadidasList.map { it.foto?.let { foto -> foto } ?: "" }
+                                )
+
+                                // cambia el atributo borrable de las mascotas a false
+                                for (mascota in mascotasAñadidasList) {
+                                    val mascotaRef = FirebaseDatabase.getInstance()
+                                        .getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
+                                    mascotaRef.child("borrable").setValue(false)
+                                }
+
+                                val myRefAnuncios = database.getReference("app/anuncios")
+                                myRefAnuncios.push().setValue(anuncio).addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        Toast.makeText(
+                                            this@PublicarAnuncio,
+                                            "Anuncio publicado con éxito",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        val intent = Intent(this@PublicarAnuncio, MisAnuncios::class.java)
+                                        startActivity(intent)
+                                    } else {
+                                        Toast.makeText(
+                                            this@PublicarAnuncio,
+                                            "Error al publicar el anuncio",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
                             }
                         }
                         override fun onCancelled(databaseError: DatabaseError) {
@@ -184,49 +239,6 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                             ).show()
                         }
                     })
-
-
-                    val anuncio = hashMapOf(
-                        "titulo" to tituloText,
-                        "descripcion" to descripcionText,
-                        "lugar" to lugarText,
-                        "fecha" to fechaText,
-                        "hora" to horaText,
-                        "usuarioDueño" to currentUser.uid,
-                        "mascotasId" to mascotasIdList,
-                        "estado" to "creado",
-                        "usuarioPaseador" to "",
-                        "nombreMascota" to mascotasAñadidasList.map { it.nombre!! },
-                        "razaMascota" to mascotasAñadidasList.map { it.raza!! },
-                        "valoracionMascota" to mascotasAñadidasList.map { it.valoracion!! },
-                        "imagenMascota" to mascotasAñadidasList.map { it.foto!! }
-                    )
-
-                    // cambia el atributo borrable de las mascotas a false
-                    for (mascota in mascotasAñadidasList) {
-                        val mascotaRef = FirebaseDatabase.getInstance()
-                            .getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
-                        mascotaRef.child("borrable").setValue(false)
-                    }
-
-                    val myRefAnuncios = database.getReference("app/anuncios")
-                    myRefAnuncios.push().setValue(anuncio).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(
-                                this@PublicarAnuncio,
-                                "Anuncio publicado con éxito",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            val intent = Intent(this@PublicarAnuncio, MisAnuncios::class.java)
-                            startActivity(intent)
-                        } else {
-                            Toast.makeText(
-                                this@PublicarAnuncio,
-                                "Error al publicar el anuncio",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
@@ -236,7 +248,6 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
             })
         }
     }

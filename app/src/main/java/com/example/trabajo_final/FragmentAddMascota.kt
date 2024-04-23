@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -134,8 +135,13 @@ class FragmentAddMascota : Fragment(), OnBackPressedInFragmentListener {
         if (fragmentInferior != null && fragmentInferior.isHidden) {
             parentFragmentManager.beginTransaction().show(fragmentInferior).commit()
         }
+        val fragmentSuperiorPerfil = parentFragmentManager.findFragmentById(R.id.fragment_superior_perfil)
+        if (fragmentSuperiorPerfil != null && fragmentSuperiorPerfil.isHidden) {
+            parentFragmentManager.beginTransaction().show(fragmentSuperiorPerfil).commit()
+        }
 
         parentFragmentManager.popBackStack()
+        activity?.findViewById<ScrollView>(R.id.scrollView)?.visibility = View.VISIBLE
     }
 
     private fun mostrarDialogoSeleccion() {

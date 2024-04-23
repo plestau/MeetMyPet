@@ -74,8 +74,6 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
                     .load(mascotaFotoUrl)
                     .transform(CircleCrop())
                     .into(tvFotoMascota)
-            } else {
-                Toast.makeText(itemView.context, "No se encontró la foto de la mascota", Toast.LENGTH_SHORT).show()
             }
 
             itemView.setOnClickListener {
