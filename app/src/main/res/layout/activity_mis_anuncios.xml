@@ -7,27 +7,35 @@
     android:layout_height="match_parent"
     tools:context=".MisAnuncios">
 
-    <TextView
-        android:id="@+id/tituloMisAnuncios"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mis anuncios"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@id/recyclerViewMisAnuncios"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewMisAnuncios"
+    <LinearLayout
+        android:id="@+id/llMisAnuncios"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="?attr/actionBarSize"
-        app:layout_constraintBottom_toTopOf="@id/fragment_inferior"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tituloMisAnuncios" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/tituloMisAnuncios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mis anuncios"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewMisAnuncios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="?attr/actionBarSize"
+            app:layout_constraintBottom_toTopOf="@id/fragment_inferior"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tituloMisAnuncios" />
+    </LinearLayout>
     <FrameLayout
         android:id="@+id/fragment_inferior"
         android:layout_width="match_parent"
@@ -35,5 +43,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

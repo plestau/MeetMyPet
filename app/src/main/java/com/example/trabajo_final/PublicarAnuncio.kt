@@ -187,8 +187,12 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                                 mascota.foto = mascotaPicValue.toString()
                             }
 
+                            val myRefAnuncios = FirebaseDatabase.getInstance().getReference("app/anuncios")
+                            val anuncioId = myRefAnuncios.push().key
+
                             if (todasLasMascotasTienenFoto) {
                                 val anuncio = hashMapOf(
+                                    "id" to anuncioId,
                                     "titulo" to tituloText,
                                     "descripcion" to descripcionText,
                                     "lugar" to lugarText,
@@ -211,7 +215,6 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                                     mascotaRef.child("borrable").setValue(false)
                                 }
 
-                                val myRefAnuncios = database.getReference("app/anuncios")
                                 myRefAnuncios.push().setValue(anuncio).addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
                                         Toast.makeText(

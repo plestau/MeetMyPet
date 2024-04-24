@@ -4,7 +4,9 @@ import FragmentInferior
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +28,7 @@ class MisAnuncios : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         anunciosRecyclerView = findViewById(R.id.recyclerViewMisAnuncios)
-        anunciosAdapter = AnuncioAdapter(listOf())
+        anunciosAdapter = AnuncioAdapter(listOf(), supportFragmentManager)
         anunciosRecyclerView.layoutManager = LinearLayoutManager(this)
         anunciosRecyclerView.adapter = anunciosAdapter
 
@@ -71,5 +73,25 @@ class MisAnuncios : AppCompatActivity() {
                 Toast.makeText(this@MisAnuncios, "Error al cargar anuncios", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    override fun onBackPressed() {
+        val fragmentList = supportFragmentManager.fragments
+        for (fragment in fragmentList) {
+            if (fragment is FragmentEditarAnuncio) {
+                //añade un cuadro de confirmación antes de salir
+                AlertDialog.Builder(this)
+                    .setTitle("Confirmación")
+                    .setMessage("¿Estás seguro de que quieres salir? Los cambios no se guardarán")
+                    .setPositiveButton("Sí") { _, _ ->
+                        supportFragmentManager.beginTransaction().remove(fragment).commit()
+                        findViewById<LinearLayout>(R.id.llMisAnuncios).visibility = RecyclerView.VISIBLE
+                    }
+                    .setNegativeButton("No", null)
+                    .show()
+                return
+            }
+        }
+        super.onBackPressed()
     }
 }

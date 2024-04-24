@@ -78,5 +78,12 @@
             android:textSize="16sp" />
 
     </LinearLayout>
-
+    <ImageView
+        android:id="@+id/ivEditarAnuncio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_edit_24"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        android:layout_gravity="bottom|end" />
 </androidx.cardview.widget.CardView>

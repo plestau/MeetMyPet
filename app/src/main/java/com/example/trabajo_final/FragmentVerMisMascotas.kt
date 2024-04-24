@@ -39,6 +39,11 @@ class FragmentVerMisMascotas : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_ver_mis_mascotas, container, false)
+        val fragmentEditarAnuncio = FragmentEditarAnuncio().apply {
+            arguments = Bundle().apply {
+                putParcelableArrayList("mascotasAñadidasList", ArrayList(mascotasAñadidasList))
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
