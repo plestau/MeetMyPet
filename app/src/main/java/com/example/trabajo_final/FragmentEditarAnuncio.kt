@@ -92,15 +92,16 @@ class FragmentEditarAnuncio : Fragment() {
                 .setMessage("¿Estás seguro de que quieres borrar este anuncio?")
                 .setPositiveButton("Sí") { _, _ ->
                     val database = FirebaseDatabase.getInstance()
-                    // elimina el anuncio de la base de datos
-                    database.getReference("app/anuncios").child(anuncio.id!!).removeValue().addOnCompleteListener { task ->
+                    // anuncioRef es la referencia al anuncio que se desea borrar que coge el id del anuncio de Firebase
+                    val anuncioRef = database.getReference("app/anuncios").child(anuncio.id!!)
+                    anuncioRef.removeValue().addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(
                                 requireContext(),
                                 "Anuncio borrado correctamente",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            // Aquí puedes agregar el código para navegar de regreso a la pantalla anterior
+                            activity?.onBackPressed()
                         } else {
                             Toast.makeText(
                                 requireContext(),
