@@ -79,17 +79,8 @@ class MisAnuncios : AppCompatActivity() {
         val fragmentList = supportFragmentManager.fragments
         for (fragment in fragmentList) {
             if (fragment is FragmentEditarAnuncio) {
-                //añade un cuadro de confirmación antes de salir
-                AlertDialog.Builder(this)
-                    .setTitle("Confirmación")
-                    .setMessage("¿Estás seguro de que quieres salir? Los cambios no se guardarán")
-                    .setPositiveButton("Sí") { _, _ ->
-                        supportFragmentManager.beginTransaction().remove(fragment).commit()
-                        findViewById<LinearLayout>(R.id.llMisAnuncios).visibility = RecyclerView.VISIBLE
-                    }
-                    .setNegativeButton("No", null)
-                    .show()
-                return
+                supportFragmentManager.beginTransaction().remove(fragment).commit()
+                findViewById<LinearLayout>(R.id.llMisAnuncios).visibility = RecyclerView.VISIBLE
             }
         }
         super.onBackPressed()

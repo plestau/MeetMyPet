@@ -29,7 +29,23 @@ class FragmentEditarAnuncio : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mascotasAñadidasList = arguments?.getParcelableArrayList<Mascota>("mascotasAñadidasList") ?: mutableListOf()
+
+        anuncio = arguments?.getParcelable<Anuncio>("anuncio")!!
+        auth = FirebaseAuth.getInstance()
+        val database = FirebaseDatabase.getInstance()
+        val anuncioRef = database.getReference("app/anuncios").child(anuncio.id!!)
+        val mascotaRef = database.getReference("app/usuarios").child(auth.currentUser!!.uid).child("mascotas")
+        anuncioRef.child("idmascota").get().addOnSuccessListener { dataSnapshot ->
+            val mascotasIdList = dataSnapshot.value as List<String>
+            mascotasIdList.forEach { mascotaId ->
+                mascotaRef.child(mascotaId).get().addOnSuccessListener { dataSnapshot ->
+                    val mascota = dataSnapshot.getValue(Mascota::class.java)
+                    if (mascota != null) {
+                        mascotasAñadidasList.add(mascota)
+                    }
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -125,6 +141,61 @@ class FragmentEditarAnuncio : Fragment() {
             val horaText = hora.text.toString()
 
             // Aquí puedes agregar las validaciones necesarias para los campos de entrada
+            if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty()) {
+                Toast.makeText(requireContext(), "Faltan datos en el formulario", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+
+            if (mascotasAñadidasList.isEmpty()) {
+                Toast.makeText(requireContext(), "Debes añadir al menos una mascota", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+
+            val horaEvento = horaText.split(":")
+            val horaEventoInt = horaEvento[0].toIntOrNull()
+            val minutoEventoInt = horaEvento[1].toIntOrNull()
+            val diaEvento = fechaText.split("/")
+            val diaEventoInt = diaEvento[0].toIntOrNull()
+            val mesEventoInt = diaEvento[1].toIntOrNull()
+            val añoEventoInt = diaEvento[2].toIntOrNull()
+
+            if (diaEventoInt!! < 1 || diaEventoInt > 31 || mesEventoInt!! < 1 || mesEventoInt > 12 || añoEventoInt!! < 2024) {
+                Toast.makeText(
+                    requireContext(),
+                    "La fecha debe tener el formato DD/MM/AAAA",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (horaEventoInt == null || minutoEventoInt == null) {
+                Toast.makeText(
+                    requireContext(),
+                    "La hora debe tener el formato HH:MM",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (horaEventoInt < 0 || horaEventoInt > 23 || minutoEventoInt < 0 || minutoEventoInt > 59) {
+                Toast.makeText(
+                    requireContext(),
+                    "La hora debe tener el formato HH:MM",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (lugarText.matches(Regex("^[0-9]*$"))) {
+                Toast.makeText(
+                    requireContext(),
+                    "El lugar no puede ser solo números",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
 
             if (currentUser == null) {
                 Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT)
@@ -142,34 +213,12 @@ class FragmentEditarAnuncio : Fragment() {
             anuncioRef.child("fecha").setValue(fechaText)
             anuncioRef.child("hora").setValue(horaText)
 
-            // Actualizar la lista de mascotas del anuncio
-            val mascotasIdList = mascotasAñadidasList.map { it.id!! }
-            anuncioRef.child("idmascota").setValue(mascotasIdList)
-
-            // Si deseas guardar también los detalles de las mascotas en el anuncio,
-            // puedes agregar más campos para almacenar esa información.
-
             Toast.makeText(requireContext(), "Anuncio actualizado con éxito", Toast.LENGTH_SHORT)
                 .show()
 
-            // Aquí puedes agregar el código para navegar de regreso a la pantalla anterior
+            activity?.onBackPressed()
         }
 
-
         return view
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val activity = activity as AppCompatActivity
-        activity.onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    view!!.findViewById<ScrollView>(R.id.scrollView).visibility = View.VISIBLE
-                    isEnabled = false
-                    activity.onBackPressed()
-                }
-            })
     }
 }

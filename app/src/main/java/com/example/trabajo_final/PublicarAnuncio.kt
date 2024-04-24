@@ -205,6 +205,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                                     "idmascota" to mascotasIdList,
                                     "nombreMascota" to mascotasAñadidasList.map { it.nombre!! },
                                     "razaMascota" to mascotasAñadidasList.map { it.raza!! },
+                                    "edadMascota" to mascotasAñadidasList.map { it.edad!! },
                                     "valoracionMascota" to mascotasAñadidasList.map { it.valoracion!! },
                                     "imagenMascota" to mascotasAñadidasList.map { it.foto?.let { foto -> foto } ?: "" }
                                 )

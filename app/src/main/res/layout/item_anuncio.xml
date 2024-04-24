@@ -41,42 +41,66 @@
             android:layout_marginTop="8dp"
             android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tvFechaAnuncio"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="14sp" />
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
 
-        <TextView
-            android:id="@+id/tvHoraAnuncio"
+            <TextView
+                android:id="@+id/tvFechaAnuncio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvHoraAnuncio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvLugarAnuncio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="end"
+                android:textStyle="bold"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="14sp" />
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
 
-        <TextView
-            android:id="@+id/tvLugarAnuncio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tvNombreMascotaAnuncio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tvNombreMascotaAnuncio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp" />
+            <TextView
+                android:id="@+id/tvRazaMascotaAnuncio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/tvRazaMascotaAnuncio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp" />
-
+            <TextView
+                android:id="@+id/tvEdadMascotaAnuncio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp" />
+        </LinearLayout>
     </LinearLayout>
     <ImageView
         android:id="@+id/ivEditarAnuncio"

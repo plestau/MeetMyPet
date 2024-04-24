@@ -58,6 +58,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
         private val tvLugarAnuncio: TextView = itemView.findViewById(R.id.tvLugarAnuncio)
         private val tvNombreMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvNombreMascotaAnuncio)
         private val tvRazaMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvRazaMascotaAnuncio)
+        private val tvEdadMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvEdadMascotaAnuncio)
         private val tvValoracionMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvValoracionMascotaAnuncio)
         private val rvImagenMascotaAnuncio = itemView.findViewById<RecyclerView>(R.id.rvImagenesMascotaAnuncio)
         private val ivEditarAnuncio: ImageView = itemView.findViewById(R.id.ivEditarAnuncio)
@@ -70,6 +71,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
             tvLugarAnuncio.text = anuncio.lugar
             tvNombreMascotaAnuncio.text = anuncio.nombreMascota?.joinToString()
             tvRazaMascotaAnuncio.text = anuncio.razaMascota?.joinToString()
+            tvEdadMascotaAnuncio.text = anuncio.edadMascota?.joinToString() + " años"
             tvValoracionMascotaAnuncio.text = anuncio.valoracionMascota?.joinToString()
             // carga la imagen de la mascota o las imagenes de las mascotas en caso de que haya mas de una
             rvImagenMascotaAnuncio.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
@@ -134,13 +136,5 @@ class ImagenMascotaAdapter(private var listaImagenes: List<String>) : RecyclerVi
                     .into(ivImagenMascota)
             }
         }
-    }
-
-    private suspend fun getUserRole(): String {
-        val auth = FirebaseAuth.getInstance()
-        val user = auth.currentUser
-        val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${user?.uid}")
-        val snapshot = userRef.get().await()
-        return snapshot.child("tipo").getValue(String::class.java) ?: "user"
     }
 }
