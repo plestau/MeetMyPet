@@ -45,25 +45,6 @@ class Utilidades {
             return existe
         }
 
-        suspend fun guardarProfilePic(sto_ref: StorageReference, id:String, imagen: Uri):String{
-            lateinit var url_firebase: Uri
-
-            url_firebase=sto_ref.child("app").child("usuarios").child(id)
-                .putFile(imagen).await().storage.downloadUrl.await()
-
-            return url_firebase.toString()
-        }
-
-        fun tostadaCorrutina(activity: AppCompatActivity, contexto: Context, texto:String){
-            activity.runOnUiThread{
-                Toast.makeText(
-                    contexto,
-                    texto,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
         fun obtenerFechaActual():String{
             val sdf = java.text.SimpleDateFormat("dd/MM/yyyy")
             return sdf.format(Date())

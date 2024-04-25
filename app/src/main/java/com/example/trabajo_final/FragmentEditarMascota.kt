@@ -145,7 +145,7 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
 
                 val mascotaInfoUpdate = mapOf(
                     "nombre" to nombre,
-                    "edad" to edad,
+                    "edad" to edadInt,
                     "raza" to raza,
                     "sexo" to sexo,
                     "esterilizado" to esterilizado,

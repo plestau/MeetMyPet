@@ -115,10 +115,94 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
         // Maneja el clic en el botón "Editar Anuncio"
         val btnEditarAnuncio = view.findViewById<Button>(R.id.editarAnuncio)
         btnEditarAnuncio.setOnClickListener {
-            // Realiza las validaciones y actualiza el anuncio
-            // (Código de validación y actualización del anuncio aquí)
-        }
+            val tituloText = titulo.text.toString()
+            val descripcionText = descripcion.text.toString()
+            val lugarText = lugar.text.toString()
+            val fechaText = fecha.text.toString()
+            val horaText = hora.text.toString()
 
+            if (!fechaText.matches(Regex("^\\d{1,2}/\\d{1,2}/\\d{4}$"))) {
+                Toast.makeText(
+                    context,
+                    "La fecha debe tener el formato D/M/AAAA",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty()) {
+                Toast.makeText(
+                    context,
+                    "Todos los campos deben estar llenos",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            val fechaEvento = fechaText.split("/")
+            val diaEventoInt = fechaEvento[0].toIntOrNull()
+            val mesEventoInt = fechaEvento[1].toIntOrNull()
+            val añoEventoInt = fechaEvento[2].toIntOrNull()
+            if (diaEventoInt == null || mesEventoInt == null || añoEventoInt == null) {
+                Toast.makeText(
+                    context,
+                    "La fecha debe tener el formato DD/MM/AAAA",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (diaEventoInt < 1 || diaEventoInt > 31 || mesEventoInt < 1 || mesEventoInt > 12 || añoEventoInt < 2024) {
+                Toast.makeText(
+                    context,
+                    "La fecha debe tener el formato DD/MM/AAAA",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            val horaEvento = horaText.split(":")
+            val horaEventoInt = horaEvento[0].toIntOrNull()
+            val minutoEventoInt = horaEvento[1].toIntOrNull()
+            if (horaEventoInt == null || minutoEventoInt == null) {
+                Toast.makeText(
+                    context,
+                    "La hora debe tener el formato HH:MM",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (horaEventoInt < 0 || horaEventoInt > 23 || minutoEventoInt < 0 || minutoEventoInt > 59) {
+                Toast.makeText(
+                    context,
+                    "La hora debe tener el formato HH:MM",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            if (lugarText.matches(Regex("^[0-9]*$"))) {
+                Toast.makeText(
+                    context,
+                    "El lugar no puede ser solo números",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            val database = FirebaseDatabase.getInstance()
+            val anuncioRef = database.getReference("app/anuncios").child(anuncio.id!!)
+            val mascotasIdList = mascotasAñadidasList.map { it.id!! }
+            anuncioRef.child("titulo").setValue(tituloText)
+            anuncioRef.child("descripcion").setValue(descripcionText)
+            anuncioRef.child("lugar").setValue(lugarText)
+            anuncioRef.child("fecha").setValue(fechaText)
+            anuncioRef.child("hora").setValue(horaText)
+            anuncioRef.child("idmascota").setValue(mascotasIdList)
+            Toast.makeText(context, "Anuncio editado correctamente", Toast.LENGTH_SHORT).show()
+            activity?.onBackPressed()
+        }
         return view
     }
 
