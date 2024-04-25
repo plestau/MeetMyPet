@@ -39,11 +39,6 @@ class FragmentVerMisMascotas : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_ver_mis_mascotas, container, false)
-        val fragmentEditarAnuncio = FragmentEditarAnuncio().apply {
-            arguments = Bundle().apply {
-                putParcelableArrayList("mascotasAñadidasList", ArrayList(mascotasAñadidasList))
-            }
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -132,14 +127,15 @@ class FragmentVerMisMascotas : Fragment() {
                         .setTitle("Confirmación")
                         .setMessage("¿Seguro que quieres añadir a ${mascota.nombre}?")
                         .setPositiveButton("Sí") { _, _ ->
-                            Log.d("MascotasAñadidasList", mascota.nombre.toString())
                             listener?.onMascotaAdded(mascota)
                             val intent = Intent()
                             intent.putExtra("mascota", mascota)
                             activity?.setResult(Activity.RESULT_OK, intent)
-                            activity?.findViewById<ScrollView>(R.id.scrollView)?.visibility = View.VISIBLE
+                            // Comprueba si la actividad actual es MisAnuncios o PublicarAnuncio antes de intentar mostrar la vista scrollView
+                            if (activity is MisAnuncios || activity is PublicarAnuncio) {
+                                activity?.findViewById<ScrollView>(R.id.scrollView)?.visibility = View.VISIBLE
+                            }
                             parentFragmentManager.beginTransaction().hide(this@FragmentVerMisMascotas).commit()
-
                             // Crea un nuevo TextView para el nombre de la mascota
                             val mascotaTextView = TextView(context)
                             mascotaTextView.text = mascota.nombre
@@ -173,6 +169,8 @@ class FragmentVerMisMascotas : Fragment() {
                             // Añade el LinearLayout al layout de mascotas añadidas
                             val mascotasAñadidasLayout = activity?.findViewById<LinearLayout>(R.id.mascotasAñadidasLayout)
                             mascotasAñadidasLayout?.addView(mascotaLayout)
+
+                            parentFragmentManager.popBackStack()
                         }
                         .setNegativeButton("No", null)
                         .show()

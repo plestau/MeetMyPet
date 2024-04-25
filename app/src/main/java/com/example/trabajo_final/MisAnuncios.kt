@@ -4,7 +4,9 @@ import FragmentInferior
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -16,15 +18,17 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class MisAnuncios : AppCompatActivity() {
+class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedListener {
     private lateinit var auth: FirebaseAuth
     private lateinit var anunciosRecyclerView: RecyclerView
     private lateinit var anunciosAdapter: AnuncioAdapter
     private val anunciosAñadidosIds = mutableListOf<String>()
+    private var mascotasAñadidasList = mutableListOf<Mascota>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mis_anuncios)
+
 
         auth = FirebaseAuth.getInstance()
         anunciosRecyclerView = findViewById(R.id.recyclerViewMisAnuncios)
@@ -41,6 +45,7 @@ class MisAnuncios : AppCompatActivity() {
         }
 
         FragmentInferior.actividadActual = "MisAnuncios"
+
     }
 
     private fun mostrarAnunciosUsuario() {
@@ -84,5 +89,34 @@ class MisAnuncios : AppCompatActivity() {
             }
         }
         super.onBackPressed()
+    }
+
+    override fun onMascotaAdded(mascota: Mascota) {
+        // Crea un nuevo TextView para el nombre de la mascota
+        val mascotaTextView = TextView(this)
+        mascotaTextView.text = mascota.nombre
+        mascotaTextView.textSize = 20f
+
+        // Crea un nuevo LinearLayout para contener el nombre de la mascota y el icono de borrar
+        val mascotaLayout = LinearLayout(this)
+        mascotaLayout.orientation = LinearLayout.HORIZONTAL
+        mascotaLayout.addView(mascotaTextView)
+
+        val mascotasAñadidasLayout = this.findViewById<LinearLayout>(R.id.mascotasAñadidasLayout)
+
+        // Crea un nuevo ImageView para el icono de borrar
+        val borrarImageView = ImageView(this)
+        borrarImageView.setImageResource(R.drawable.baseline_delete_forever_24) // Reemplaza 'baseline_delete_forever_24' con el nombre de tu icono de borrar
+        borrarImageView.setOnClickListener {
+            // elimina a la mascota elegida del mascotasAñadidasLayout
+            mascotasAñadidasLayout.removeView(mascotaLayout)
+            // elimina a la mascota elegida del mascotasAñadidasList
+            mascotasAñadidasList.removeAll { it.nombre == mascota.nombre }
+        }
+
+        // Añade el LinearLayout al layout de mascotas añadidas
+        mascotasAñadidasLayout?.addView(mascotaLayout)
+        mascotasAñadidasLayout?.addView(borrarImageView)
+        Log.d("MascotasAñadidas", mascotasAñadidasList.toString())
     }
 }
