@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import com.example.trabajo_final.Chat
 import com.example.trabajo_final.MainActivity
 import com.example.trabajo_final.MisAnuncios
 import com.example.trabajo_final.PerfilUsuario
@@ -184,7 +185,7 @@ class FragmentInferior : Fragment() {
             selectedText = txtMensajes
 
             if (FragmentInferior.actividadActual != "Mensajes") {
-                val intent = Intent(context, MainActivity::class.java)
+                val intent = Intent(context, Chat::class.java)
                 startActivity(intent)
                 FragmentInferior.actividadActual = "Mensajes"
                 selectedCardId = R.id.card_mensajes
