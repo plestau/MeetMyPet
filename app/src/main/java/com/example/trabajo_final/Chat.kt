@@ -71,6 +71,7 @@ class Chat : AppCompatActivity() {
             )
             txtMensaje.setText("")
         }
+        a
 
         fotoPerfil.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
