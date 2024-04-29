@@ -149,15 +149,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/hora_layout" />
 
-<<<<<<< HEAD
-            <LinearLayout
-                android:id="@+id/mascotasAñadidasLayout"
-                android:layout_width="wrap_content"
-=======
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mascotasAñadidasRv"
                 android:layout_width="match_parent"
->>>>>>> backup_master
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingLeft="20dp"
@@ -186,11 +180,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-<<<<<<< HEAD
-                app:layout_constraintTop_toBottomOf="@id/mascotasAñadidasLayout">
-=======
                 app:layout_constraintTop_toBottomOf="@id/mascotasAñadidasRv">
->>>>>>> backup_master
 
                 <ImageView
                     android:layout_width="50dp"

@@ -143,34 +143,6 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                     }
                 }
 
-<<<<<<< HEAD
-                val mascotaInfoUpdate = mapOf(
-                    "nombre" to nombre,
-                    "edad" to edadInt,
-                    "raza" to raza,
-                    "sexo" to sexo,
-                    "esterilizado" to esterilizado,
-                    "biografia" to biografia,
-                    "foto" to mascotaPicUrl,
-                    "valoracion" to valoracion
-                )
-
-                mascotaRef.updateChildren(mascotaInfoUpdate).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Datos de la mascota actualizados con éxito",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        parentFragmentManager.popBackStack()
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Error al actualizar los datos de la mascota",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-=======
                 // actualizar la mascota en la base de datos con setValue
                 mascotaRef.setValue(mascota.copy(
                     nombre = nombre.text.toString(),
@@ -186,7 +158,6 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Mascota actualizada", Toast.LENGTH_SHORT).show()
                     parentFragmentManager.popBackStack()
->>>>>>> backup_master
                 }
 
                 // Recorrer todos los anuncios en la base de datos y actualizar los atributos imagenMascota, nombreMascota y razaMascota de la mascota asociada

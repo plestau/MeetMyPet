@@ -29,11 +29,7 @@ import java.util.*
 
 class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedListener {
     private lateinit var auth: FirebaseAuth
-<<<<<<< HEAD
-    private lateinit var mascotasAñadidas: LinearLayout
-=======
     private lateinit var mascotaAdapter: MascotaEnAnuncioAdapter
->>>>>>> backup_master
     val mascotasAñadidasList = mutableListOf<Mascota>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,9 +51,6 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
         val lugar = findViewById<EditText>(R.id.lugar)
         val fecha = findViewById<EditText>(R.id.fecha)
         val hora = findViewById<EditText>(R.id.hora)
-<<<<<<< HEAD
-        mascotasAñadidas = findViewById(R.id.mascotasAñadidasLayout)
-=======
         val mascotasAñadidas = findViewById<RecyclerView>(R.id.mascotasAñadidasRv)
         mascotaAdapter = MascotaEnAnuncioAdapter(mascotasAñadidasList) { mascota ->
             mascotasAñadidasList.removeAll { it.nombre == mascota.nombre }
@@ -65,7 +58,6 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
 
         mascotasAñadidas.adapter = mascotaAdapter
         mascotasAñadidas.layoutManager = LinearLayoutManager(this)
->>>>>>> backup_master
 
         val verMisMascotas = findViewById<LinearLayout>(R.id.verMisMascotas)
         verMisMascotas.setOnClickListener {
@@ -73,10 +65,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                 arguments = Bundle().apply {
                     putBoolean("fromPublicarAnuncio", true)
                     putBoolean("mascotasClicables", true)
-<<<<<<< HEAD
-=======
                     putParcelableArrayList("mascotasAñadidasList", ArrayList(mascotasAñadidasList))
->>>>>>> backup_master
                 }
             }
             val transaction = supportFragmentManager.beginTransaction()
@@ -294,11 +283,5 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
 
     override fun onMascotaAdded(mascota: Mascota) {
         mascotasAñadidasList.add(mascota)
-<<<<<<< HEAD
     }
-
-=======
-        mascotaAdapter.notifyDataSetChanged()
-    }
->>>>>>> backup_master
 }
