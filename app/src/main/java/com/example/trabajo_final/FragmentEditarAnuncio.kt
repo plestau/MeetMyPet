@@ -194,12 +194,23 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
             val database = FirebaseDatabase.getInstance()
             val anuncioRef = database.getReference("app/anuncios").child(anuncio.id!!)
             val mascotasIdList = mascotasAñadidasList.map { it.id!! }
+            val mascotasNombreList = mascotasAñadidasList.map { it.nombre!! }
+            val mascotasRazaList = mascotasAñadidasList.map { it.raza!! }
+            val mascotasEdadList = mascotasAñadidasList.map { it.edad!! }
+            val mascotasValoracionList = mascotasAñadidasList.map { it.valoracion!! }
+            val mascotasImagenList = mascotasAñadidasList.map { it.foto!! }
+
             anuncioRef.child("titulo").setValue(tituloText)
             anuncioRef.child("descripcion").setValue(descripcionText)
             anuncioRef.child("lugar").setValue(lugarText)
             anuncioRef.child("fecha").setValue(fechaText)
             anuncioRef.child("hora").setValue(horaText)
             anuncioRef.child("idmascota").setValue(mascotasIdList)
+            anuncioRef.child("nombreMascota").setValue(mascotasNombreList)
+            anuncioRef.child("razaMascota").setValue(mascotasRazaList)
+            anuncioRef.child("edadMascota").setValue(mascotasEdadList)
+            anuncioRef.child("valoracionMascota").setValue(mascotasValoracionList)
+            anuncioRef.child("imagenMascota").setValue(mascotasImagenList)
             Toast.makeText(context, "Anuncio editado correctamente", Toast.LENGTH_SHORT).show()
             activity?.onBackPressed()
         }

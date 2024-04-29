@@ -151,17 +151,9 @@ class FragmentVerMisMascotas : Fragment() {
                             borrarImageView.setImageResource(R.drawable.baseline_delete_forever_24) // Reemplaza 'ic_delete' con el nombre de tu icono de borrar
                             borrarImageView.setOnClickListener {
                                 // elimina a la mascota elegida del mascotasAñadidasLayout despues de confirmarlo
-                                AlertDialog.Builder(context)
-                                    .setTitle("Confirmación")
-                                    .setMessage("¿Estás seguro de que quieres borrar a ${mascota.nombre}?")
-                                    .setPositiveButton("Sí") { _, _ ->
-                                        // elimina a la mascota elegida del mascotasAñadidasList
-                                        (activity as? PublicarAnuncio)?.mascotasAñadidasList?.removeAll { it.nombre == mascota.nombre }
-                                        mascotasAñadidasLayout?.removeView(mascotaLayout)
-                                        Log.d("MascotasAñadidasList", (activity as? PublicarAnuncio)?.mascotasAñadidasList.toString())
-                                    }
-                                    .setNegativeButton("No", null)
-                                    .show()
+                                (activity as? PublicarAnuncio)?.mascotasAñadidasList?.removeAll { it.nombre == mascota.nombre }
+                                mascotasAñadidasLayout?.removeView(mascotaLayout)
+                                Log.d("MascotasAñadidasList", (activity as? PublicarAnuncio)?.mascotasAñadidasList.toString())
                             }
 
                             mascotaLayout.addView(borrarImageView)
