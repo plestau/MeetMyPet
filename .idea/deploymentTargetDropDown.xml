@@ -3,6 +3,7 @@
   <component name="deploymentTargetDropDown">
     <value>
       <entry key="app">
+<<<<<<< HEAD
         <State>
           <runningDeviceTargetSelectedWithDropDown>
             <Target>
@@ -39,6 +40,9 @@
             </Target>
           </targetsSelectedWithDialog>
         </State>
+=======
+        <State />
+>>>>>>> backup_master
       </entry>
     </value>
   </component>

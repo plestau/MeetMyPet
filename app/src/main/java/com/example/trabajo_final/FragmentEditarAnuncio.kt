@@ -15,20 +15,32 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+<<<<<<< HEAD
+=======
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+>>>>>>> backup_master
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedListener {
 
     private lateinit var auth: FirebaseAuth
+<<<<<<< HEAD
     private lateinit var mascotasAñadidas: LinearLayout
     private lateinit var anuncio: Anuncio
     var mascotasAñadidasList = mutableListOf<Mascota>()
+=======
+    private lateinit var anuncio: Anuncio
+    var mascotasAñadidasList = mutableListOf<Mascota>()
+    private lateinit var mascotaAdapter: MascotaEnAnuncioAdapter
+>>>>>>> backup_master
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         anuncio = arguments?.getParcelable<Anuncio>("anuncio")!!
         auth = FirebaseAuth.getInstance()
+<<<<<<< HEAD
         val database = FirebaseDatabase.getInstance()
         val anuncioRef = database.getReference("app/anuncios").child(anuncio.id!!)
         val mascotaRef = database.getReference("app/usuarios").child(auth.currentUser!!.uid).child("mascotas")
@@ -45,6 +57,20 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 }
             }
         }
+=======
+
+        // Inicializa mascotasAñadidasList con las mascotas del anuncio
+        mascotasAñadidasList = anuncio.nombreMascota?.mapIndexed { index, nombre ->
+            Mascota(
+                id = anuncio.idmascota?.get(index),
+                nombre = nombre,
+                raza = anuncio.razaMascota?.get(index),
+                edad = anuncio.edadMascota?.get(index),
+                valoracion = anuncio.valoracionMascota?.get(index),
+                foto = anuncio.imagenMascota?.get(index)
+            )
+        }?.toMutableList() ?: mutableListOf()
+>>>>>>> backup_master
     }
 
     override fun onCreateView(
@@ -52,7 +78,17 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_editar_anuncio, container, false)
+<<<<<<< HEAD
         mascotasAñadidas = view.findViewById(R.id.mascotasAñadidasLayout)
+=======
+        val mascotasAñadidas = view.findViewById<RecyclerView>(R.id.mascotasAñadidasRv)
+        mascotaAdapter = MascotaEnAnuncioAdapter(mascotasAñadidasList) { mascota ->
+            mascotasAñadidasList.removeAll { it.id == mascota.id }
+            mascotaAdapter.notifyDataSetChanged()
+        }
+        mascotasAñadidas.adapter = mascotaAdapter
+        mascotasAñadidas.layoutManager = LinearLayoutManager(context)
+>>>>>>> backup_master
 
         val titulo = view.findViewById<EditText>(R.id.titulo)
         val descripcion = view.findViewById<EditText>(R.id.descripcion)
@@ -74,7 +110,13 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 arguments = Bundle().apply {
                     putBoolean("fromPublicarAnuncio", true)
                     putBoolean("mascotasClicables", true)
+<<<<<<< HEAD
                 }
+=======
+                    putParcelableArrayList("mascotasAñadidasList", ArrayList(mascotasAñadidasList))
+                }
+                setTargetFragment(this@FragmentEditarAnuncio, 0)
+>>>>>>> backup_master
             }
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -200,6 +242,7 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
             val mascotasValoracionList = mascotasAñadidasList.map { it.valoracion!! }
             val mascotasImagenList = mascotasAñadidasList.map { it.foto!! }
 
+<<<<<<< HEAD
             anuncioRef.child("titulo").setValue(tituloText)
             anuncioRef.child("descripcion").setValue(descripcionText)
             anuncioRef.child("lugar").setValue(lugarText)
@@ -211,12 +254,29 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
             anuncioRef.child("edadMascota").setValue(mascotasEdadList)
             anuncioRef.child("valoracionMascota").setValue(mascotasValoracionList)
             anuncioRef.child("imagenMascota").setValue(mascotasImagenList)
+=======
+            anuncioRef.setValue(anuncio.copy(
+                titulo = tituloText,
+                descripcion = descripcionText,
+                lugar = lugarText,
+                fecha = fechaText,
+                hora = horaText,
+                idmascota = mascotasIdList,
+                nombreMascota = mascotasNombreList,
+                razaMascota = mascotasRazaList,
+                edadMascota = mascotasEdadList,
+                valoracionMascota = mascotasValoracionList,
+                imagenMascota = mascotasImagenList
+            ))
+
+>>>>>>> backup_master
             Toast.makeText(context, "Anuncio editado correctamente", Toast.LENGTH_SHORT).show()
             activity?.onBackPressed()
         }
         return view
     }
 
+<<<<<<< HEAD
     // Método para actualizar la UI con la mascota añadida
     private fun actualizarUIConMascotaAñadida(mascota: Mascota) {
         // Crea un nuevo TextView para el nombre de la mascota
@@ -249,5 +309,11 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
     override fun onMascotaAdded(mascota: Mascota) {
         mascotasAñadidasList.add(mascota)
         actualizarUIConMascotaAñadida(mascota)
+=======
+
+    override fun onMascotaAdded(mascota: Mascota) {
+        mascotasAñadidasList.add(mascota)
+        mascotaAdapter.notifyDataSetChanged()
+>>>>>>> backup_master
     }
 }

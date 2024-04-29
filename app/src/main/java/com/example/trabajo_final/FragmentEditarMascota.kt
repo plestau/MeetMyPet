@@ -143,6 +143,7 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                     }
                 }
 
+<<<<<<< HEAD
                 val mascotaInfoUpdate = mapOf(
                     "nombre" to nombre,
                     "edad" to edadInt,
@@ -169,6 +170,23 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+=======
+                // actualizar la mascota en la base de datos con setValue
+                mascotaRef.setValue(mascota.copy(
+                    nombre = nombre.text.toString(),
+                    edad = edadInt,
+                    raza = raza.selectedItem.toString(),
+                    sexo = sexo.selectedItem.toString(),
+                    esterilizado = esterilizado.isChecked,
+                    biografia = biografia.text.toString(),
+                    foto = mascotaPicUrl,
+                    valoracion = valoracion
+                )).await()
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Mascota actualizada", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+>>>>>>> backup_master
                 }
 
                 // Recorrer todos los anuncios en la base de datos y actualizar los atributos imagenMascota, nombreMascota y razaMascota de la mascota asociada

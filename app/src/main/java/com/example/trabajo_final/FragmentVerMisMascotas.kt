@@ -105,22 +105,17 @@ class FragmentVerMisMascotas : Fragment() {
         if (fromPublicarAnuncio) {
             mascotaAdapter.setOnItemClickListener(object : MascotaAdapter.OnItemClickListener {
                 override fun onItemClick(position: Int) {
-                    val fromPublicarAnuncio = arguments?.getBoolean("fromPublicarAnuncio", false) ?: false
-                    if (!fromPublicarAnuncio) {
+                    val mascota = mascotas[position]
+                    val mascotasAñadidasList = arguments?.getParcelableArrayList<Mascota>("mascotasAñadidasList")
+
+                    if (mascotasAñadidasList != null && mascotasAñadidasList.any { it.id == mascota.id }) {
+                        Toast.makeText(context, "La mascota ya ha sido añadida", Toast.LENGTH_SHORT).show()
                         return
                     }
-                    val mascota = mascotas[position]
 
-                    // Comprueba si la mascota ya ha sido añadida
-                    val mascotasAñadidasLayout = activity?.findViewById<LinearLayout>(R.id.mascotasAñadidasLayout)
-                    mascotasAñadidasLayout?.forEach { view ->
-                        if (view is LinearLayout) {
-                            val textView = view.getChildAt(0) as TextView
-                            if (textView.text == mascota.nombre) {
-                                Toast.makeText(context, "La mascota ya ha sido añadida", Toast.LENGTH_SHORT).show()
-                                return
-                            }
-                        }
+                    val targetFragment = targetFragment
+                    if (targetFragment is OnMascotaAddedListener) {
+                        targetFragment.onMascotaAdded(mascota)
                     }
 
                     AlertDialog.Builder(context)
@@ -136,32 +131,6 @@ class FragmentVerMisMascotas : Fragment() {
                                 activity?.findViewById<ScrollView>(R.id.scrollView)?.visibility = View.VISIBLE
                             }
                             parentFragmentManager.beginTransaction().hide(this@FragmentVerMisMascotas).commit()
-                            // Crea un nuevo TextView para el nombre de la mascota
-                            val mascotaTextView = TextView(context)
-                            mascotaTextView.text = mascota.nombre
-                            mascotaTextView.textSize = 20f
-
-                            // Crea un nuevo LinearLayout para contener el nombre de la mascota y el icono de borrar
-                            val mascotaLayout = LinearLayout(context)
-                            mascotaLayout.orientation = LinearLayout.HORIZONTAL
-                            mascotaLayout.addView(mascotaTextView)
-
-                            // Crea un nuevo ImageView para el icono de borrar
-                            val borrarImageView = ImageView(context)
-                            borrarImageView.setImageResource(R.drawable.baseline_delete_forever_24) // Reemplaza 'ic_delete' con el nombre de tu icono de borrar
-                            borrarImageView.setOnClickListener {
-                                // elimina a la mascota elegida del mascotasAñadidasLayout despues de confirmarlo
-                                (activity as? PublicarAnuncio)?.mascotasAñadidasList?.removeAll { it.nombre == mascota.nombre }
-                                mascotasAñadidasLayout?.removeView(mascotaLayout)
-                                Log.d("MascotasAñadidasList", (activity as? PublicarAnuncio)?.mascotasAñadidasList.toString())
-                            }
-
-                            mascotaLayout.addView(borrarImageView)
-
-                            // Añade el LinearLayout al layout de mascotas añadidas
-                            val mascotasAñadidasLayout = activity?.findViewById<LinearLayout>(R.id.mascotasAñadidasLayout)
-                            mascotasAñadidasLayout?.addView(mascotaLayout)
-
                             parentFragmentManager.popBackStack()
                         }
                         .setNegativeButton("No", null)

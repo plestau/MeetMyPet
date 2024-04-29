@@ -23,7 +23,12 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
     private lateinit var anunciosRecyclerView: RecyclerView
     private lateinit var anunciosAdapter: AnuncioAdapter
     private val anunciosAñadidosIds = mutableListOf<String>()
+<<<<<<< HEAD
     private var mascotasAñadidasList = mutableListOf<Mascota>()
+=======
+    var mascotasAñadidasList = mutableListOf<Mascota>()
+    private lateinit var mascotaAdapter: MascotaEnAnuncioAdapter
+>>>>>>> backup_master
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +40,13 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
         anunciosAdapter = AnuncioAdapter(listOf(), supportFragmentManager)
         anunciosRecyclerView.layoutManager = LinearLayoutManager(this)
         anunciosRecyclerView.adapter = anunciosAdapter
+<<<<<<< HEAD
+=======
+        mascotaAdapter = MascotaEnAnuncioAdapter(mascotasAñadidasList) { mascota ->
+            mascotasAñadidasList.removeAll { it.id == mascota.id }
+            mascotaAdapter.notifyDataSetChanged()
+        }
+>>>>>>> backup_master
 
         mostrarAnunciosUsuario()
 
@@ -92,6 +104,7 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
     }
 
     override fun onMascotaAdded(mascota: Mascota) {
+<<<<<<< HEAD
         // Crea un nuevo TextView para el nombre de la mascota
         val mascotaTextView = TextView(this)
         mascotaTextView.text = mascota.nombre
@@ -118,5 +131,9 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
         mascotasAñadidasLayout?.addView(mascotaLayout)
         mascotasAñadidasLayout?.addView(borrarImageView)
         Log.d("MascotasAñadidas", mascotasAñadidasList.toString())
+=======
+        mascotasAñadidasList.add(mascota)
+        mascotaAdapter.notifyDataSetChanged()
+>>>>>>> backup_master
     }
 }
