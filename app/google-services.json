@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "379859229563",
+    "firebase_url": "https://trabajo-final-d562c-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "trabajo-final-d562c",
+    "storage_bucket": "trabajo-final-d562c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:379859229563:android:37dc4690b80cc5cb20bbde",
+        "android_client_info": {
+          "package_name": "com.example.trabajo_final"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "379859229563-dh941ro5c5sr8vbq0hbv8vsadrgk3lrb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.trabajo_final",
+            "certificate_hash": "e4034a2422feb7fea3e592ce2ba336cc570b1060"
+          }
+        },
+        {
+          "client_id": "379859229563-3r2ieldk65ecnr0159etr2tuj73sel9e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDynTeF--6mfB_QdPg4--Gzzgniwkn13I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "379859229563-3r2ieldk65ecnr0159etr2tuj73sel9e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

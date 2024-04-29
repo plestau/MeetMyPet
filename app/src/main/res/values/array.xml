@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sexo_array">
+        <item>Seleccione sexo: </item>
+        <item>Masculino</item>
+        <item>Femenino</item>
+        <item>Otro</item>
+    </string-array>
+    <string-array name="razas_array">
+        <item>Seleccione raza: </item>
+        <item>Perro</item>
+        <item>Gato</item>
+        <item>Conejo</item>
+        <item>Hamster</item>
+        <item>Pájaro</item>
+        <item>Pez</item>
+        <item>Tortuga</item>
+        <item>Otro</item>
+    </string-array>
+</resources>
