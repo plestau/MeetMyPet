@@ -27,6 +27,7 @@ class MascotaEnAnuncioAdapter(
     override fun onBindViewHolder(holder: MascotaViewHolder, position: Int) {
         val mascota = mascotas[position]
         holder.mascotaNombreTextView.text = mascota.nombre
+        holder.mascotaNombreTextView.text = holder.mascotaNombreTextView.text.toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString()}
         holder.borrarMascotaImageView.setOnClickListener {
             // si hay solo una mascota en el anuncio, no se puede borrar
             if (mascotas.size == 1) {

@@ -47,7 +47,15 @@
                     android:textColor="@color/azul"
                     android:textSize="18sp" />
             </com.google.android.material.textfield.TextInputLayout>
-
+            <Spinner
+                android:id="@+id/tipoAnuncio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:entries="@array/tipos_anuncios_array"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/titulo_layout" />
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/descripcion_layout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -58,7 +66,7 @@
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/titulo_layout">
+                app:layout_constraintTop_toBottomOf="@id/tipoAnuncio">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/descripcion"
@@ -138,6 +146,28 @@
                     android:textSize="18sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/precio_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/hora_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/precio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Precio del anuncio"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/azul"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <TextView
                 android:id="@+id/mascotasAñadidasTitle"
                 android:layout_width="wrap_content"
@@ -147,7 +177,7 @@
                 android:textSize="20sp"
                 android:layout_marginTop="20dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/hora_layout" />
+                app:layout_constraintTop_toBottomOf="@id/precio_layout" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mascotasAñadidasRv"

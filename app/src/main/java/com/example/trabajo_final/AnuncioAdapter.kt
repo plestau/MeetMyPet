@@ -56,6 +56,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
         private val tvFechaAnuncio: TextView = itemView.findViewById(R.id.tvFechaAnuncio)
         private val tvHoraAnuncio: TextView = itemView.findViewById(R.id.tvHoraAnuncio)
         private val tvLugarAnuncio: TextView = itemView.findViewById(R.id.tvLugarAnuncio)
+        private val tvTipoAnuncio: TextView = itemView.findViewById(R.id.tvTipoAnuncio)
+        private val tvPrecioAnuncio: TextView = itemView.findViewById(R.id.tvPrecioAnuncio)
         private val tvNombreMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvNombreMascotaAnuncio)
         private val tvRazaMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvRazaMascotaAnuncio)
         private val tvEdadMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvEdadMascotaAnuncio)
@@ -65,11 +67,16 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
 
         fun bind(anuncio: Anuncio) {
             tvTituloAnuncio.text = anuncio.titulo
+            tvTituloAnuncio.text = anuncio.titulo?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString()}
             tvDescrpicionAnuncio.text = anuncio.descripcion
             tvFechaAnuncio.text = anuncio.fecha
             tvHoraAnuncio.text = anuncio.hora
             tvLugarAnuncio.text = anuncio.lugar
+            tvLugarAnuncio.text = anuncio.lugar?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString()}
+            tvTipoAnuncio.text = anuncio.tipoAnuncio
+            tvPrecioAnuncio.text = anuncio.precio?.let { String.format("%.1f", it) } + " €"
             tvNombreMascotaAnuncio.text = anuncio.nombreMascota?.joinToString()
+            tvNombreMascotaAnuncio.text = anuncio.nombreMascota?.joinToString()?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString()}
             tvRazaMascotaAnuncio.text = anuncio.razaMascota?.joinToString()
             tvEdadMascotaAnuncio.text = anuncio.edadMascota?.joinToString() + " años"
             tvValoracionMascotaAnuncio.text = anuncio.valoracionMascota?.joinToString()

@@ -97,7 +97,7 @@ class FragmentAddMascota : Fragment(), OnBackPressedInFragmentListener {
                 val mascota = Mascota(
                     id = dbRef.push().key,
                     raza = raza,
-                    nombre = nombre,
+                    nombre = nombre.lowercase(),
                     foto = mascotaPicUrl,
                     edad = edad,
                     sexo = sexo,

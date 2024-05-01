@@ -6,11 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -59,17 +61,45 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
         mascotasAñadidas.layoutManager = LinearLayoutManager(context)
 
         val titulo = view.findViewById<EditText>(R.id.titulo)
+        titulo.setText(anuncio.titulo?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
         val descripcion = view.findViewById<EditText>(R.id.descripcion)
         val lugar = view.findViewById<EditText>(R.id.lugar)
+        lugar.setText(anuncio.lugar?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
         val fecha = view.findViewById<EditText>(R.id.fecha)
         val hora = view.findViewById<EditText>(R.id.hora)
+        val precio = view.findViewById<TextView>(R.id.precio)
+        val tipoAnuncioSpinner = view.findViewById<Spinner>(R.id.tipoAnuncio)
+
+        // Crea un ArrayAdapter usando el array de tipos de anuncios
+        val adapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.tipos_anuncios_array,
+            android.R.layout.simple_spinner_item
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        // Aplica el adaptador al Spinner
+        tipoAnuncioSpinner.adapter = adapter
+
+        // Mapea el tipo de anuncio almacenado a los valores del Spinner
+        val tipoAnuncioText = when (anuncio.tipoAnuncio) {
+            "Paseo" -> "Paseo de mascotas"
+            "Cuidado casa dueño" -> "Cuidado a domicilio en casa del dueño"
+            "Cuidado casa paseador" -> "Cuidado a domicilio en casa del paseador"
+            else -> ""
+        }
+
+        // Establece el valor seleccionado del Spinner al tipo de anuncio del anuncio actual
+        val tipoAnuncioPosition = adapter.getPosition(tipoAnuncioText)
+        tipoAnuncioSpinner.setSelection(tipoAnuncioPosition)
 
         // Carga los datos del anuncio en los EditText
-        titulo.setText(anuncio.titulo)
+        titulo.setText(anuncio.titulo?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
         descripcion.setText(anuncio.descripcion)
-        lugar.setText(anuncio.lugar)
+        lugar.setText(anuncio.lugar?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
         fecha.setText(anuncio.fecha)
         hora.setText(anuncio.hora)
+        precio.text = anuncio.precio?.let { String.format("%.1f", it) }
 
         // Maneja el clic en el botón "Ver Mis Mascotas"
         val verMisMascotas = view.findViewById<LinearLayout>(R.id.verMisMascotas)
@@ -126,7 +156,21 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
             val lugarText = lugar.text.toString()
             val fechaText = fecha.text.toString()
             val horaText = hora.text.toString()
-
+            val precioText = precio.text.toString().replace(",", ".")
+            val tipoAnuncioText = when (tipoAnuncioSpinner.selectedItem) {
+                "Paseo de mascotas" -> "Paseo"
+                "Cuidado a domicilio en casa del dueño" -> "Cuidado casa dueño"
+                "Cuidado a domicilio en casa del paseador" -> "Cuidado casa paseador"
+                else -> ""
+            }
+            if (precioText.toFloat() < 0) {
+                Toast.makeText(
+                    context,
+                    "El precio no puede ser negativo",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
             if (!fechaText.matches(Regex("^\\d{1,2}/\\d{1,2}/\\d{4}$"))) {
                 Toast.makeText(
                     context,
@@ -136,7 +180,7 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 return@setOnClickListener
             }
 
-            if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty()) {
+            if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty() || precioText.isEmpty() || tipoAnuncioSpinner.selectedItem == "Seleccione tipo de anuncio:") {
                 Toast.makeText(
                     context,
                     "Todos los campos deben estar llenos",
@@ -207,11 +251,13 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
             val mascotasImagenList = mascotasAñadidasList.map { it.foto!! }
 
             anuncioRef.setValue(anuncio.copy(
-                titulo = tituloText,
+                titulo = tituloText.lowercase(),
                 descripcion = descripcionText,
-                lugar = lugarText,
+                lugar = lugarText.lowercase(),
                 fecha = fechaText,
                 hora = horaText,
+                precio = precioText.toFloat(),
+                tipoAnuncio = tipoAnuncioText,
                 idmascota = mascotasIdList,
                 nombreMascota = mascotasNombreList,
                 razaMascota = mascotasRazaList,

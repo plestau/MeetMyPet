@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -51,6 +52,8 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
         val lugar = findViewById<EditText>(R.id.lugar)
         val fecha = findViewById<EditText>(R.id.fecha)
         val hora = findViewById<EditText>(R.id.hora)
+        val tipoAnuncio = findViewById<Spinner>(R.id.tipoAnuncio)
+        val precio = findViewById<EditText>(R.id.precio)
         val mascotasAñadidas = findViewById<RecyclerView>(R.id.mascotasAñadidasRv)
         mascotaAdapter = MascotaEnAnuncioAdapter(mascotasAñadidasList) { mascota ->
             mascotasAñadidasList.removeAll { it.nombre == mascota.nombre }
@@ -78,11 +81,28 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
         val btnPublicarAnuncio = findViewById<Button>(R.id.btnPublicarAnuncio)
 
         btnPublicarAnuncio.setOnClickListener {
-            val tituloText = titulo.text.toString()
+            val tituloText = titulo.text.toString().lowercase()
             val descripcionText = descripcion.text.toString()
-            val lugarText = lugar.text.toString()
+            val lugarText = lugar.text.toString().lowercase()
             val fechaText = fecha.text.toString()
             val horaText = hora.text.toString()
+            val tipoAnuncioText = when (tipoAnuncio.selectedItem) {
+                "Paseo de mascotas" -> "Paseo"
+                "Cuidado a domicilio en casa del dueño" -> "Cuidado casa dueño"
+                "Cuidado a domicilio en casa del paseador" -> "Cuidado casa paseador"
+                else -> ""
+            }
+            val precioText = precio.text.toString()
+
+            // si el precio no es un número, se muestra un mensaje de error
+            if (precioText.toFloat() < 0) {
+                Toast.makeText(
+                    this@PublicarAnuncio,
+                    "El precio no puede ser negativo",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
 
             if (!fechaText.matches(Regex("^\\d{1,2}/\\d{1,2}/\\d{4}$"))) {
                 Toast.makeText(
@@ -93,7 +113,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                 return@setOnClickListener
             }
 
-            if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty()) {
+            if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty() || precioText.isEmpty() || tipoAnuncioText == "Seleccione tipo de anuncio:") {
                 Toast.makeText(
                     this@PublicarAnuncio,
                     "Todos los campos deben estar llenos",
@@ -208,6 +228,8 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                                     "hora" to horaText,
                                     "usuarioDueño" to currentUser.uid,
                                     "estado" to "creado",
+                                    "tipoAnuncio" to tipoAnuncioText,
+                                    "precio" to precioText.toFloat(),
                                     "usuarioPaseador" to "",
                                     "idmascota" to mascotasIdList,
                                     "nombreMascota" to mascotasAñadidasList.map { it.nombre!! },

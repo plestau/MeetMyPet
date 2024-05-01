@@ -1,0 +1,106 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+        android:id="@+id/spinnerFiltro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/filtros"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextBusqueda"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Búsqueda"
+        app:layout_constraintTop_toBottomOf="@id/spinnerFiltro"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinnerTipoAnuncio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:visibility="gone"
+        android:entries="@array/tipos_anuncios_array"
+        app:layout_constraintTop_toBottomOf="@id/editTextBusqueda"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinnerRazaMascota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:entries="@array/razas_array"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/spinnerTipoAnuncio"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/botonAñadirFiltro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Añadir filtro"
+        app:layout_constraintTop_toBottomOf="@id/spinnerRazaMascota"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/botonBuscar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buscar"
+        app:layout_constraintTop_toBottomOf="@id/botonAñadirFiltro"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tituloFiltrosAñadidos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filtros añadidos:"
+        app:layout_constraintTop_toBottomOf="@id/botonBuscar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFiltrosAñadidos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tituloFiltrosAñadidos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tituloHistorialBusqueda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historial de búsqueda:"
+        app:layout_constraintTop_toBottomOf="@id/rvFiltrosAñadidos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvHistorialBusqueda"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tituloHistorialBusqueda"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/fragment_inferior"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

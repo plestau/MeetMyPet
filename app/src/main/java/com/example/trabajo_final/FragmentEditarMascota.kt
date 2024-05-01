@@ -145,7 +145,7 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
 
                 // actualizar la mascota en la base de datos con setValue
                 mascotaRef.setValue(mascota.copy(
-                    nombre = nombre.text.toString(),
+                    nombre = nombre.text.toString().lowercase(),
                     edad = edadInt,
                     raza = raza.selectedItem.toString(),
                     sexo = sexo.selectedItem.toString(),

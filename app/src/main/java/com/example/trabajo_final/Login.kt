@@ -8,12 +8,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.ThemeUtils
-import com.example.trabajo_final.MainActivity
-import com.example.trabajo_final.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.database.FirebaseDatabase
 
 class Login : AppCompatActivity() {
@@ -60,9 +56,9 @@ class Login : AppCompatActivity() {
                             editor.putString("role", role)
                             editor.apply()
                             val intent = if (role == "admin") {
-                                Intent(this, MainActivity::class.java)
+                                Intent(this, Buscador::class.java)
                             } else {
-                                Intent(this, MainActivity::class.java)
+                                Intent(this, Buscador::class.java)
                             }
                             // si el usuario es de tipo admin, se manda por sharedPreferences el tipo de usuario
                             if(role == "admin") {
@@ -72,6 +68,7 @@ class Login : AppCompatActivity() {
                                 editor.apply()
                             }
                             startActivity(intent)
+                            FragmentInferior.actividadActual = "Buscar"
                         }
                     } else {
                         when (task.exception) {

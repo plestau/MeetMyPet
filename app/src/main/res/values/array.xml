@@ -17,4 +17,20 @@
         <item>Tortuga</item>
         <item>Otro</item>
     </string-array>
+    <string-array name="tipos_anuncios_array">
+        <item>Seleccione tipo de anuncio:</item>
+        <item>Paseo de mascotas</item>
+        <item>Cuidado a domicilio en casa del dueño</item>
+        <item>Cuidado a domicilio en casa del paseador</item>
+    </string-array>
+    <string-array name="filtros">
+        <item>Filtros de búsqueda:</item>
+        <item>Tipo de anuncio</item>
+        <item>Fecha</item>
+        <item>Ubicación</item>
+        <item>Nombre de mascota</item>
+        <item>Raza de mascota</item>
+        <item>Precio</item>
+        <item>Título</item>
+    </string-array>
 </resources>

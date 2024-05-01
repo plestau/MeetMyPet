@@ -14,6 +14,8 @@ data class Anuncio(
     var usuarioDueño: String? = null,
     var usuarioPaseador: String? = null,
     var estado: String? = null,
+    var tipoAnuncio: String? = null,
+    var precio: Float? = null,
     var idmascota: List<String>? = null,
     var nombreMascota: List<String>? = null,
     var razaMascota: List<String>? = null,

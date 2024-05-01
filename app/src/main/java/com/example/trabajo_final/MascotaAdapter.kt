@@ -61,6 +61,7 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
 
         fun bind(mascota: Mascota) {
             tvNombreMascota.text = mascota.nombre
+            tvNombreMascota.text = mascota.nombre?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString()}
             tvRazaMascota.text = mascota.raza
             tvEdadMascota.text = "Tiene ${mascota.edad} años"
             tvSexoMascota.text = mascota.sexo
