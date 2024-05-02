@@ -218,12 +218,12 @@ class Buscador : AppCompatActivity() {
                 val intent = Intent(this, ResultadosBusqueda::class.java)
                 intent.putExtra("busqueda", busqueda)
                 startActivity(intent)
-                historialBusqueda.add(0, busqueda) // Agregar la búsqueda completa al principio de la lista
-                // Limitar el tamaño del historial a las últimas 5 búsquedas
-                if (historialBusqueda.size > MAX_HISTORIAL_SIZE) {
-                    historialBusqueda = historialBusqueda.take(MAX_HISTORIAL_SIZE).toMutableList()
+                // Check if the history size is equal to the maximum allowed size and if so, remove the oldest search
+                if (historialBusqueda.size == MAX_HISTORIAL_SIZE) {
+                    historialBusqueda.removeAt(historialBusqueda.size - 1)
                 }
-                val historialBusquedaString = historialBusqueda.joinToString("||") // Usar un delimitador distinto, como "||"
+                historialBusqueda.add(0, busqueda)
+                val historialBusquedaString = historialBusqueda.joinToString("||")
                 sharedPref.edit().putString(userId, historialBusquedaString).apply()
                 historialBusquedaAdapter.notifyDataSetChanged()
             }
