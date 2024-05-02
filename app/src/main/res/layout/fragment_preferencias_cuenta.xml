@@ -51,6 +51,23 @@
         android:layout_margin="15dp"
         android:background="@android:color/darker_gray" />
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/cambiarTema"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Dark Mode"
+        app:layout_constraintBottom_toTopOf="@+id/tituloMoneda"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/separator3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_margin="15dp"
+        android:background="@android:color/darker_gray" />
+
     <TextView
         android:id="@+id/cerrarSesion"
         android:layout_width="match_parent"

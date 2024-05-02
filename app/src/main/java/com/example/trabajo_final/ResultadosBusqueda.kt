@@ -26,7 +26,7 @@ class ResultadosBusqueda : AppCompatActivity() {
 
         val rvAnuncios = findViewById<RecyclerView>(R.id.rvAnunciosFiltrados)
         anuncios = mutableListOf()
-        anuncioAdapter = AnuncioAdapter(anuncios, supportFragmentManager)
+        anuncioAdapter = AnuncioAdapter(anuncios, supportFragmentManager, "ResultadosBusqueda")
         rvAnuncios.layoutManager = LinearLayoutManager(this)
         rvAnuncios.adapter = anuncioAdapter
 

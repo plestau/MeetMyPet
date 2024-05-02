@@ -9,10 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SwitchCompat
+import com.example.trabajo_final.ThemeUtils
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -29,7 +33,7 @@ import com.google.firebase.storage.FirebaseStorage
 import java.io.File
 
 class FragmentPreferenciasCuenta : Fragment() {
-
+    private lateinit var themeSwitch: SwitchCompat
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private var profilePic: Uri? = null
@@ -59,6 +63,32 @@ class FragmentPreferenciasCuenta : Fragment() {
 
         auth = FirebaseAuth.getInstance()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN)
+
+        themeSwitch = view.findViewById(R.id.cambiarTema)
+        themeSwitch.isChecked = ThemeUtils.loadThemeState(requireContext())
+        themeSwitch.setOnClickListener {
+            val isChecked = themeSwitch.isChecked
+            AlertDialog.Builder(requireContext())
+                .setTitle("Cambiar tema")
+                .setMessage("Cambiar el tema reiniciará la aplicación. ¿Deseas continuar?")
+                .setPositiveButton("Sí") { _, _ ->
+                    if (isChecked) {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                        ThemeUtils.saveThemeState(requireContext(), true)
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        ThemeUtils.saveThemeState(requireContext(), false)
+                    }
+                    requireActivity().finishAffinity()
+                    val intent = Intent(requireContext(), Buscador::class.java)
+                    FragmentInferior.actividadActual = "Buscar"
+                    startActivity(intent)
+                }
+                .setNegativeButton("No") { _, _ ->
+                    themeSwitch.isChecked = !isChecked
+                }
+                .show()
+        }
 
         cambiarFoto.setOnClickListener {
             mostrarDialogoSeleccion()

@@ -33,7 +33,7 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
 
         auth = FirebaseAuth.getInstance()
         anunciosRecyclerView = findViewById(R.id.recyclerViewMisAnuncios)
-        anunciosAdapter = AnuncioAdapter(listOf(), supportFragmentManager)
+        anunciosAdapter = AnuncioAdapter(listOf(), supportFragmentManager, "MisAnuncios")
         anunciosRecyclerView.layoutManager = LinearLayoutManager(this)
         anunciosRecyclerView.adapter = anunciosAdapter
         mascotaAdapter = MascotaEnAnuncioAdapter(mascotasAñadidasList) { mascota ->

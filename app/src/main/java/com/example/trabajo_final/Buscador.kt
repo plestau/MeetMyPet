@@ -42,6 +42,7 @@ class Buscador : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buscador)
 
+
         val spinnerFiltro = findViewById<Spinner>(R.id.spinnerFiltro)
         val editTextBusqueda = findViewById<EditText>(R.id.editTextBusqueda)
         val botonBuscar = findViewById<Button>(R.id.botonBuscar)
@@ -62,7 +63,7 @@ class Buscador : AppCompatActivity() {
 
         anuncios = mutableListOf()
         anunciosFiltrados = mutableListOf()
-        anuncioAdapter = AnuncioAdapter(anunciosFiltrados, supportFragmentManager)
+        anuncioAdapter = AnuncioAdapter(anunciosFiltrados, supportFragmentManager, "ResultadosBusqueda")
 
         filtrosAnadidos = mutableListOf()
         filtrosAnadidosAdapter = FiltrosAnadidosAdapter(filtrosAnadidos)

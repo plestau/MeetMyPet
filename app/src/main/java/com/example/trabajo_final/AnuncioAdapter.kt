@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManager: FragmentManager) : RecyclerView.Adapter<AnuncioAdapter.AnuncioViewHolder>() {
+class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManager: FragmentManager, private val activityName: String) : RecyclerView.Adapter<AnuncioAdapter.AnuncioViewHolder>() {
     private val database = FirebaseDatabase.getInstance()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnuncioViewHolder {
@@ -64,6 +64,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
         private val tvValoracionMascotaAnuncio = itemView.findViewById<TextView>(R.id.tvValoracionMascotaAnuncio)
         private val rvImagenMascotaAnuncio = itemView.findViewById<RecyclerView>(R.id.rvImagenesMascotaAnuncio)
         private val ivEditarAnuncio: ImageView = itemView.findViewById(R.id.ivEditarAnuncio)
+        private val btnIniciarChat: ImageView = itemView.findViewById(R.id.btnIniciarChat)
+        private val btnApuntarse: ImageView = itemView.findViewById(R.id.btnApuntarse)
 
         fun bind(anuncio: Anuncio) {
             tvTituloAnuncio.text = anuncio.titulo
@@ -80,18 +82,30 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
             tvRazaMascotaAnuncio.text = anuncio.razaMascota?.joinToString()
             tvEdadMascotaAnuncio.text = anuncio.edadMascota?.joinToString() + " años"
             tvValoracionMascotaAnuncio.text = anuncio.valoracionMascota?.joinToString()
+            ivEditarAnuncio.visibility = View.GONE
             // carga la imagen de la mascota o las imagenes de las mascotas en caso de que haya mas de una
             rvImagenMascotaAnuncio.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             rvImagenMascotaAnuncio.adapter = ImagenMascotaAdapter(anuncio.imagenMascota!!)
-            CoroutineScope(Dispatchers.IO).launch {
-                val sharedPref = itemView.context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-                val userRole = sharedPref.getString("userRole", "user")
-                withContext(Dispatchers.Main) {
-                    if (userRole == "admin" || anuncio.estado == "creado") {
-                        ivEditarAnuncio.visibility = View.VISIBLE
-                    } else {
-                        ivEditarAnuncio.visibility = View.GONE
+            when (activityName) {
+                "MisAnuncios" -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val sharedPref = itemView.context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                        val userRole = sharedPref.getString("userRole", "user")
+                        withContext(Dispatchers.Main) {
+                            if (userRole == "admin" || anuncio.estado == "creado") {
+                                ivEditarAnuncio.visibility = View.VISIBLE
+                            } else {
+                                ivEditarAnuncio.visibility = View.GONE
+                            }
+                        }
                     }
+                    btnIniciarChat.visibility = View.GONE
+                    btnApuntarse.visibility = View.GONE
+                }
+                "ResultadosBusqueda" -> {
+                    ivEditarAnuncio.visibility = View.GONE
+                    btnIniciarChat.visibility = View.VISIBLE
+                    btnApuntarse.visibility = View.VISIBLE
                 }
             }
             ivEditarAnuncio.setOnClickListener {

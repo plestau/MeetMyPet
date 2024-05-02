@@ -34,6 +34,12 @@ class LoginOptions : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login_options)
 
+        if (ThemeUtils.loadThemeState(this)) {
+            setTheme(R.style.Base_Theme_Trabajo_final_Night)
+        } else {
+            setTheme(R.style.Base_Theme_Trabajo_final_Light)
+        }
+
         val googleLoginButton = findViewById<LinearLayout>(R.id.googleLoginButton)
         val emailLoginButton = findViewById<LinearLayout>(R.id.emailLoginButton)
         val registerButton = findViewById<TextView>(R.id.register)
