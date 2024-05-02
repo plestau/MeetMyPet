@@ -35,6 +35,7 @@ class Buscador : AppCompatActivity() {
     private lateinit var filtrosAnadidos: MutableList<Pair<String, String>>
     private lateinit var filtrosAnadidosAdapter: FiltrosAnadidosAdapter
     private lateinit var userId: String
+    private val MAX_HISTORIAL_SIZE = 5
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +49,12 @@ class Buscador : AppCompatActivity() {
         val rvHistorialBusqueda = findViewById<RecyclerView>(R.id.rvHistorialBusqueda)
         val sharedPref = getSharedPreferences("HistorialBusqueda", Context.MODE_PRIVATE)
         userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-        historialBusqueda =
-            sharedPref.getStringSet(userId, mutableSetOf())?.toMutableList() ?: mutableListOf()
+        val historialBusquedaString = sharedPref.getString(userId, "")
+        historialBusqueda = historialBusquedaString?.split("||")?.toMutableList() ?: mutableListOf()
+        // si el tamaño del historial es mayor que el máximo permitido, se toman los últimos elementos
+        if (historialBusqueda.size > MAX_HISTORIAL_SIZE) {
+            historialBusqueda = historialBusqueda.takeLast(MAX_HISTORIAL_SIZE).toMutableList()
+        }
         historialBusquedaAdapter = HistorialBusquedaAdapter(historialBusqueda)
         rvHistorialBusqueda.layoutManager = LinearLayoutManager(this)
         rvHistorialBusqueda.adapter = historialBusquedaAdapter
@@ -170,7 +175,6 @@ class Buscador : AppCompatActivity() {
                     }
                 }
             }
-            val nuevoFiltro = Pair(filtroSeleccionado, textoBusqueda)
 
             if (spinnerFiltro.selectedItemPosition != 0 && textoBusqueda.isNotEmpty()) {
                 // Verifica si el filtro ya ha sido añadido
@@ -210,12 +214,17 @@ class Buscador : AppCompatActivity() {
                 Toast.makeText(this, "Añade al menos un filtro para realizar la búsqueda", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             } else {
-                val busqueda = filtrosAnadidos.joinToString(separator = ", ") { "${it.first}: ${it.second}" }
+                val busqueda = filtrosAnadidos.joinToString(separator = " | ") { "${it.first}: ${it.second}" }
                 val intent = Intent(this, ResultadosBusqueda::class.java)
                 intent.putExtra("busqueda", busqueda)
                 startActivity(intent)
-                historialBusqueda.add(busqueda)
-                sharedPref.edit().putStringSet(userId, historialBusqueda.toSet()).apply()
+                historialBusqueda.add(0, busqueda) // Agregar la búsqueda completa al principio de la lista
+                // Limitar el tamaño del historial a las últimas 5 búsquedas
+                if (historialBusqueda.size > MAX_HISTORIAL_SIZE) {
+                    historialBusqueda = historialBusqueda.take(MAX_HISTORIAL_SIZE).toMutableList()
+                }
+                val historialBusquedaString = historialBusqueda.joinToString("||") // Usar un delimitador distinto, como "||"
+                sharedPref.edit().putString(userId, historialBusquedaString).apply()
                 historialBusquedaAdapter.notifyDataSetChanged()
             }
         }
