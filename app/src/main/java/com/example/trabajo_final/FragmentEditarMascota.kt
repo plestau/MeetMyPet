@@ -73,8 +73,10 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
             mascotaPic = Uri.parse(mascota.foto)
             Glide.with(this)
                 .load(mascotaPic)
+                .placeholder(Utilidades.animacion_carga(requireContext()))
                 .transform(CircleCrop())
                 .into(mascotaImageView)
+                .apply { Utilidades.opcionesGlide(requireContext()) }
         }
 
         mascotaImageView.setOnClickListener {

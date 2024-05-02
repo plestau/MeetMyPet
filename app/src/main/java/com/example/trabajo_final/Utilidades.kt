@@ -5,6 +5,8 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -48,6 +50,22 @@ class Utilidades {
         fun obtenerFechaActual():String{
             val sdf = java.text.SimpleDateFormat("dd/MM/yyyy")
             return sdf.format(Date())
+        }
+
+        fun animacion_carga(contexto: Context): CircularProgressDrawable {
+            val animacion = CircularProgressDrawable(contexto)
+            animacion.strokeWidth = 5f
+            animacion.centerRadius = 30f
+            animacion.start()
+            return animacion
+        }
+
+        fun opcionesGlide(context: Context): RequestOptions {
+            val options = RequestOptions()
+                .placeholder(animacion_carga(context))
+                .fallback(R.drawable.error_404)
+                .error(R.drawable.error_404)
+            return options
         }
     }
 }

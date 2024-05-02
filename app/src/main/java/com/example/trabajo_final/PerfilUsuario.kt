@@ -2,6 +2,7 @@ package com.example.trabajo_final
 
 import FragmentInferior
 import FragmentSuperiorPerfil
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -30,6 +31,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
         enableEdgeToEdge()
         setContentView(R.layout.activity_perfil_usuario)
 
+        val context: Context = this
         val añadirMascota = findViewById<LinearLayout>(R.id.añadirMascota)
         val verMascotas = findViewById<LinearLayout>(R.id.verMisMascotas)
 
@@ -72,7 +74,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
             }
             profilePicRef.downloadUrl.addOnSuccessListener { uri ->
                 val imageView = findViewById<ImageView>(R.id.fotoPerfil)
-                Glide.with(this).load(uri).transform(CircleCrop()).into(imageView)
+                Glide.with(this).load(uri).placeholder(Utilidades.animacion_carga(context)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(context) }
             }
             findViewById<TextView>(R.id.biografia).text = "Biografía: ${usuario?.biografia}"
         }
@@ -81,7 +83,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
                 val imageUrl = dataSnapshot.getValue(String::class.java)
                 if (!imageUrl.isNullOrEmpty()) {
                     val imageView = findViewById<ImageView>(R.id.fotoPerfil)
-                    Glide.with(this@PerfilUsuario).load(imageUrl).transform(CircleCrop()).into(imageView)
+                    Glide.with(this@PerfilUsuario).load(imageUrl).placeholder(Utilidades.animacion_carga(context)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(context) }
                 }
             }
 

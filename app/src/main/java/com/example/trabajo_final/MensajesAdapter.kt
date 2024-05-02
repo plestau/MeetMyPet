@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.trabajo_final.R
+import com.example.trabajo_final.Utilidades
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -39,7 +40,7 @@ class MensajesAdapter(c: Context) : RecyclerView.Adapter<HolderMensaje>() {
         if (listMensaje[position].type_mensaje == "2") {
             holder.fotoMensajeEnviado.visibility = View.VISIBLE
             holder.mensaje.visibility = View.VISIBLE
-            Glide.with(c).load(listMensaje[position].urlFoto).into(holder.fotoMensajeEnviado)
+            Glide.with(c).load(listMensaje[position].urlFoto).placeholder(Utilidades.animacion_carga(c)).into(holder.fotoMensajeEnviado).apply { Utilidades.opcionesGlide(c) }
             Log.d("url", listMensaje[position].urlFoto!!)
         } else if (listMensaje[position].type_mensaje == "1") {
             holder.fotoMensajeEnviado.visibility = View.GONE
@@ -48,14 +49,14 @@ class MensajesAdapter(c: Context) : RecyclerView.Adapter<HolderMensaje>() {
         if (listMensaje[position].fotoPerfil!!.isEmpty()) {
             holder.fotoMensajePerfil.setImageResource(R.mipmap.ic_launcher_round)
         } else {
-            Glide.with(c).load(listMensaje[position].fotoPerfil).into(holder.fotoMensajePerfil)
+            Glide.with(c).load(listMensaje[position].urlFoto).placeholder(Utilidades.animacion_carga(c)).into(holder.fotoMensajeEnviado).apply { Utilidades.opcionesGlide(c) }
         }
         val databaseReference = FirebaseDatabase.getInstance().getReference("app/users/${listMensaje[position].nombre}/profilePic")
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val profilePicUrl = dataSnapshot.getValue(String::class.java)
                 if (profilePicUrl != null) {
-                    Glide.with(c).load(profilePicUrl).into(holder.fotoMensajePerfil)
+                    Glide.with(c).load(profilePicUrl).placeholder(Utilidades.animacion_carga(c)).into(holder.fotoMensajePerfil).apply { Utilidades.opcionesGlide(c) }
                 } else {
                     holder.fotoMensajePerfil.setImageResource(R.mipmap.ic_launcher_round)
                 }

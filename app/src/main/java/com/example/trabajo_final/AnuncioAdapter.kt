@@ -139,8 +139,10 @@ class ImagenMascotaAdapter(private var listaImagenes: List<String>) : RecyclerVi
                 Glide.with(itemView)
                     .load(imagen)
                     .centerCrop()
+                    .placeholder(Utilidades.animacion_carga(itemView.context))
                     .transform(CircleCrop())
                     .into(ivImagenMascota)
+                    .apply { Utilidades.opcionesGlide(itemView.context) }
             }
         }
     }

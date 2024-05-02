@@ -19,6 +19,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -142,7 +143,7 @@ class FragmentPreferenciasCuenta : Fragment() {
 
     private fun actualizarFotoPerfil(uri: Uri) {
         val imageView = requireActivity().findViewById<ImageView>(R.id.fotoPerfil)
-        Glide.with(this).load(uri).into(imageView)
+        Glide.with(this).load(uri).placeholder(Utilidades.animacion_carga(requireContext())).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(requireContext()) }
         val currentUser = auth.currentUser
         val profilePicRef = FirebaseStorage.getInstance().getReference("app/usuarios/${currentUser?.uid}/profile_pic.jpg")
         profilePicRef.putFile(uri).addOnSuccessListener {

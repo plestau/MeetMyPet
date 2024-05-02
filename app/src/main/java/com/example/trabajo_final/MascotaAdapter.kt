@@ -73,8 +73,10 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
             if (mascotaFotoUrl != null && mascotaFotoUrl.isNotEmpty()) {
                 Glide.with(this.itemView)
                     .load(mascotaFotoUrl)
+                    .placeholder(Utilidades.animacion_carga(itemView.context))
                     .transform(CircleCrop())
                     .into(tvFotoMascota)
+                    .apply { Utilidades.opcionesGlide(itemView.context) }
             }
 
             itemView.setOnClickListener {
