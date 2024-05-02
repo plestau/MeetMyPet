@@ -130,9 +130,11 @@
         android:src="@drawable/baseline_edit_24"
         android:layout_margin="8dp"
         android:padding="8dp"
-        android:layout_gravity="bottom|end" />
+        android:layout_gravity="bottom|end"
+        android:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/llBotonesAnuncio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -155,5 +157,54 @@
             android:layout_margin="8dp"
             android:padding="8dp"
             android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/ivAprobar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_check_box_24"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/ivDenegar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_disabled_by_default_24"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/ivTerminar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_recommend_24"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:visibility="gone" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/llPaseadorAnuncio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|start"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvNombrePaseadorAnuncio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/ivPerfilPaseador"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_account_circle_24"
+            android:layout_margin="8dp"
+            android:padding="8dp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

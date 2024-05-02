@@ -1,6 +1,7 @@
 package com.example.trabajo_final
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
@@ -9,14 +10,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -66,6 +72,13 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
         private val ivEditarAnuncio: ImageView = itemView.findViewById(R.id.ivEditarAnuncio)
         private val btnIniciarChat: ImageView = itemView.findViewById(R.id.btnIniciarChat)
         private val btnApuntarse: ImageView = itemView.findViewById(R.id.btnApuntarse)
+        private val ivAprobar: ImageView = itemView.findViewById(R.id.ivAprobar)
+        private val ivDenegar: ImageView = itemView.findViewById(R.id.ivDenegar)
+        private val ivTerminar: ImageView = itemView.findViewById(R.id.ivTerminar)
+        private var tvNombrePaseador: TextView = itemView.findViewById(R.id.tvNombrePaseadorAnuncio)
+        private val ivPerfilPaseador: ImageView = itemView.findViewById(R.id.ivPerfilPaseador)
+        private val llPaseadorAnuncio: LinearLayout = itemView.findViewById(R.id.llPaseadorAnuncio)
+        private var nombrePaseador: String = ""
 
         fun bind(anuncio: Anuncio) {
             tvTituloAnuncio.text = anuncio.titulo
@@ -82,10 +95,11 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
             tvRazaMascotaAnuncio.text = anuncio.razaMascota?.joinToString()
             tvEdadMascotaAnuncio.text = anuncio.edadMascota?.joinToString() + " años"
             tvValoracionMascotaAnuncio.text = anuncio.valoracionMascota?.joinToString()
-            ivEditarAnuncio.visibility = View.GONE
             // carga la imagen de la mascota o las imagenes de las mascotas en caso de que haya mas de una
             rvImagenMascotaAnuncio.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             rvImagenMascotaAnuncio.adapter = ImagenMascotaAdapter(anuncio.imagenMascota!!)
+            val nombrePaseador = obtenerNombrePaseador(anuncio.usuarioPaseador)
+
             when (activityName) {
                 "MisAnuncios" -> {
                     CoroutineScope(Dispatchers.IO).launch {
@@ -94,8 +108,12 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         withContext(Dispatchers.Main) {
                             if (userRole == "admin" || anuncio.estado == "creado") {
                                 ivEditarAnuncio.visibility = View.VISIBLE
-                            } else {
+                            } else if (anuncio.estado == "reservado") {
                                 ivEditarAnuncio.visibility = View.GONE
+                                ivAprobar.visibility = View.VISIBLE
+                                ivDenegar.visibility = View.VISIBLE
+                                llPaseadorAnuncio.visibility = View.VISIBLE
+                                tvNombrePaseador.text = nombrePaseador.await()
                             }
                         }
                     }
@@ -125,6 +143,79 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                 fragmentTransaction.add(R.id.fragment_container, fragmentEditarAnuncio)
                 fragmentTransaction.addToBackStack(null)
                 fragmentTransaction.commit()
+            }
+            btnApuntarse.setOnClickListener {
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                if (currentUser != null && currentUser.uid != anuncio.usuarioDueño) {
+                    AlertDialog.Builder(itemView.context)
+                        .setTitle("Apuntarse al anuncio")
+                        .setMessage("¿Estás seguro de que quieres apuntarte a este anuncio?")
+                        .setPositiveButton("Sí") { _, _ ->
+                            anuncio.estado = "reservado"
+                            anuncio.usuarioPaseador = currentUser.uid
+                            database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
+                            btnApuntarse.visibility = View.GONE
+                            Toast.makeText(itemView.context, "Te has apuntado al anuncio", Toast.LENGTH_SHORT).show()
+                        }
+                        .setNegativeButton("No") { _, _ -> }
+                        .show()
+                } else{
+                    Toast.makeText(itemView.context, "No puedes apuntarte a tu propio anuncio", Toast.LENGTH_SHORT).show()
+                }
+            }
+            ivAprobar.setOnClickListener {
+                AlertDialog.Builder(itemView.context)
+                    .setTitle("Aprobar paseador")
+                    .setMessage("¿Estás seguro de que quieres aprobar a $nombrePaseador como paseador de tu mascota?")
+                    .setPositiveButton("Sí") { _, _ ->
+                        anuncio.estado = "aprobado"
+                        database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
+                        ivAprobar.visibility = View.GONE
+                        ivDenegar.visibility = View.GONE
+                        Toast.makeText(itemView.context, "Has aprobado a $nombrePaseador como paseador de tu mascota", Toast.LENGTH_SHORT).show()
+                        ivTerminar.visibility = View.VISIBLE
+                    }
+                        .setNegativeButton("No") { _, _ -> }.show()
+            }
+            ivDenegar.setOnClickListener {
+                AlertDialog.Builder(itemView.context)
+                    .setTitle("Denegar paseador")
+                    .setMessage("¿Estás seguro de que quieres denegar a $nombrePaseador como paseador de tu mascota?")
+                    .setPositiveButton("Sí") { _, _ ->
+                        anuncio.estado = "creado"
+                        anuncio.usuarioPaseador = ""
+                        database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
+                        ivAprobar.visibility = View.GONE
+                        ivDenegar.visibility = View.GONE
+                        Toast.makeText(itemView.context, "Has denegado a $nombrePaseador como paseador de tu mascota", Toast.LENGTH_SHORT).show()
+                    }
+                        .setNegativeButton("No") { _, _ ->
+                            Toast.makeText(itemView.context, "No has denegado a $nombrePaseador como paseador de tu mascota", Toast.LENGTH_SHORT).show()
+                        }
+                        .show()
+            }
+            ivTerminar.setOnClickListener {
+                AlertDialog.Builder(itemView.context)
+                    .setTitle("Terminar anuncio")
+                    .setMessage("¿Estás seguro de que quieres terminar este anuncio?")
+                    .setPositiveButton("Sí") { _, _ ->
+                        anuncio.estado = "terminado"
+                        database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
+                        ivTerminar.visibility = View.GONE
+                        Toast.makeText(itemView.context, "Has terminado el anuncio", Toast.LENGTH_SHORT).show()
+                        //valorar la mascota y el paseador con un AlertDialog
+                    }
+                    .setNegativeButton("No") { _, _ -> }
+                    .show()
+            }
+        }
+        fun obtenerNombrePaseador(idUsuarioPaseador: String?): Task<String> {
+            // busca en firabse el nombre del usuario paseador a partir de su id
+            val userRef = database.getReference("app/usuarios/$idUsuarioPaseador/nombre")
+            return userRef.get().addOnSuccessListener {
+                nombrePaseador = it.value.toString()
+            }.continueWith {
+                nombrePaseador
             }
         }
     }
