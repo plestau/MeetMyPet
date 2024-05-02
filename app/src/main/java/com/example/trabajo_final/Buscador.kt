@@ -210,6 +210,7 @@ class Buscador : AppCompatActivity() {
         }
 
         botonBuscar.setOnClickListener {
+            // Verifica que haya al menos un filtro añadido
             if (filtrosAnadidos.isEmpty()) {
                 Toast.makeText(this, "Añade al menos un filtro para realizar la búsqueda", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -217,6 +218,7 @@ class Buscador : AppCompatActivity() {
                 val busqueda = filtrosAnadidos.joinToString(separator = " | ") { "${it.first}: ${it.second}" }
                 val intent = Intent(this, ResultadosBusqueda::class.java)
                 intent.putExtra("busqueda", busqueda)
+                intent.putExtra("filtros", filtrosAnadidos.map { Pair(it.first, it.second) }.toTypedArray()) // Pasar filtros como extras
                 startActivity(intent)
                 // Check if the history size is equal to the maximum allowed size and if so, remove the oldest search
                 if (historialBusqueda.size == MAX_HISTORIAL_SIZE) {

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import java.math.BigDecimal
 
 class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedListener {
 
@@ -99,7 +100,7 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
         lugar.setText(anuncio.lugar?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
         fecha.setText(anuncio.fecha)
         hora.setText(anuncio.hora)
-        precio.text = anuncio.precio?.let { String.format("%.1f", it) }
+        precio.text = anuncio.precio?.toString()
 
         // Maneja el clic en el botón "Ver Mis Mascotas"
         val verMisMascotas = view.findViewById<LinearLayout>(R.id.verMisMascotas)
@@ -156,7 +157,7 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
             val lugarText = lugar.text.toString()
             val fechaText = fecha.text.toString()
             val horaText = hora.text.toString()
-            val precioText = precio.text.toString().replace(",", ".")
+            val precioText = precio.text.toString()
             val tipoAnuncioText = when (tipoAnuncioSpinner.selectedItem) {
                 "Paseo de mascotas" -> "Paseo"
                 "Cuidado a domicilio en casa del dueño" -> "Cuidado casa dueño"
@@ -256,7 +257,7 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 lugar = lugarText.lowercase(),
                 fecha = fechaText,
                 hora = horaText,
-                precio = precioText.toFloat(),
+                precio = precioText.toDouble(),
                 tipoAnuncio = tipoAnuncioText,
                 idmascota = mascotasIdList,
                 nombreMascota = mascotasNombreList,

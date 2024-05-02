@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -229,7 +230,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                                     "usuarioDueño" to currentUser.uid,
                                     "estado" to "creado",
                                     "tipoAnuncio" to tipoAnuncioText,
-                                    "precio" to precioText.toFloat(),
+                                    "precio" to precioText.toDouble(),
                                     "usuarioPaseador" to "",
                                     "idmascota" to mascotasIdList,
                                     "nombreMascota" to mascotasAñadidasList.map { it.nombre!! },
