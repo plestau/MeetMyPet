@@ -1,5 +1,7 @@
 package com.example.trabajo_final
 
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,8 +28,22 @@ class HistorialBusquedaAdapter(private var listaBusquedas: List<String>) : Recyc
         private val tvBusqueda: TextView = itemView.findViewById(R.id.tvHistorial)
 
         fun bind(busqueda: String) {
-            val filtros = busqueda.split(", ")
+            val filtros = busqueda.split(" | ")
             tvBusqueda.text = filtros.joinToString("\n")
+
+            itemView.setOnClickListener {
+                val intent = Intent(it.context, ResultadosBusqueda::class.java)
+                intent.putExtra("busqueda", busqueda)
+                // Convertir los filtros a un array de pares y pasarlo como un extra en el intent
+                val filtrosArray = filtros.map { filtro ->
+                    val parts = filtro.split(": ")
+                    Pair(parts[0], parts[1])
+                }.toTypedArray()
+                intent.putExtra("filtros", filtrosArray)
+                it.context.startActivity(intent)
+                // muestra en un log.d los filtros usados
+                Log.d("HistorialBusquedaAdapter", "Filtros usados: $busqueda")
+            }
         }
     }
 }

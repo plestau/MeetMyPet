@@ -22,7 +22,7 @@ class ResultadosBusqueda : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_resultados_busqueda)
 
-        val filtros = intent.getSerializableExtra("filtros") as Array<Pair<String, String>>
+        val filtros = intent.getSerializableExtra("filtros") as? Array<Pair<String, String>> ?: arrayOf()
 
         val rvAnuncios = findViewById<RecyclerView>(R.id.rvAnunciosFiltrados)
         anuncios = mutableListOf()
@@ -60,7 +60,7 @@ class ResultadosBusqueda : AppCompatActivity() {
                         "Paseo de mascotas" -> "Paseo"
                         "Cuidado a domicilio en casa del dueño" -> "Cuidado casa dueño"
                         "Cuidado a domicilio en casa del paseador" -> "Cuidado casa paseador"
-                        else -> ""
+                        else -> filtro.second
                     }
                     if (anuncio.tipoAnuncio != tipoAnuncioText) return false
                 }

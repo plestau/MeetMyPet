@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -228,6 +229,11 @@ class Buscador : AppCompatActivity() {
                 val historialBusquedaString = historialBusqueda.joinToString("||")
                 sharedPref.edit().putString(userId, historialBusquedaString).apply()
                 historialBusquedaAdapter.notifyDataSetChanged()
+                Log.d("Buscador", "Filtros usados: $busqueda")
+
+                // Limpiar los filtros después de realizar la búsqueda
+                filtrosAnadidos.clear()
+                filtrosAnadidosAdapter.notifyDataSetChanged()
             }
         }
     }
