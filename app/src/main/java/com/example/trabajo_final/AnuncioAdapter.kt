@@ -101,31 +101,42 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
 
             when (activityName) {
                 "MisAnuncios" -> {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val nombrePaseador = obtenerNombrePaseador(anuncio.usuarioPaseador).await()
-                        val sharedPref = itemView.context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-                        val userRole = sharedPref.getString("userRole", "user")
-                        withContext(Dispatchers.Main) {
-                            if (userRole == "admin" || anuncio.estado == "creado") {
-                                ivEditarAnuncio.visibility = View.VISIBLE
-                            } else if (anuncio.estado == "reservado") {
-                                ivEditarAnuncio.visibility = View.GONE
-                                ivAprobar.visibility = View.VISIBLE
-                                ivDenegar.visibility = View.VISIBLE
-                                llPaseadorAnuncio.visibility = View.VISIBLE
-                                tvNombrePaseador.text = nombrePaseador
-                                btnApuntarse.visibility = View.GONE
+                    // si el usuario es dueño del anuncio
+                    if (anuncio.usuarioDueño == FirebaseAuth.getInstance().currentUser?.uid) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val nombrePaseador = obtenerNombrePaseador(anuncio.usuarioPaseador).await()
+                            val sharedPref = itemView.context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+                            val userRole = sharedPref.getString("userRole", "user")
+                            withContext(Dispatchers.Main) {
+                                if (userRole == "admin" || anuncio.estado == "creado") {
+                                    ivEditarAnuncio.visibility = View.VISIBLE
+                                } else if (anuncio.estado == "reservado") {
+                                    ivEditarAnuncio.visibility = View.GONE
+                                    ivAprobar.visibility = View.VISIBLE
+                                    ivDenegar.visibility = View.VISIBLE
+                                    llPaseadorAnuncio.visibility = View.VISIBLE
+                                    tvNombrePaseador.text = nombrePaseador
+                                    btnApuntarse.visibility = View.GONE
+                                }
                             }
                         }
+                        btnIniciarChat.visibility = View.GONE
+                        btnApuntarse.visibility = View.GONE
+                    } else {
+                        ivEditarAnuncio.visibility = View.GONE
+                        btnIniciarChat.visibility = View.VISIBLE
+                        btnApuntarse.visibility = View.GONE
                     }
-                    btnIniciarChat.visibility = View.GONE
-                    btnApuntarse.visibility = View.GONE
                 }
                 "ResultadosBusqueda" -> {
                     if (anuncio.estado == "creado") {
                         ivEditarAnuncio.visibility = View.GONE
                         btnIniciarChat.visibility = View.VISIBLE
                         btnApuntarse.visibility = View.VISIBLE
+                    } else if (anuncio.estado == "En curso") {
+                        ivEditarAnuncio.visibility = View.GONE
+                        btnIniciarChat.visibility = View.VISIBLE
+                        btnApuntarse.visibility = View.GONE
                     } else {
                         ivEditarAnuncio.visibility = View.GONE
                         btnIniciarChat.visibility = View.VISIBLE
@@ -175,7 +186,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                     .setTitle("Aprobar paseador")
                     .setMessage("¿Estás seguro de que quieres aprobar a $nombrePaseador como paseador de tu mascota?")
                     .setPositiveButton("Sí") { _, _ ->
-                        anuncio.estado = "aprobado"
+                        anuncio.estado = "En curso"
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
                         ivAprobar.visibility = View.GONE
                         ivDenegar.visibility = View.GONE
@@ -211,7 +222,6 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
                         ivTerminar.visibility = View.GONE
                         Toast.makeText(itemView.context, "Has terminado el anuncio", Toast.LENGTH_SHORT).show()
-                        //valorar la mascota y el paseador con un AlertDialog
                     }
                     .setNegativeButton("No") { _, _ -> }
                     .show()

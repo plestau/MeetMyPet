@@ -59,11 +59,11 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
         val userRol = sharedPref.getString("role", "user")
 
         // Decide qué referencia usar basándote en el rol del usuario
+        val currentUser = auth.currentUser
         val anunciosRef = if (userRol == "admin") {
-            FirebaseDatabase.getInstance().getReference("app/anuncios")
+            FirebaseDatabase.getInstance().getReference("app/anuncios").orderByChild("timestamp")
         } else {
-            val currentUser = auth.currentUser
-            FirebaseDatabase.getInstance().getReference("app/anuncios").orderByChild("usuarioDueño").equalTo(currentUser?.uid)
+            FirebaseDatabase.getInstance().getReference("app/anuncios")
         }
 
         anunciosRef.addValueEventListener(object : ValueEventListener {
@@ -71,8 +71,8 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
                 val anuncios = mutableListOf<Anuncio>()
                 dataSnapshot.children.forEach { anuncio ->
                     val anuncioObject = anuncio.getValue(Anuncio::class.java)
-                    if (anuncioObject != null) {
-                        anuncios.add(anuncioObject)
+                    if (anuncioObject != null && (anuncioObject.usuarioDueño == currentUser?.uid || anuncioObject.usuarioPaseador == currentUser?.uid)) {
+                        anuncios.add(0, anuncioObject) // Agrega al inicio de la lista para mantener el orden de más nuevo a más antiguo
                         anuncioObject.id?.let { anunciosAñadidosIds.add(it) }
                     }
                 }
