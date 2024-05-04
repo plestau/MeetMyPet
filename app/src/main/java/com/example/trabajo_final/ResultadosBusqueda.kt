@@ -71,7 +71,7 @@ class ResultadosBusqueda : AppCompatActivity() {
                     if (anuncio.fecha != fechaFormatted) return false
                 }
                 "Ubicación" -> if (anuncio.lugar?.lowercase(Locale.getDefault()) != filtro.second.lowercase(Locale.getDefault())) return false
-                "Nombre de mascota" -> if (!anuncio.nombreMascota?.contains(filtro.second)!!) return false
+                "Nombre de mascota" -> if (!anuncio.nombreMascota?.contains(filtro.second.lowercase())!!) return false
                 "Raza de mascota" -> if (!anuncio.razaMascota?.contains(filtro.second)!!) return false
                 "Precio" -> if (anuncio.precio?.toDouble() != filtro.second.toDouble()) return false
                 "Título" -> if (!anuncio.titulo?.lowercase(Locale.getDefault())?.contains(filtro.second.lowercase(Locale.getDefault()))!!) return false

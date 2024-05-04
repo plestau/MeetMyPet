@@ -54,7 +54,7 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
         val tvSexoMascota: TextView = itemView.findViewById(R.id.tvSexoMascota)
         val cbEsterilizadoMascota: CheckBox = itemView.findViewById(R.id.cbEsterilizadoMascota)
         val tvBiografiaMascota: TextView = itemView.findViewById(R.id.tvBiografiaMascota)
-        val tvValoracionMascota: RatingBar = itemView.findViewById(R.id.rbValoracionMascota)
+        val rbValoracionMascota: RatingBar = itemView.findViewById(R.id.rbValoracionMascota)
         val tvFotoMascota: ImageView = itemView.findViewById(R.id.ivFotoMascota)
         val ivEditarMascota: ImageView = itemView.findViewById(R.id.ivEditarMascota)
         val ivBorrarMascota: ImageView = itemView.findViewById(R.id.ivBorrarMascota)
@@ -68,7 +68,7 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
             cbEsterilizadoMascota.isChecked = mascota.esterilizado!!
             cbEsterilizadoMascota.isEnabled = false
             tvBiografiaMascota.text = mascota.biografia
-            tvValoracionMascota.rating = mascota.valoracion!!
+            rbValoracionMascota.rating = mascota.valoraciones?.average()?.toFloat() ?: 0.0f
             val mascotaFotoUrl = mascota.foto
             if (mascotaFotoUrl != null && mascotaFotoUrl.isNotEmpty()) {
                 Glide.with(this.itemView)

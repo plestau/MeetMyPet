@@ -66,19 +66,16 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
             findViewById<TextView>(R.id.correo).text = "Correo: ${usuario?.email}"
             findViewById<TextView>(R.id.telefono).text = "Teléfono: ${usuario?.n_telefono}"
             findViewById<TextView>(R.id.fechaRegistro).text = "Fecha de registro: ${usuario?.fecha_registro}"
-            findViewById<RatingBar>(R.id.valoracion).rating = usuario?.valoracion?.toFloat() ?: 0f
-            findViewById<RatingBar>(R.id.valoracion).apply {
-                rating = usuario?.valoracion?.toFloat() ?: 0f
-                isClickable = false
-                isFocusable = false
-            }
+            // muestra la media de las valoraciones del usuario
+            findViewById<RatingBar>(R.id.valoracion).rating = usuario?.valoraciones?.average()?.toFloat() ?: 0f
+
             profilePicRef.downloadUrl.addOnSuccessListener { uri ->
                 val imageView = findViewById<ImageView>(R.id.fotoPerfil)
                 Glide.with(this).load(uri).placeholder(Utilidades.animacion_carga(context)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(context) }
             }
             findViewById<TextView>(R.id.biografia).text = "Biografía: ${usuario?.biografia}"
         }
-        userRef.child("imagen").addValueEventListener(object : ValueEventListener {
+        userRef.child("profilePic").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val imageUrl = dataSnapshot.getValue(String::class.java)
                 if (!imageUrl.isNullOrEmpty()) {
@@ -96,7 +93,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
                 val usuario = dataSnapshot.getValue(Usuario::class.java)
                 findViewById<TextView>(R.id.nombreUsuario).text = usuario?.nombre
                 findViewById<TextView>(R.id.telefono).text = "Teléfono: ${usuario?.n_telefono}"
-                findViewById<RatingBar>(R.id.valoracion).rating = usuario?.valoracion?.toFloat() ?: 0f
+                findViewById<RatingBar>(R.id.valoracion).rating = usuario?.valoraciones?.average()?.toFloat() ?: 0f
                 findViewById<TextView>(R.id.biografia).text = usuario?.biografia
             }
 

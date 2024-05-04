@@ -110,7 +110,6 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                 return@setOnClickListener
             }
 
-            val valoracion = mascota.valoracion
             val mascotaRef = FirebaseDatabase.getInstance()
                 .getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
             val stRef =
@@ -153,8 +152,7 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                     sexo = sexo.selectedItem.toString(),
                     esterilizado = esterilizado.isChecked,
                     biografia = biografia.text.toString(),
-                    foto = mascotaPicUrl,
-                    valoracion = valoracion
+                    foto = mascotaPicUrl
                 )).await()
 
                 withContext(Dispatchers.Main) {

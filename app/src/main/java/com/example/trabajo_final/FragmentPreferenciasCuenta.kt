@@ -179,7 +179,7 @@ class FragmentPreferenciasCuenta : Fragment() {
         profilePicRef.putFile(uri).addOnSuccessListener {
             profilePicRef.downloadUrl.addOnSuccessListener { uri ->
                 val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${currentUser?.uid}")
-                userRef.child("imagen").setValue(uri.toString())
+                userRef.child("profilePic").setValue(uri.toString())
             }
         }
         Toast.makeText(requireContext(), "Foto de perfil actualizada", Toast.LENGTH_SHORT).show()

@@ -103,7 +103,7 @@ class FragmentAddMascota : Fragment(), OnBackPressedInFragmentListener {
                     sexo = sexo,
                     esterilizado = esterilizado,
                     biografia = biografia,
-                    valoracion = 0f,
+                    valoraciones = arrayListOf(),
                     usuarioId = user?.uid,
                     borrable = true
                 )

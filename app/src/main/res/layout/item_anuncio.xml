@@ -113,7 +113,7 @@
                 android:textSize="14sp" />
         </LinearLayout>
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="8dp">
@@ -201,6 +201,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_recommend_24"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/ivValorar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_star_24"
             android:layout_margin="8dp"
             android:padding="8dp"
             android:visibility="gone" />

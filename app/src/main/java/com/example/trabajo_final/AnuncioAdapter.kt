@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -76,6 +77,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
         private val ivDenegar: ImageView = itemView.findViewById(R.id.ivDenegar)
         private val ivTerminar: ImageView = itemView.findViewById(R.id.ivTerminar)
         private var tvNombrePaseador: TextView = itemView.findViewById(R.id.tvNombrePaseadorAnuncio)
+        private var ivValorar: ImageView = itemView.findViewById(R.id.ivValorar)
         private val ivPerfilPaseador: ImageView = itemView.findViewById(R.id.ivPerfilPaseador)
         private val llPaseadorAnuncio: LinearLayout = itemView.findViewById(R.id.llPaseadorAnuncio)
         private var nombrePaseador: String = ""
@@ -123,9 +125,25 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         btnIniciarChat.visibility = View.GONE
                         btnApuntarse.visibility = View.GONE
                     } else {
-                        ivEditarAnuncio.visibility = View.GONE
-                        btnIniciarChat.visibility = View.VISIBLE
-                        btnApuntarse.visibility = View.GONE
+                        if (anuncio.estado == "creado") {
+                            ivEditarAnuncio.visibility = View.GONE
+                            btnIniciarChat.visibility = View.VISIBLE
+                            btnApuntarse.visibility = View.VISIBLE
+                        } else if (anuncio.estado == "reservado") {
+                            ivEditarAnuncio.visibility = View.GONE
+                            btnIniciarChat.visibility = View.VISIBLE
+                            btnApuntarse.visibility = View.GONE
+                        } else if (anuncio.estado == "terminado") {
+                            ivEditarAnuncio.visibility = View.GONE
+                            btnIniciarChat.visibility = View.VISIBLE
+                            btnApuntarse.visibility = View.GONE
+                            ivValorar.visibility = View.VISIBLE
+                        } else {
+                            ivEditarAnuncio.visibility = View.GONE
+                            btnIniciarChat.visibility = View.VISIBLE
+                            btnApuntarse.visibility = View.GONE
+                            ivValorar.visibility = View.GONE
+                        }
                     }
                 }
                 "ResultadosBusqueda" -> {
@@ -222,9 +240,52 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
                         ivTerminar.visibility = View.GONE
                         Toast.makeText(itemView.context, "Has terminado el anuncio", Toast.LENGTH_SHORT).show()
+
+                        // Crea un nuevo AlertDialog para la valoración del paseador
+                        val valoracionDialogView = LayoutInflater.from(itemView.context).inflate(R.layout.fragment_valorar_paseador, null)
+                        val valoracionDialog = AlertDialog.Builder(itemView.context)
+                            .setView(valoracionDialogView)
+                            .setTitle("Valorar al paseador")
+                            .setPositiveButton("Enviar") { _, _ ->
+                                val ratingBarPaseador = valoracionDialogView.findViewById<RatingBar>(R.id.ratingBarValorarPaseador)
+                                val valoracionPaseador = ratingBarPaseador.rating
+                                // añade la valoracion a la lista de valoraciones del usuario paseador
+                                agregarValoracionUsuario(anuncio.usuarioPaseador!!, valoracionPaseador)
+                            }
+                            .setNegativeButton("No, gracias") { _, _ ->
+                                Toast.makeText(itemView.context, "No has enviado ninguna valoración", Toast.LENGTH_SHORT).show()
+                            }
+                            .create()
+
+                        valoracionDialog.show()
+                    }.show()
+            }
+            ivValorar.setOnClickListener {
+                ivValorar.visibility = View.GONE
+                // Crea un nuevo AlertDialog para la valoración del dueño y la mascota
+                val valoracionDialogView = LayoutInflater.from(itemView.context).inflate(R.layout.fragment_valorar_dueno, null)
+                val valoracionDialog = AlertDialog.Builder(itemView.context)
+                    .setView(valoracionDialogView)
+                    .setTitle("Valorar al dueño y a la mascota")
+                    .setPositiveButton("Enviar") { _, _ ->
+                        anuncio.estado = "valorado"
+                        database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
+                        // Valora al dueño y a la mascota y añade los valores de los ratingBars a "valoraciones"
+                        val ratingBarDueno = valoracionDialogView.findViewById<RatingBar>(R.id.ratingBarValorarDueno)
+                        val ratingBarMascota = valoracionDialogView.findViewById<RatingBar>(R.id.ratingBarValorarMascota)
+                        val valoracionDueno = ratingBarDueno.rating
+                        val valoracionMascota = ratingBarMascota.rating
+                        // añade la valoracion a la lista de valoraciones del usuario dueño
+                        agregarValoracionUsuario(anuncio.usuarioDueño!!, valoracionDueno)
+                        // añade la valoracion a la lista de valoraciones de la mascota
+                        agregarValoracionMascota(anuncio.usuarioDueño!!, anuncio.idmascota!!, valoracionMascota)
                     }
-                    .setNegativeButton("No") { _, _ -> }
-                    .show()
+                    .setNegativeButton("No, gracias") { _, _ ->
+                        Toast.makeText(itemView.context, "No has enviado ninguna valoración", Toast.LENGTH_SHORT).show()
+                    }
+                    .create()
+
+                valoracionDialog.show()
             }
         }
         fun obtenerNombrePaseador(idUsuarioPaseador: String?): Task<String> {
@@ -235,6 +296,41 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
             }.continueWith {
                 nombrePaseador
             }
+        }
+        fun agregarValoracionUsuario(idUsuario: String, nuevaValoracion: Float) {
+            val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/$idUsuario")
+
+            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val usuario = dataSnapshot.getValue(Usuario::class.java)
+                    val valoraciones = usuario?.valoraciones?.toMutableList() ?: mutableListOf()
+                    valoraciones.add(nuevaValoracion)
+                    userRef.child("valoraciones").setValue(valoraciones)
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                }
+            })
+        }
+
+        fun agregarValoracionMascota(idUsuario: String, idMascota: List<String>, nuevaValoracion: Float) {
+            val mascotaRef = FirebaseDatabase.getInstance().getReference("app/usuarios/$idUsuario/mascotas")
+            mascotaRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (mascotaSnapshot in dataSnapshot.children) {
+                        val mascota = mascotaSnapshot.getValue(Mascota::class.java)
+                        if (mascota?.id in idMascota) {
+                            val valoraciones = mascota?.valoraciones?.toMutableList() ?: mutableListOf()
+                            valoraciones.add(nuevaValoracion)
+                            mascotaRef.child(mascota?.id!!).child("valoraciones").setValue(valoraciones)
+                        }
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                }
+            })
+
         }
     }
 }

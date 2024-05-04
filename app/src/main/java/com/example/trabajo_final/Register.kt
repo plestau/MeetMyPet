@@ -111,7 +111,7 @@ class Register : AppCompatActivity() {
                                     "profilePic" to profilePicUrl,
                                     "biografia" to "",
                                     "n_telefono" to "",
-                                    "valoracion" to 0.0,
+                                    "valoraciones" to arrayListOf<Float>(),
                                     "mascotas" to arrayListOf<String>(),
                                     "fecha_registro" to Utilidades.obtenerFechaActual(),
                                 )
@@ -158,7 +158,7 @@ class Register : AppCompatActivity() {
                         "profilePic" to profilePicUrl,
                         "biografia" to "",
                         "n_telefono" to "",
-                        "valoracion" to 0.0,
+                        "valoraciones" to arrayListOf<Float>(),
                         "mascotas" to arrayListOf<String>(),
                         "fecha_registro" to Utilidades.obtenerFechaActual(),
                     )

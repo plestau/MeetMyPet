@@ -13,7 +13,7 @@ data class Usuario(
     var imagen: String? = null,
     var biografia: String? = null,
     var n_telefono: String? = null,
-    var valoracion: Float? = null,
+    var valoraciones: List<Float>? = null,
     var mascotas: HashMap<String, Mascota>? = null,
     var fecha_registro: String? = null,
 ): Parcelable, Comparable<Usuario> {

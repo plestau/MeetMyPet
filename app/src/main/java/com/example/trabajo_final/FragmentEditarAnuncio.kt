@@ -42,7 +42,7 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 nombre = nombre,
                 raza = anuncio.razaMascota?.get(index),
                 edad = anuncio.edadMascota?.get(index),
-                valoracion = anuncio.valoracionMascota?.get(index),
+                valoraciones = anuncio.valoracionMascota?.get(index)?.let { listOf(it) },
                 foto = anuncio.imagenMascota?.get(index)
             )
         }?.toMutableList() ?: mutableListOf()
@@ -172,14 +172,6 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 ).show()
                 return@setOnClickListener
             }
-            if (!fechaText.matches(Regex("^\\d{1,2}/\\d{1,2}/\\d{4}$"))) {
-                Toast.makeText(
-                    context,
-                    "La fecha debe tener el formato D/M/AAAA",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
 
             if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty() || precioText.isEmpty() || tipoAnuncioSpinner.selectedItem == "Seleccione tipo de anuncio:") {
                 Toast.makeText(
@@ -190,10 +182,24 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 return@setOnClickListener
             }
 
+            if (!fechaText.matches(Regex("^\\d{1,2}/\\d{1,2}/\\d{2}(\\d{2})?$"))) {
+                Toast.makeText(
+                    context,
+                    "La fecha debe tener el formato D/M/AA o D/M/AAAA",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             val fechaEvento = fechaText.split("/")
             val diaEventoInt = fechaEvento[0].toIntOrNull()
             val mesEventoInt = fechaEvento[1].toIntOrNull()
-            val añoEventoInt = fechaEvento[2].toIntOrNull()
+            var añoEventoInt = fechaEvento[2].toIntOrNull()
+
+            // Añade "20" al principio del año si solo tiene dos dígitos
+            if (añoEventoInt != null && añoEventoInt < 100) {
+                añoEventoInt += 2000
+            }
             if (diaEventoInt == null || mesEventoInt == null || añoEventoInt == null) {
                 Toast.makeText(
                     context,
@@ -248,7 +254,7 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
             val mascotasNombreList = mascotasAñadidasList.map { it.nombre!! }
             val mascotasRazaList = mascotasAñadidasList.map { it.raza!! }
             val mascotasEdadList = mascotasAñadidasList.map { it.edad!! }
-            val mascotasValoracionList = mascotasAñadidasList.map { it.valoracion!! }
+            val mascotasValoracionList = mascotasAñadidasList.map { it.valoraciones!![0] }
             val mascotasImagenList = mascotasAñadidasList.map { it.foto!! }
 
             anuncioRef.setValue(anuncio.copy(

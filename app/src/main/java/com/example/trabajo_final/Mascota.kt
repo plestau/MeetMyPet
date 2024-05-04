@@ -13,7 +13,7 @@ data class Mascota(
     var sexo: String? = null,
     var esterilizado: Boolean? = null,
     var biografia: String? = null,
-    var valoracion: Float? = null,
+    var valoraciones: List<Float>? = null,
     var usuarioId: String? = null,
     var borrable: Boolean = true
 ): Parcelable
