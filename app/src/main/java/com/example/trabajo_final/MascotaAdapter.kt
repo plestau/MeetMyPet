@@ -79,7 +79,6 @@ class MascotaAdapter(private var listaMascotas: List<Mascota>, val fragmentManag
                     .apply { Utilidades.opcionesGlide(itemView.context) }
             }
 
-            Log.d("MascotaAdapter", "currentUserId: $currentUserId")
             // Si la mascota no es del usuario actual, no se pueden editar ni borrar
             if (mascota.usuarioId != currentUserId) {
                 ivEditarMascota.visibility = View.GONE

@@ -52,7 +52,11 @@ class Buscador : AppCompatActivity() {
         val sharedPref = getSharedPreferences("HistorialBusqueda", Context.MODE_PRIVATE)
         userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
         val historialBusquedaString = sharedPref.getString(userId, "")
-        historialBusqueda = historialBusquedaString?.split("||")?.toMutableList() ?: mutableListOf()
+        if (historialBusquedaString.isNullOrEmpty()) {
+            historialBusqueda = mutableListOf()
+        } else {
+            historialBusqueda = historialBusquedaString.split("||").toMutableList()
+        }
         // si el tamaño del historial es mayor que el máximo permitido, se toman los últimos elementos
         if (historialBusqueda.size > MAX_HISTORIAL_SIZE) {
             historialBusqueda = historialBusqueda.takeLast(MAX_HISTORIAL_SIZE).toMutableList()

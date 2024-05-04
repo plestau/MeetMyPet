@@ -70,6 +70,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                     putBoolean("fromPublicarAnuncio", true)
                     putBoolean("mascotasClicables", true)
                     putParcelableArrayList("mascotasAñadidasList", ArrayList(mascotasAñadidasList))
+                    putString("USER_ID", currentUser?.uid)
                 }
             }
             val transaction = supportFragmentManager.beginTransaction()
