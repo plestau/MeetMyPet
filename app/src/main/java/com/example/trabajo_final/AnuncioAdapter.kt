@@ -98,11 +98,11 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
             // carga la imagen de la mascota o las imagenes de las mascotas en caso de que haya mas de una
             rvImagenMascotaAnuncio.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             rvImagenMascotaAnuncio.adapter = ImagenMascotaAdapter(anuncio.imagenMascota!!)
-            val nombrePaseador = obtenerNombrePaseador(anuncio.usuarioPaseador)
 
             when (activityName) {
                 "MisAnuncios" -> {
                     CoroutineScope(Dispatchers.IO).launch {
+                        val nombrePaseador = obtenerNombrePaseador(anuncio.usuarioPaseador).await()
                         val sharedPref = itemView.context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
                         val userRole = sharedPref.getString("userRole", "user")
                         withContext(Dispatchers.Main) {
@@ -113,7 +113,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                                 ivAprobar.visibility = View.VISIBLE
                                 ivDenegar.visibility = View.VISIBLE
                                 llPaseadorAnuncio.visibility = View.VISIBLE
-                                tvNombrePaseador.text = nombrePaseador.await()
+                                tvNombrePaseador.text = nombrePaseador
+                                btnApuntarse.visibility = View.GONE
                             }
                         }
                     }
@@ -121,9 +122,15 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                     btnApuntarse.visibility = View.GONE
                 }
                 "ResultadosBusqueda" -> {
-                    ivEditarAnuncio.visibility = View.GONE
-                    btnIniciarChat.visibility = View.VISIBLE
-                    btnApuntarse.visibility = View.VISIBLE
+                    if (anuncio.estado == "creado") {
+                        ivEditarAnuncio.visibility = View.GONE
+                        btnIniciarChat.visibility = View.VISIBLE
+                        btnApuntarse.visibility = View.VISIBLE
+                    } else {
+                        ivEditarAnuncio.visibility = View.GONE
+                        btnIniciarChat.visibility = View.VISIBLE
+                        btnApuntarse.visibility = View.GONE
+                    }
                 }
             }
             ivEditarAnuncio.setOnClickListener {
@@ -187,6 +194,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
                         ivAprobar.visibility = View.GONE
                         ivDenegar.visibility = View.GONE
+                        llPaseadorAnuncio.visibility = View.GONE
                         Toast.makeText(itemView.context, "Has denegado a $nombrePaseador como paseador de tu mascota", Toast.LENGTH_SHORT).show()
                     }
                         .setNegativeButton("No") { _, _ ->
