@@ -21,7 +21,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 
-open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager: FragmentManager) : RecyclerView.Adapter<MascotaAdapter.MascotaViewHolder>() {
+class MascotaAdapter(private var listaMascotas: List<Mascota>, val fragmentManager: FragmentManager, private val currentUserId: String) : RecyclerView.Adapter<MascotaAdapter.MascotaViewHolder>() {
     interface OnItemClickListener {
         fun onItemClick(position: Int)
     }
@@ -77,6 +77,13 @@ open class MascotaAdapter(var listaMascotas: List<Mascota>, val fragmentManager:
                     .transform(CircleCrop())
                     .into(tvFotoMascota)
                     .apply { Utilidades.opcionesGlide(itemView.context) }
+            }
+
+            Log.d("MascotaAdapter", "currentUserId: $currentUserId")
+            // Si la mascota no es del usuario actual, no se pueden editar ni borrar
+            if (mascota.usuarioId != currentUserId) {
+                ivEditarMascota.visibility = View.GONE
+                ivBorrarMascota.visibility = View.GONE
             }
 
             itemView.setOnClickListener {

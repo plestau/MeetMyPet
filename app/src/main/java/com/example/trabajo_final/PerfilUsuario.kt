@@ -25,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage
 
 class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedListener {
     private lateinit var auth: FirebaseAuth
+    private var userId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,53 +55,19 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
             commit()
         }
 
-        auth = FirebaseAuth.getInstance()
-        val currentUser = auth.currentUser
-        val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${currentUser?.uid}")
-
-        userRef.get().addOnSuccessListener { dataSnapshot ->
-            val usuario = dataSnapshot.getValue(Usuario::class.java)
-            val profilePicRef = FirebaseStorage.getInstance().getReference("app/usuarios/${currentUser?.uid}/profile_pic.jpg")
-
-            findViewById<TextView>(R.id.nombreUsuario).text = usuario?.nombre
-            findViewById<TextView>(R.id.correo).text = "Correo: ${usuario?.email}"
-            findViewById<TextView>(R.id.telefono).text = "Teléfono: ${usuario?.n_telefono}"
-            findViewById<TextView>(R.id.fechaRegistro).text = "Fecha de registro: ${usuario?.fecha_registro}"
-            // muestra la media de las valoraciones del usuario
-            findViewById<RatingBar>(R.id.valoracion).rating = usuario?.valoraciones?.average()?.toFloat() ?: 0f
-
-            profilePicRef.downloadUrl.addOnSuccessListener { uri ->
-                val imageView = findViewById<ImageView>(R.id.fotoPerfil)
-                Glide.with(this).load(uri).placeholder(Utilidades.animacion_carga(context)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(context) }
+        userId = intent.getStringExtra("USER_ID")
+        if (userId != null) {
+            loadUserData(userId!!)
+        } else {
+            auth = FirebaseAuth.getInstance()
+            userId = auth.currentUser?.uid
+            if (userId != null) {
+                loadUserData(userId!!)
+            } else {
+                Toast.makeText(context, "Error al cargar los datos del usuario", Toast.LENGTH_SHORT).show()
+                finish()
             }
-            findViewById<TextView>(R.id.biografia).text = "Biografía: ${usuario?.biografia}"
         }
-        userRef.child("profilePic").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val imageUrl = dataSnapshot.getValue(String::class.java)
-                if (!imageUrl.isNullOrEmpty()) {
-                    val imageView = findViewById<ImageView>(R.id.fotoPerfil)
-                    Glide.with(this@PerfilUsuario).load(imageUrl).placeholder(Utilidades.animacion_carga(context)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(context) }
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(this@PerfilUsuario, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
-            }
-        })
-        userRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val usuario = dataSnapshot.getValue(Usuario::class.java)
-                findViewById<TextView>(R.id.nombreUsuario).text = usuario?.nombre
-                findViewById<TextView>(R.id.telefono).text = "Teléfono: ${usuario?.n_telefono}"
-                findViewById<RatingBar>(R.id.valoracion).rating = usuario?.valoraciones?.average()?.toFloat() ?: 0f
-                findViewById<TextView>(R.id.biografia).text = usuario?.biografia
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(this@PerfilUsuario, "Error al cargar los datos del usuario", Toast.LENGTH_SHORT).show()
-            }
-        })
 
         añadirMascota.setOnClickListener {
             val fragmentAddMascota = FragmentAddMascota()
@@ -117,6 +84,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
             val fragmentVerMisMascotas = FragmentVerMisMascotas().apply {
                 arguments = Bundle().apply {
                     putBoolean("mascotasClicables", false)
+                    putString("USER_ID", userId)
                 }
             }
             supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragmentVerMisMascotas).addToBackStack(null).commit()
@@ -127,6 +95,58 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
             }
             findViewById<View>(R.id.scrollView)?.visibility = View.GONE
         }
+    }
+
+    private fun loadUserData(userId: String) {
+        auth = FirebaseAuth.getInstance()
+        val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/$userId")
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val usuario = dataSnapshot.getValue(Usuario::class.java)
+                if (usuario != null) {
+                    val profilePicRef = FirebaseStorage.getInstance().getReference("app/usuarios/$userId/profile_pic.jpg")
+
+                    findViewById<TextView>(R.id.nombreUsuario).text = usuario.nombre
+                    findViewById<TextView>(R.id.correo).text = "Correo: ${usuario.email}"
+                    findViewById<TextView>(R.id.telefono).text = "Teléfono: ${usuario.n_telefono}"
+                    findViewById<TextView>(R.id.fechaRegistro).text = "Fecha de registro: ${usuario.fecha_registro}"
+                    findViewById<RatingBar>(R.id.valoracion).rating = usuario.valoraciones?.average()?.toFloat() ?: 0f
+                    findViewById<TextView>(R.id.biografia).text = "Biografía: ${usuario.biografia}"
+
+                    profilePicRef.downloadUrl.addOnSuccessListener { uri ->
+                        val imageView = findViewById<ImageView>(R.id.fotoPerfil)
+                        Glide.with(this@PerfilUsuario).load(uri).placeholder(Utilidades.animacion_carga(this@PerfilUsuario)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(this@PerfilUsuario) }
+                    }.addOnFailureListener {
+                        // Manejo de errores al cargar la imagen de perfil
+                        Toast.makeText(this@PerfilUsuario, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
+                    }
+
+                    val currentUserId = auth.currentUser?.uid
+
+                    // Comprueba si el usuario actual es diferente del usuario cuyo perfil se está visualizando
+                    if (currentUserId != null && currentUserId != userId) {
+                        val añadirMascota = findViewById<LinearLayout>(R.id.añadirMascota)
+                        añadirMascota.visibility = View.GONE
+                        val separator = findViewById<View>(R.id.separator3)
+                        separator.visibility = View.GONE
+                        val fragmentSuperiorPerfil = supportFragmentManager.findFragmentById(R.id.fragment_superior_perfil)
+                        if (fragmentSuperiorPerfil != null) {
+                            supportFragmentManager.beginTransaction().remove(fragmentSuperiorPerfil).commit()
+                        }
+                    }
+                } else {
+                    // Manejo de errores si no se encuentra el usuario
+                    Toast.makeText(this@PerfilUsuario, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Manejo de errores en la lectura de datos de Firebase
+                Toast.makeText(this@PerfilUsuario, "Error al cargar los datos del usuario", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        })
     }
 
     override fun onBackPressed() {

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -286,6 +287,11 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                     .create()
 
                 valoracionDialog.show()
+            }
+            ivPerfilPaseador.setOnClickListener {
+                val intent = Intent(it.context, PerfilUsuario::class.java)
+                intent.putExtra("USER_ID", anuncio.usuarioPaseador)
+                it.context.startActivity(intent)
             }
         }
         fun obtenerNombrePaseador(idUsuarioPaseador: String?): Task<String> {

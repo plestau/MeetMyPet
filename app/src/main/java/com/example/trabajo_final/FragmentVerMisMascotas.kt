@@ -51,10 +51,11 @@ class FragmentVerMisMascotas : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerViewMisMascotas)
         recyclerView.layoutManager = LinearLayoutManager(context)
         val mascotas = mutableListOf<Mascota>()
-        val mascotaAdapter = MascotaAdapter(mascotas, parentFragmentManager)
+        val mascotaAdapter = MascotaAdapter(mascotas, parentFragmentManager, currentUser?.uid ?: "")
         recyclerView.adapter = mascotaAdapter
 
         val fromPublicarAnuncio = arguments?.getBoolean("fromPublicarAnuncio", false) ?: false
+        val userId = arguments?.getString("USER_ID") // Obtiene el ID del usuario del bundle
 
         if (userRole == "admin") {
             val usersRef = database.getReference("app/usuarios")
@@ -80,7 +81,7 @@ class FragmentVerMisMascotas : Fragment() {
                 }
             })
         } else {
-            val mascotasRef = database.getReference("app/usuarios/${currentUser?.uid}/mascotas")
+            val mascotasRef = database.getReference("app/usuarios/${userId}/mascotas")
             mascotasRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val newMascotas = mutableListOf<Mascota>()
