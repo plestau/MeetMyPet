@@ -6,14 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import com.example.trabajo_final.R
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.cardview.widget.CardView
-import com.example.trabajo_final.Chat
 import com.example.trabajo_final.Buscador
 import com.example.trabajo_final.MisAnuncios
 import com.example.trabajo_final.PerfilUsuario
 import com.example.trabajo_final.PublicarAnuncio
+import com.example.trabajo_final.SelectorChats
 
 class FragmentInferior : Fragment() {
     companion object {
@@ -89,7 +87,7 @@ class FragmentInferior : Fragment() {
             selectedCard = it as CardView
 
             if (FragmentInferior.actividadActual != "Mensajes") {
-                val intent = Intent(context, Chat::class.java)
+                val intent = Intent(context, SelectorChats::class.java)
                 startActivity(intent)
                 FragmentInferior.actividadActual = "Mensajes"
                 selectedCardId = R.id.card_mensajes

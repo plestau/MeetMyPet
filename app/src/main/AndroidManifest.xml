@@ -18,10 +18,13 @@
         android:theme="@style/Theme.Trabajo_final"
         tools:targetApi="31">
         <activity
+            android:name=".SelectorChats"
+            android:exported="false" />
+        <activity
             android:name=".ResultadosBusqueda"
             android:exported="false" />
         <activity
-            android:name=".Chat"
+            android:name=".ChatPublico"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
