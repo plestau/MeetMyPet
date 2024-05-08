@@ -293,6 +293,20 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                 intent.putExtra("USER_ID", anuncio.usuarioPaseador)
                 it.context.startActivity(intent)
             }
+            btnIniciarChat.setOnClickListener {
+                val idUsuarioActual = FirebaseAuth.getInstance().currentUser!!.uid
+                val idUsuarioDueñoAnuncio = anuncio.usuarioDueño
+                val tituloAnuncio = anuncio.titulo
+
+                // Crear el ID del chat a partir de los ID de los usuarios
+                val idChatPrivado = "$idUsuarioActual@$idUsuarioDueñoAnuncio"
+
+                val intent = Intent(it.context, ChatPrivado::class.java)
+                intent.putExtra("idUsuarioDueñoAnuncio", idUsuarioDueñoAnuncio)
+                intent.putExtra("tituloAnuncio", tituloAnuncio)
+                intent.putExtra("idChatPrivado", idChatPrivado)
+                it.context.startActivity(intent)
+            }
         }
         fun obtenerNombrePaseador(idUsuarioPaseador: String?): Task<String> {
             // busca en firabse el nombre del usuario paseador a partir de su id

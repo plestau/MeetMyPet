@@ -35,7 +35,5 @@ class ChatPublicoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
         Glide.with(holder.itemView.context).load(mensaje.urlAvatar).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfil)
     }
 
-    override fun getItemCount(): Int {
-        return listMensaje.size
-    }
+    override fun getItemCount () = listMensaje.size
 }

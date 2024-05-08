@@ -1,37 +1,39 @@
 package com.example.trabajo_final
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.example.trabajo_final.Java.HolderMensaje
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ChatPrivadoAdapter(private val privateChats: List<ChatPrivado>) : RecyclerView.Adapter<ChatPrivadoAdapter.PrivateChatViewHolder>() {
+class ChatPrivadoAdapter(private val idUsuarioActual: String) : RecyclerView.Adapter<HolderMensaje>() {
+    private var listMensaje: MutableList<MensajePrivado> = ArrayList()
 
-    class PrivateChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
-        val tvContenido: TextView = itemView.findViewById(R.id.tv_contenido)
-        val tvFechaHora: TextView = itemView.findViewById(R.id.tv_fecha_hora)
+    fun addMensaje(m: MensajePrivado) {
+        listMensaje.add(m)
+        notifyItemInserted(listMensaje.size)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrivateChatViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_privado, parent, false)
-        return PrivateChatViewHolder(view)
+    fun clear() {
+        listMensaje.clear()
+        notifyDataSetChanged()
     }
 
-    override fun onBindViewHolder(holder: PrivateChatViewHolder, position: Int) {
-        val privateChat = privateChats[position]
-        Glide.with(holder.itemView.context).load(privateChat.urlAvatar).into(holder.ivAvatar)
-        holder.tvContenido.text = privateChat.contenido
-        holder.tvFechaHora.text = privateChat.fechaHora.toString()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val formattedDate = dateFormat.format(privateChat.fechaHora)
-        holder.tvFechaHora.text = formattedDate
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderMensaje {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_mensaje, parent, false)
+        return HolderMensaje(v)
     }
 
-    override fun getItemCount() = privateChats.size
+    override fun onBindViewHolder(holder: HolderMensaje, position: Int) {
+        val mensaje = listMensaje[position]
+        holder.nombre.text = if (mensaje.idEmisor == idUsuarioActual) "Yo" else mensaje.nombreEmisor
+        holder.mensaje.text = mensaje.contenido
+        holder.hora.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
+        Glide.with(holder.itemView.context).load(mensaje.urlAvatar).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfil)
+    }
+
+    override fun getItemCount () = listMensaje.size
 }

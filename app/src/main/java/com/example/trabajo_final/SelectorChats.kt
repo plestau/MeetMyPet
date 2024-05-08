@@ -2,11 +2,9 @@ package com.example.trabajo_final
 
 import FragmentInferior
 import android.content.Intent
-import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -40,7 +39,7 @@ class SelectorChats : AppCompatActivity() {
 
         val privateChats = getPrivateChats()
         rvPrivateChats.layoutManager = LinearLayoutManager(this)
-        rvPrivateChats.adapter = ChatPrivadoAdapter(privateChats)
+        rvPrivateChats.adapter = SelectorChatsPrivadosAdapter(privateChats)
 
         // Configurar el botón para ir al chat público
         btnPublicChat.setOnClickListener {
@@ -53,7 +52,6 @@ class SelectorChats : AppCompatActivity() {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val ultimoMensaje = dataSnapshot.children.lastOrNull()?.getValue(MensajePublico::class.java)
-                Log.d("Mensaje final", "Ultimo mensaje: $ultimoMensaje")
                 findViewById<TextView>(R.id.tv_last_public_message).text = ultimoMensaje?.contenido
                 findViewById<TextView>(R.id.tv_fecha_hora).text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ultimoMensaje?.fechaHora ?: Date())
                 val urlAvatar = ultimoMensaje?.urlAvatar ?: ""
@@ -67,13 +65,34 @@ class SelectorChats : AppCompatActivity() {
 
     }
 
-    private fun getPrivateChats(): List<ChatPrivado> {
-        // Implementa la lógica para obtener los chats privados
-        // Este es solo un ejemplo y deberías reemplazarlo con tu propia lógica
-        return listOf(
-            ChatPrivado("id1", "emisor1@repeptor1", "Mensaje de prueba1", Date(), 1, "urlAvatar1", "nombreEmisor1"),
-            ChatPrivado("id2", "emisor2@repeptor2", "Mensaje de prueba2", Date(), 2, "urlAvatar2", "nombreEmisor2"),
-            ChatPrivado("id3", "emisor3@repeptor3", "Mensaje de prueba3", Date(), 3, "urlAvatar3", "nombreEmisor3")
-        )
+    private fun getPrivateChats(): List<SelectorChatsPrivados>{
+        val chatsPrivados = mutableListOf<SelectorChatsPrivados>()
+        val idUsuarioActual = FirebaseAuth.getInstance().currentUser!!.uid
+
+        val chatsPrivadosRef = FirebaseDatabase.getInstance().getReference("app/chats_privados")
+        chatsPrivadosRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                chatsPrivados.clear()
+                for (chatSnapshot in dataSnapshot.children) {
+                    val chatPrivado = chatSnapshot.children.lastOrNull()?.getValue(SelectorChatsPrivados::class.java)
+                    if (chatPrivado != null && (chatPrivado.idsEmisorReceptor.contains(idUsuarioActual))) {
+                        // Check if a chat with the same idsEmisorReceptor already exists in the chatsPrivados list
+                        if (!chatsPrivados.any { it.idsEmisorReceptor == chatPrivado.idsEmisorReceptor }) {
+                            chatsPrivados.add(chatPrivado)
+                            Log.d("SelectorChats", "Chat privado: $chatPrivado")
+                        }
+                    }
+                }
+                // Actualiza el adaptador del RecyclerView
+                val rvPrivateChats = findViewById<RecyclerView>(R.id.rv_private_chats)
+                rvPrivateChats.adapter = SelectorChatsPrivadosAdapter(chatsPrivados)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle possible errors.
+            }
+        })
+
+        return chatsPrivados
     }
 }

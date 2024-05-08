@@ -28,6 +28,10 @@
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
+            android:name=".ChatPrivado"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
             android:name=".MisAnuncios"
             android:exported="false"
             android:windowSoftInputMode="adjustNothing" />
@@ -38,7 +42,6 @@
         <activity
             android:name=".PerfilUsuario"
             android:exported="false" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.trabajo_final.fileprovider"

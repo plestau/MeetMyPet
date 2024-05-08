@@ -106,7 +106,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                 return@setOnClickListener
             }
 
-            if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty() || precioText.isEmpty() || tipoAnuncioText == "Seleccione tipo de anuncio:") {
+            if (tituloText.isEmpty() || descripcionText.isEmpty() || lugarText.isEmpty() || fechaText.isEmpty() || horaText.isEmpty() || precioText.isEmpty() || tipoAnuncio.selectedItem == "Seleccione tipo de anuncio:") {
                 Toast.makeText(
                     this@PublicarAnuncio,
                     "Todos los campos deben estar llenos",
