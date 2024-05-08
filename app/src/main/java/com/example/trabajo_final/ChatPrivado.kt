@@ -86,6 +86,11 @@ class ChatPrivado : AppCompatActivity() {
                 val idChatPrivado = intent.getStringExtra("idChatPrivado") ?: ""
                 val tituloAnuncio = intent.getStringExtra("tituloAnuncio") ?: ""
 
+                val fotoPerfilReceptor = findViewById<ImageView>(R.id.fotoPerfilReceptor)
+                val nombreReceptor = findViewById<TextView>(R.id.nombreReceptor)
+                nombreReceptor.text = nombreEmisor
+                Glide.with(this@ChatPrivado).load(urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(this@ChatPrivado)).into(fotoPerfilReceptor)
+
                 // Verificar si ya existe un chat privado
                 val chatPrivadoRef = FirebaseDatabase.getInstance().getReference("app/chats_privados/$idChatPrivado")
                 chatPrivadoRef.addListenerForSingleValueEvent(object : ValueEventListener {

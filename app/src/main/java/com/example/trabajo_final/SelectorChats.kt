@@ -49,7 +49,7 @@ class SelectorChats : AppCompatActivity() {
 
         // carga el último mensaje y la url de la imagen de usuario del chat público
         val database = FirebaseDatabase.getInstance().getReference("app/chat_publico")
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
+        database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val ultimoMensaje = dataSnapshot.children.lastOrNull()?.getValue(MensajePublico::class.java)
                 findViewById<TextView>(R.id.tv_last_public_message).text = ultimoMensaje?.contenido

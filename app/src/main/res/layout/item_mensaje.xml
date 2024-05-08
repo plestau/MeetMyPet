@@ -17,8 +17,8 @@
             android:padding="10sp">
             <ImageView
                 android:id="@+id/fotoPerfilMensaje"
-                android:layout_width="24sp"
-                android:layout_height="24sp"
+                android:layout_width="32sp"
+                android:layout_height="32sp"
                 android:src="@mipmap/ic_launcher" />
         </LinearLayout>
         <LinearLayout
