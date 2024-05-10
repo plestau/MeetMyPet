@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Trabajo_final"
         tools:targetApi="31">
         <activity
+            android:name=".GraficoMascotas"
+            android:exported="false" />
+        <activity
             android:name=".SelectorChats"
             android:exported="false" />
         <activity
@@ -42,6 +45,7 @@
         <activity
             android:name=".PerfilUsuario"
             android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.trabajo_final.fileprovider"

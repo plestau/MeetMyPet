@@ -62,7 +62,6 @@ class SelectorChats : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
             }
         })
-
     }
 
     private fun getPrivateChats(): List<SelectorChatsPrivados>{

@@ -60,6 +60,7 @@ class FragmentPreferenciasCuenta : Fragment() {
         val cambiarDatosPersonales = view.findViewById<View>(R.id.cambiarDatosPersonales)
         val cambiarContrasena = view.findViewById<View>(R.id.cambiarContrasena)
         val cerrarSesion = view.findViewById<View>(R.id.cerrarSesion)
+        val verGraficoMascotas = view.findViewById<TextView>(R.id.verGraficoMascotas)
 
         auth = FirebaseAuth.getInstance()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -112,6 +113,11 @@ class FragmentPreferenciasCuenta : Fragment() {
 
             val fragmentChangePassword = FragmentCambiarPassword()
             parentFragmentManager.beginTransaction().replace(R.id.fragment_container, fragmentChangePassword).addToBackStack(null).commit()
+        }
+
+        verGraficoMascotas.setOnClickListener {
+            val intent = Intent(requireContext(), GraficoMascotas::class.java)
+            startActivity(intent)
         }
 
         cerrarSesion.setOnClickListener {
