@@ -22,4 +22,6 @@ data class Anuncio(
     var edadMascota: List<Int>? = null,
     var valoracionMascota: List<Float>? = null,
     var imagenMascota: List<String>? = null,
+    var estado_noti:Int? = null,
+    var user_notificacion:String? = null,
 ): Parcelable

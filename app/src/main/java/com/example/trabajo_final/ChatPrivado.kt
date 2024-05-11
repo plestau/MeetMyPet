@@ -2,6 +2,7 @@ package com.example.trabajo_final
 
 import FragmentInferior
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -97,7 +98,9 @@ class ChatPrivado : AppCompatActivity() {
                     override fun onDataChange(chatSnapshot: DataSnapshot) {
                         // Agregar el nuevo mensaje
                         val id = database.push().key
-                        val mensaje = MensajePrivado(id!!, idChatPrivado, contenido, fechaHora, idUsuarioActual, 0, urlAvatar, nombreEmisor, tituloAnuncio)
+                        // comprueba con el idchatPrivado si el usuario actual es el dueño del anuncio o el usuario que ha enviado el mensaje
+                        val idReceptor = if (idUsuarioActual == idChatPrivado.split("@")[0]) idChatPrivado.split("@")[1] else idChatPrivado.split("@")[0]
+                        val mensaje = MensajePrivado(id!!, idChatPrivado, contenido, fechaHora, idUsuarioActual, 0, urlAvatar, nombreEmisor, tituloAnuncio, Estado.CREADO, idReceptor)
                         chatPrivadoRef.child(id).setValue(mensaje)
                     }
 

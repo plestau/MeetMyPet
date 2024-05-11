@@ -1,11 +1,19 @@
 package com.example.trabajo_final
 
 import FragmentInferior
+import android.Manifest
 import android.app.DatePickerDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -14,9 +22,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -24,13 +36,16 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicInteger
 
 class Buscador : AppCompatActivity() {
     private lateinit var anuncios: MutableList<Anuncio>
     private lateinit var anunciosFiltrados: MutableList<Anuncio>
     private lateinit var anuncioAdapter: AnuncioAdapter
     private lateinit var dbRef: DatabaseReference
+    private lateinit var generador: AtomicInteger
     private lateinit var historialBusqueda: MutableList<String>
     private lateinit var historialBusquedaAdapter: HistorialBusquedaAdapter
     private lateinit var filtrosAnadidos: MutableList<Pair<String, String>>
@@ -42,6 +57,10 @@ class Buscador : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buscador)
 
+        crearCanalNotificaciones()
+        generador = AtomicInteger(0)
+        notificacionesChatPrivado()
+        notificacionesApuntarseAnuncio()
 
         val spinnerFiltro = findViewById<Spinner>(R.id.spinnerFiltro)
         val editTextBusqueda = findViewById<EditText>(R.id.editTextBusqueda)
@@ -241,5 +260,158 @@ class Buscador : AppCompatActivity() {
                 filtrosAnadidosAdapter.notifyDataSetChanged()
             }
         }
+    }
+
+    fun generarNotificacion(id_noti: Int, pojo: Parcelable, contenido: String, titulo: String, destino: Class<*>) {
+        val id = "Canal de prueba"
+        val actividad = Intent(applicationContext, destino)
+
+        when (pojo) {
+            is Anuncio -> {
+                actividad.putExtra("anuncio", pojo)
+            }
+        }
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, actividad, PendingIntent.FLAG_MUTABLE)
+
+        val notificacion = NotificationCompat.Builder(this, id)
+            .setSmallIcon(R.drawable.baseline_notification_important_24)
+            .setContentTitle(titulo)
+            .setContentText(contenido)
+            .setSubText("sistema de informacion")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        with(NotificationManagerCompat.from(this)) {
+            if (ActivityCompat.checkSelfPermission(
+                    this@Buscador,
+                    Manifest.permission.FOREGROUND_SERVICE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            notify(id_noti, notificacion)
+        }
+
+    }
+
+    private fun crearCanalNotificaciones() {
+        val nombre = "canal_basico"
+        val id = "Canal de prueba"
+        val descripcion = "Notificacion basica"
+        val importancia = NotificationManager.IMPORTANCE_DEFAULT
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(id, nombre, importancia).apply {
+                description = descripcion
+            }
+
+            val nm: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            nm.createNotificationChannel(channel)
+        }
+    }
+
+    private fun notificacionesChatPrivado() {
+        val chatsPrivadosRef = FirebaseDatabase.getInstance().getReference("app/chats_privados")
+        val idUsuarioActual = FirebaseAuth.getInstance().currentUser?.uid
+        val tiempoApertura = System.currentTimeMillis() // Tiempo de apertura de la actividad
+        chatsPrivadosRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val idChatPrivado = snapshot.key
+                val mensajesPrivadosRef = FirebaseDatabase.getInstance().getReference("app/chats_privados/$idChatPrivado")
+                mensajesPrivadosRef.addChildEventListener(object : ChildEventListener {
+                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                        val mensaje = snapshot.getValue(MensajePrivado::class.java)
+                        val tiempoAperturaDate = Date(tiempoApertura)
+                        if (mensaje!!.user_notificacion == idUsuarioActual && mensaje.fechaHora.after(tiempoAperturaDate)) {
+                            snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
+                                generarNotificacion(
+                                generador.getAndIncrement(),
+                                mensaje,
+                                mensaje.contenido,
+                                "Nuevo mensaje",
+                                SelectorChats::class.java
+                            )
+                        }
+                    }
+
+                    override fun onChildChanged(
+                        snapshot: DataSnapshot,
+                        previousChildName: String?
+                    ) {
+                        // No action needed
+                    }
+
+
+                    override fun onChildRemoved(snapshot: DataSnapshot) {
+                        // No action needed
+                    }
+
+                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                        // No action neededF
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // No action needed
+                    }
+                })
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                // No action needed
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                // No action needed
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // No action needed
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // No action needed
+            }
+        })
+    }
+
+    // notifica al usuario dueño de un anuncio cada vez que un usuario paseador se apunta a su anuncio
+    private fun notificacionesApuntarseAnuncio() {
+        val anunciosRef = FirebaseDatabase.getInstance().getReference("app/anuncios")
+        val idUsuarioActual = FirebaseAuth.getInstance().currentUser?.uid
+        anunciosRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                // No action needed
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                val anuncio = snapshot.getValue(Anuncio::class.java)
+                if (anuncio != null && anuncio.usuarioDueño == idUsuarioActual && anuncio.estado == "reservado" && anuncio.estado_noti == Estado.CREADO) {
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
+                    generarNotificacion(
+                        generador.getAndIncrement(),
+                        anuncio,
+                        "Un paseador se ha apuntado a tu anuncio ${anuncio.titulo}",
+                        "Nuevo paseador",
+                        MisAnuncios::class.java
+                    )
+                }
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                // No action needed
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // No action needed
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle possible errors.
+            }
+        })
     }
 }

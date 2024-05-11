@@ -6,6 +6,7 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -176,6 +177,11 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                 val activity = itemView.context as AppCompatActivity
                 activity.findViewById<View>(R.id.llMisAnuncios).visibility = View.GONE
 
+                // edita el valor de user_notification en FirebaseDatabase
+                val androidId = Settings.Secure.getString(itemView.context.contentResolver, Settings.Secure.ANDROID_ID)
+                val userNotificationRef = database.getReference("app/usuarios/${FirebaseAuth.getInstance().currentUser?.uid}/user_notification")
+                userNotificationRef.setValue(androidId)
+
                 // Agrega el fragmento de edición de anuncio encima del fragmento existente
                 fragmentTransaction.add(R.id.fragment_container, fragmentEditarAnuncio)
                 fragmentTransaction.addToBackStack(null)
@@ -222,6 +228,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         anuncio.estado = "creado"
                         anuncio.usuarioPaseador = ""
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
+                        database.getReference("app/anuncios/${anuncio.id}/user_notification").setValue("")
+                        database.getReference("app/anuncios/${anuncio.id}/estado_noti").setValue(Estado.CREADO)
                         ivAprobar.visibility = View.GONE
                         ivDenegar.visibility = View.GONE
                         llPaseadorAnuncio.visibility = View.GONE

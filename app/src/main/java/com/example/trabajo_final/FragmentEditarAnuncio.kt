@@ -2,6 +2,7 @@ package com.example.trabajo_final
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -135,6 +136,9 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                                 "Anuncio borrado correctamente",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            val androidId = Settings.Secure.getString(requireContext().contentResolver, Settings.Secure.ANDROID_ID)
+                            val userNotificationRef = database.getReference("app/usuarios/${FirebaseAuth.getInstance().currentUser?.uid}/user_notification")
+                            userNotificationRef.setValue(androidId)
                             activity?.onBackPressed()
                         } else {
                             Toast.makeText(

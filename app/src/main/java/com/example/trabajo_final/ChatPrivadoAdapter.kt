@@ -29,7 +29,7 @@ class ChatPrivadoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
 
     override fun onBindViewHolder(holder: HolderMensaje, position: Int) {
         val mensaje = listMensaje[position]
-        holder.nombre.text = if (mensaje.idEmisor == idUsuarioActual) "Yo" else mensaje.nombreEmisor
+        holder.nombre.text = mensaje.nombreEmisor
         holder.mensaje.text = mensaje.contenido
         holder.hora.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
         Glide.with(holder.itemView.context).load(mensaje.urlAvatar).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfil)
