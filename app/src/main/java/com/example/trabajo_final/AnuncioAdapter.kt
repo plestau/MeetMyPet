@@ -6,6 +6,7 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -120,6 +121,33 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                                     llPaseadorAnuncio.visibility = View.VISIBLE
                                     tvNombrePaseador.text = nombrePaseador
                                     btnApuntarse.visibility = View.GONE
+                                } else if (anuncio.estado == "En curso") {
+                                    ivEditarAnuncio.visibility = View.GONE
+                                    ivAprobar.visibility = View.GONE
+                                    ivDenegar.visibility = View.GONE
+                                    llPaseadorAnuncio.visibility = View.VISIBLE
+                                    tvNombrePaseador.text = nombrePaseador
+                                    ivTerminar.visibility = View.VISIBLE
+                                } else if (anuncio.estado == "terminado") {
+                                    ivEditarAnuncio.visibility = View.GONE
+                                    ivAprobar.visibility = View.GONE
+                                    ivDenegar.visibility = View.GONE
+                                    llPaseadorAnuncio.visibility = View.VISIBLE
+                                    tvNombrePaseador.text = nombrePaseador
+                                    ivValorar.visibility = View.GONE
+                                } else if (anuncio.estado == "valorado") {
+                                    ivEditarAnuncio.visibility = View.GONE
+                                    ivAprobar.visibility = View.GONE
+                                    ivDenegar.visibility = View.GONE
+                                    llPaseadorAnuncio.visibility = View.VISIBLE
+                                    tvNombrePaseador.text = nombrePaseador
+                                    ivValorar.visibility = View.GONE
+                                } else {
+                                    ivEditarAnuncio.visibility = View.GONE
+                                    ivAprobar.visibility = View.GONE
+                                    ivDenegar.visibility = View.GONE
+                                    llPaseadorAnuncio.visibility = View.GONE
+                                    ivTerminar.visibility = View.GONE
                                 }
                             }
                         }
@@ -156,6 +184,16 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         ivEditarAnuncio.visibility = View.GONE
                         btnIniciarChat.visibility = View.VISIBLE
                         btnApuntarse.visibility = View.GONE
+                    } else if (anuncio.estado == "terminado") {
+                        ivEditarAnuncio.visibility = View.GONE
+                        btnIniciarChat.visibility = View.VISIBLE
+                        btnApuntarse.visibility = View.GONE
+                        ivValorar.visibility = View.VISIBLE
+                    } else if( anuncio.estado == "valorado"){
+                        ivEditarAnuncio.visibility = View.GONE
+                        btnIniciarChat.visibility = View.VISIBLE
+                        btnApuntarse.visibility = View.GONE
+                        ivValorar.visibility = View.GONE
                     } else {
                         ivEditarAnuncio.visibility = View.GONE
                         btnIniciarChat.visibility = View.VISIBLE
@@ -175,6 +213,11 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                 // oculta el linear layout de la actividad MisAnuncios
                 val activity = itemView.context as AppCompatActivity
                 activity.findViewById<View>(R.id.llMisAnuncios).visibility = View.GONE
+
+                // edita el valor de user_notification en FirebaseDatabase
+                val androidId = Settings.Secure.getString(itemView.context.contentResolver, Settings.Secure.ANDROID_ID)
+                val userNotificationRef = database.getReference("app/usuarios/${FirebaseAuth.getInstance().currentUser?.uid}/user_notification")
+                userNotificationRef.setValue(androidId)
 
                 // Agrega el fragmento de edición de anuncio encima del fragmento existente
                 fragmentTransaction.add(R.id.fragment_container, fragmentEditarAnuncio)
@@ -206,6 +249,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                     .setMessage("¿Estás seguro de que quieres aprobar a $nombrePaseador como paseador de tu mascota?")
                     .setPositiveButton("Sí") { _, _ ->
                         anuncio.estado = "En curso"
+                        anuncio.estado_noti = Estado.EnCurso
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
                         ivAprobar.visibility = View.GONE
                         ivDenegar.visibility = View.GONE
@@ -220,7 +264,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                     .setMessage("¿Estás seguro de que quieres denegar a $nombrePaseador como paseador de tu mascota?")
                     .setPositiveButton("Sí") { _, _ ->
                         anuncio.estado = "creado"
-                        anuncio.usuarioPaseador = ""
+                        anuncio.estado_noti = Estado.CREADO
+                        anuncio.user_notificacion = ""
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
                         ivAprobar.visibility = View.GONE
                         ivDenegar.visibility = View.GONE

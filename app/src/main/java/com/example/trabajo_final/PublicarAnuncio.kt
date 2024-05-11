@@ -3,6 +3,7 @@ package com.example.trabajo_final
 import FragmentInferior
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -224,7 +225,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                             val myRefAnuncios = FirebaseDatabase.getInstance().getReference("app/anuncios")
                             val newAnuncioRef = myRefAnuncios.push()
                             val anuncioId = newAnuncioRef.key
-
+                            val androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
                             if (todasLasMascotasTienenFoto) {
                                 val anuncio = hashMapOf(
                                     "id" to anuncioId,
@@ -243,7 +244,9 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                                     "razaMascota" to mascotasAñadidasList.map { it.raza!! },
                                     "edadMascota" to mascotasAñadidasList.map { it.edad!! },
                                     "valoracionMascota" to mascotasAñadidasList.map { it.valoraciones?.average() ?: 0.0 },
-                                    "imagenMascota" to mascotasAñadidasList.map { it.foto?.let { foto -> foto } ?: "" }
+                                    "imagenMascota" to mascotasAñadidasList.map { it.foto?.let { foto -> foto } ?: "" },
+                                    "estado_noti" to Estado.CREADO,
+                                    "user_notificacion" to androidId
                                 )
 
                                 // cambia el atributo borrable de las mascotas a false

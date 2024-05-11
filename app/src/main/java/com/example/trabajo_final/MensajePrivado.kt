@@ -1,7 +1,10 @@
 package com.example.trabajo_final
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.util.Date
 
+@Parcelize
 data class MensajePrivado(
     val id: String = "",
     val idsEmisorReceptor: String = "",
@@ -11,5 +14,7 @@ data class MensajePrivado(
     val idAdaptador: Int = 0,
     val urlAvatar: String = "",
     val nombreEmisor: String = "",
-    val tituloAnuncio: String = ""
-)
+    val tituloAnuncio: String = "",
+    var estado_noti:Int? = null,
+    var user_notificacion:String? = null
+) : Parcelable
