@@ -267,6 +267,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         anuncio.estado_noti = Estado.CREADO
                         anuncio.user_notificacion = ""
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
+                        database.getReference("app/anuncios/${anuncio.id}/user_notification").setValue("")
+                        database.getReference("app/anuncios/${anuncio.id}/estado_noti").setValue(Estado.CREADO)
                         ivAprobar.visibility = View.GONE
                         ivDenegar.visibility = View.GONE
                         llPaseadorAnuncio.visibility = View.GONE
