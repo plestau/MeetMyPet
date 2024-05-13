@@ -16,6 +16,8 @@ data class Usuario(
     var valoraciones: List<Float>? = null,
     var mascotas: HashMap<String, Mascota>? = null,
     var fecha_registro: String? = null,
+    var estado_noti:Int? = null,
+    var user_notificacion:String? = null,
 ): Parcelable, Comparable<Usuario> {
     override fun compareTo(other: Usuario): Int {
         return this.nombre!!.compareTo(other.nombre!!)

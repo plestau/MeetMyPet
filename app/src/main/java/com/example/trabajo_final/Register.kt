@@ -114,6 +114,8 @@ class Register : AppCompatActivity() {
                                     "valoraciones" to arrayListOf<Float>(),
                                     "mascotas" to arrayListOf<String>(),
                                     "fecha_registro" to Utilidades.obtenerFechaActual(),
+                                    "estado_noti" to Estado.CREADO,
+                                    "user_notificacion" to "",
                                 )
                                 userRef.setValue(userInfo)
 

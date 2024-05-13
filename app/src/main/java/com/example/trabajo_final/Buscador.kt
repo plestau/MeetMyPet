@@ -60,6 +60,7 @@ class Buscador : AppCompatActivity() {
         crearCanalNotificaciones()
         generador = AtomicInteger(0)
         notificacionesChatPrivado()
+        notificacionesChatPublico()
         notificacionesApuntarseAnuncio()
         notificacionesEstadoAnuncio()
         notificacionesValoracionUsuario()
@@ -297,7 +298,6 @@ class Buscador : AppCompatActivity() {
             }
             notify(id_noti, notificacion)
         }
-
     }
 
     private fun crearCanalNotificaciones() {
@@ -320,7 +320,7 @@ class Buscador : AppCompatActivity() {
     private fun notificacionesChatPrivado() {
         val chatsPrivadosRef = FirebaseDatabase.getInstance().getReference("app/chats_privados")
         val idUsuarioActual = FirebaseAuth.getInstance().currentUser?.uid
-        val tiempoApertura = System.currentTimeMillis() // Tiempo de apertura de la actividad
+        val tiempoApertura = System.currentTimeMillis()
         chatsPrivadosRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val idChatPrivado = snapshot.key
@@ -335,7 +335,7 @@ class Buscador : AppCompatActivity() {
                                 generador.getAndIncrement(),
                                 mensaje,
                                 mensaje.contenido,
-                                "Nuevo mensaje",
+                                "Nuevo mensaje en chat con ${mensaje.nombreEmisor}",
                                 SelectorChats::class.java
                             )
                         }
@@ -345,12 +345,23 @@ class Buscador : AppCompatActivity() {
                         snapshot: DataSnapshot,
                         previousChildName: String?
                     ) {
-                        // No action needed
+                        val mensaje = snapshot.getValue(MensajePrivado::class.java)
+                        if (mensaje!!.estado_noti == Estado.ELIMINADO) {
+                            snapshot.ref.removeValue()
+                        }
                     }
 
-
                     override fun onChildRemoved(snapshot: DataSnapshot) {
-                        // No action needed
+                        val mensaje = snapshot.getValue(MensajePrivado::class.java)
+                        if (mensaje!!.user_notificacion == idUsuarioActual) {
+                            generarNotificacion(
+                                generador.getAndIncrement(),
+                                mensaje,
+                                mensaje.contenido,
+                                "Mensaje eliminado por administrador en chat con ${mensaje.nombreEmisor}",
+                                SelectorChats::class.java
+                            )
+                        }
                     }
 
                     override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -381,6 +392,56 @@ class Buscador : AppCompatActivity() {
         })
     }
 
+    private fun notificacionesChatPublico() {
+        val chatPublicoRef = FirebaseDatabase.getInstance().getReference("app/chat_publico")
+        val idUsuarioActual = FirebaseAuth.getInstance().currentUser?.uid
+        val tiempoApertura = System.currentTimeMillis()
+        chatPublicoRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val mensaje = snapshot.getValue(MensajePrivado::class.java)
+                val tiempoAperturaDate = Date(tiempoApertura)
+                if (mensaje!!.idEmisor != idUsuarioActual && mensaje.fechaHora.after(tiempoAperturaDate)) {
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
+                    generarNotificacion(
+                        generador.getAndIncrement(),
+                        mensaje,
+                        mensaje.nombreEmisor + " : " +mensaje.contenido,
+                        "Nuevo mensaje en chat público",
+                        ChatPublico::class.java
+                    )
+                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                val mensaje = snapshot.getValue(MensajePrivado::class.java)
+                if (mensaje!!.estado_noti == Estado.ELIMINADO) {
+                    snapshot.ref.removeValue()
+                }
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val mensaje = snapshot.getValue(MensajePrivado::class.java)
+                if (mensaje!!.user_notificacion == idUsuarioActual) {
+                    generarNotificacion(
+                        generador.getAndIncrement(),
+                        mensaje,
+                        mensaje.contenido,
+                        "Mensaje eliminado por administrador en chat público",
+                        ChatPublico::class.java
+                    )
+                }
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // No action needed
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // No action needed
+            }
+        })
+    }
+
     private fun notificacionesApuntarseAnuncio() {
         val anunciosRef = FirebaseDatabase.getInstance().getReference("app/anuncios")
         val idUsuarioActual = FirebaseAuth.getInstance().currentUser?.uid
@@ -391,8 +452,7 @@ class Buscador : AppCompatActivity() {
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 val anuncio = snapshot.getValue(Anuncio::class.java)
-                if (anuncio != null && anuncio.usuarioDueño == idUsuarioActual && anuncio.estado == "reservado" && anuncio.estado_noti == Estado.CREADO) {
-                    snapshot.ref.child("estado_noti").setValue(Estado.RESERVADO)
+                if (anuncio != null && anuncio.usuarioDueño == idUsuarioActual && anuncio.estado == "reservado" && anuncio.estado_noti == Estado.RESERVADO) {
                     generarNotificacion(
                         generador.getAndIncrement(),
                         anuncio,
@@ -401,10 +461,20 @@ class Buscador : AppCompatActivity() {
                         MisAnuncios::class.java
                     )
                 }
+
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                // No action needed
+                val anuncio = snapshot.getValue(Anuncio::class.java)
+                if (anuncio != null && anuncio.usuarioDueño == idUsuarioActual && anuncio.estado_noti == Estado.ELIMINADO) {
+                    generarNotificacion(
+                        generador.getAndIncrement(),
+                        anuncio,
+                        "Un adminsitrador ha borrado tu anuncio ${anuncio.titulo}",
+                        "Anuncio borrado",
+                        MisAnuncios::class.java
+                    )
+                }
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -446,6 +516,7 @@ class Buscador : AppCompatActivity() {
                         MisAnuncios::class.java
                     )
                 }
+                snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -472,8 +543,9 @@ class Buscador : AppCompatActivity() {
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 val usuario = snapshot.getValue(Usuario::class.java)
-                if (usuario != null && usuario.id == idUsuarioActual && usuario.valoraciones!!.isNotEmpty()) {
+                if (usuario != null && usuario.valoraciones?.isNotEmpty() == true && usuario.id == idUsuarioActual && usuario.estado_noti == Estado.VALORADO) {
                     val ultimaValoracion = usuario.valoraciones!!.last()
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
                     generarNotificacion(
                         generador.getAndIncrement(),
                         usuario,
@@ -508,8 +580,9 @@ class Buscador : AppCompatActivity() {
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 val mascota = snapshot.getValue(Mascota::class.java)
-                if (mascota != null && mascota.valoraciones!!.isNotEmpty()) {
+                if (mascota != null && mascota.valoraciones?.isNotEmpty() == true && mascota.usuarioId == userId && mascota.estado_noti == Estado.VALORADO) {
                     val ultimaValoracion = mascota.valoraciones!!.last()
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
                     generarNotificacion(
                         generador.getAndIncrement(),
                         mascota,
@@ -518,10 +591,22 @@ class Buscador : AppCompatActivity() {
                         FragmentVerMisMascotas::class.java
                     )
                 }
+                if (mascota!!.estado_noti == Estado.ELIMINADO) {
+                    snapshot.ref.removeValue()
+                }
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                // No action needed
+                val mascota = snapshot.getValue(Mascota::class.java)
+                if (mascota != null && mascota.usuarioId == userId && mascota.estado_noti == Estado.ELIMINADO) {
+                    generarNotificacion(
+                        generador.getAndIncrement(),
+                        mascota,
+                        "Se ha borrado a tu mascota ${mascota.nombre}",
+                        "Mascota borrada",
+                        PerfilUsuario::class.java
+                    )
+                }
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {

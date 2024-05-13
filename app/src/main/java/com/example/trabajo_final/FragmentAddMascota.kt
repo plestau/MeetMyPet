@@ -105,10 +105,11 @@ class FragmentAddMascota : Fragment(), OnBackPressedInFragmentListener {
                     biografia = biografia,
                     valoraciones = arrayListOf(),
                     usuarioId = user?.uid,
-                    borrable = true
+                    borrable = true,
+                    estado_noti = Estado.CREADO
                 )
 
-                dbRef.child(mascota.id!!).setValue(mascota)
+                dbRef.child(mascota.id!!).setValue(mascota).await()
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Mascota añadida con éxito", Toast.LENGTH_SHORT).show()

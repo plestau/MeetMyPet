@@ -136,9 +136,10 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                                 "Anuncio borrado correctamente",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            val androidId = Settings.Secure.getString(requireContext().contentResolver, Settings.Secure.ANDROID_ID)
-                            val userNotificationRef = database.getReference("app/usuarios/${FirebaseAuth.getInstance().currentUser?.uid}/user_notification")
-                            userNotificationRef.setValue(androidId)
+                            // cambia el valor de userNotification al dueño del anuncio
+                            val userNotificationRef = database.getReference("app/anuncios/${anuncio.id}")
+                            userNotificationRef.child("userNotificacion").setValue(anuncio.usuarioDueño)
+                            userNotificationRef.child("estado_noti").setValue(Estado.ELIMINADO)
                             activity?.onBackPressed()
                         } else {
                             Toast.makeText(

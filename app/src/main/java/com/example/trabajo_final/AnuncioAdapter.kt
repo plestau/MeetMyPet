@@ -239,6 +239,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         .setMessage("¿Estás seguro de que quieres apuntarte a este anuncio?")
                         .setPositiveButton("Sí") { _, _ ->
                             anuncio.estado = "reservado"
+                            anuncio.estado_noti = Estado.RESERVADO
                             anuncio.usuarioPaseador = currentUser.uid
                             database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
                             btnApuntarse.visibility = View.GONE
@@ -380,6 +381,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                     val valoraciones = usuario?.valoraciones?.toMutableList() ?: mutableListOf()
                     valoraciones.add(nuevaValoracion)
                     userRef.child("valoraciones").setValue(valoraciones)
+                    userRef.child("user_notificacion").setValue(usuario!!.id)
+                    userRef.child("estado_noti").setValue(Estado.VALORADO)
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
@@ -397,11 +400,14 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                             val valoraciones = mascota?.valoraciones?.toMutableList() ?: mutableListOf()
                             valoraciones.add(nuevaValoracion)
                             mascotaRef.child(mascota?.id!!).child("valoraciones").setValue(valoraciones)
+                            mascotaRef.child(mascota?.id!!).child("user_notificacion").setValue(idUsuario)
+                            mascotaRef.child(mascota?.id!!).child("estado_noti").setValue(Estado.VALORADO)
                         }
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
+                    Toast.makeText(itemView.context, "Error al añadir la valoración a la mascota", Toast.LENGTH_SHORT).show()
                 }
             })
 

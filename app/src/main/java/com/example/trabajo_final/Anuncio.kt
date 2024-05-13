@@ -24,4 +24,8 @@ data class Anuncio(
     var imagenMascota: List<String>? = null,
     var estado_noti:Int? = null,
     var user_notificacion:String? = null,
-): Parcelable
+): Parcelable, Comparable<Anuncio> {
+    override fun compareTo(other: Anuncio): Int {
+        return this.titulo!!.compareTo(other.titulo!!)
+    }
+}

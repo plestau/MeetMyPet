@@ -46,7 +46,6 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
             insets
         }
 
-        Log.d("USER_ROLE", userRol.toString())
         if (userRol == "admin") {
             verMascotasText.text = "Ver mascotas en app"
         }
