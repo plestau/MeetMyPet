@@ -54,6 +54,11 @@ class FragmentVerMisMascotas : Fragment() {
         val mascotaAdapter = MascotaAdapter(mascotas, parentFragmentManager, currentUser?.uid ?: "")
         recyclerView.adapter = mascotaAdapter
 
+        val MisMascotasText = view.findViewById<TextView>(R.id.tituloMisMascotas)
+        if (userRole == "admin") {
+            MisMascotasText.text = "Mascotas en app"
+        }
+
         val fromPublicarAnuncio = arguments?.getBoolean("fromPublicarAnuncio", false) ?: false
         val userId = arguments?.getString("USER_ID") // Obtiene el ID del usuario del bundle
 

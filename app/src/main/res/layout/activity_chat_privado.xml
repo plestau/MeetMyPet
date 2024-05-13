@@ -32,6 +32,7 @@
         android:layout_weight="1">
     </androidx.recyclerview.widget.RecyclerView>
     <LinearLayout
+        android:id="@+id/llEnviarMensaje"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">

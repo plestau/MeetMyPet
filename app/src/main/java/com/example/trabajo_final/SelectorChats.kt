@@ -1,6 +1,7 @@
 package com.example.trabajo_final
 
 import FragmentInferior
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -67,18 +68,17 @@ class SelectorChats : AppCompatActivity() {
     private fun getPrivateChats(): List<SelectorChatsPrivados>{
         val chatsPrivados = mutableListOf<SelectorChatsPrivados>()
         val idUsuarioActual = FirebaseAuth.getInstance().currentUser!!.uid
-
+        val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
+        val userRol = sharedPref.getString("role", "user")
         val chatsPrivadosRef = FirebaseDatabase.getInstance().getReference("app/chats_privados")
         chatsPrivadosRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 chatsPrivados.clear()
                 for (chatSnapshot in dataSnapshot.children) {
                     val chatPrivado = chatSnapshot.children.lastOrNull()?.getValue(SelectorChatsPrivados::class.java)
-                    if (chatPrivado != null && (chatPrivado.idsEmisorReceptor.contains(idUsuarioActual))) {
-                        // Check if a chat with the same idsEmisorReceptor already exists in the chatsPrivados list
-                        if (!chatsPrivados.any { it.idsEmisorReceptor == chatPrivado.idsEmisorReceptor }) {
-                            chatsPrivados.add(chatPrivado)
-                            Log.d("SelectorChats", "Chat privado: $chatPrivado")
+                    if (chatPrivado != null && (chatPrivado.idsEmisorReceptor.contains(idUsuarioActual)) || userRol == "admin") {
+                        if (!chatsPrivados.any { it.idsEmisorReceptor == chatPrivado!!.idsEmisorReceptor }) {
+                            chatsPrivados.add(chatPrivado!!)
                         }
                     }
                 }
@@ -93,5 +93,10 @@ class SelectorChats : AppCompatActivity() {
         })
 
         return chatsPrivados
+    }
+
+    override fun onResume() {
+        super.onResume()
+        FragmentInferior.actividadActual = "Mensajes"
     }
 }

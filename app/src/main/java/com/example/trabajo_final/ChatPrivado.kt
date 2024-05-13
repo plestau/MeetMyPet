@@ -1,12 +1,15 @@
 package com.example.trabajo_final
 
 import FragmentInferior
+import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,6 +40,13 @@ class ChatPrivado : AppCompatActivity() {
         val idUsuarioDueñoAnuncio = intent.getStringExtra("idUsuarioDueñoAnuncio") ?: ""
         val idChatPrivado = intent.getStringExtra("idChatPrivado") ?: ""
         val idUsuarioActual = idChatPrivado.split("@")[0]
+        val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
+        val userRol = sharedPref.getString("role", "user")
+        val llEnviarMensaje = findViewById<LinearLayout>(R.id.llEnviarMensaje)
+
+        if (userRol == "admin") {
+            llEnviarMensaje.visibility = View.GONE
+        }
 
         // Actualizar la vista con los datos del usuario receptor
         val tvNombreReceptor = findViewById<TextView>(R.id.nombreReceptor)

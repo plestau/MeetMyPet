@@ -124,15 +124,15 @@ class FragmentPreferenciasCuenta : Fragment() {
             auth.signOut()
             googleSignInClient.signOut()
             requireActivity().finish()
-            val intent = Intent(requireContext(), LoginOptions::class.java)
-            startActivity(intent)
             // Eliminar el rol del usuario de SharedPreferences
             val sharedPref = requireActivity().getSharedPreferences("userRole", 0)
             FragmentInferior.actividadActual = "Buscar"
             val editor = sharedPref.edit()
             editor.remove("role")
             editor.apply()
-
+            requireActivity().finishAffinity()
+            val intent = Intent(requireContext(), LoginOptions::class.java)
+            startActivity(intent)
 
             // Restablecer el color de la tarjeta de usuario en FragmentInferior
             val fragmentInferior = parentFragmentManager.findFragmentById(R.id.fragment_inferior) as? FragmentInferior

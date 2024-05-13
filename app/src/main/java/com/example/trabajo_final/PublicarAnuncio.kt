@@ -300,6 +300,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
         super.onResume()
         val scrollView = findViewById<ScrollView>(R.id.scrollView)
         scrollView.visibility = View.VISIBLE
+        FragmentInferior.actividadActual = "Publicar"
     }
 
     override fun onBackPressed() {

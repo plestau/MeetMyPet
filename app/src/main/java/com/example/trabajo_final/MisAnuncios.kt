@@ -30,6 +30,12 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mis_anuncios)
 
+        val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
+        val userRol = sharedPref.getString("role", "user")
+        val misAnunciosText = findViewById<TextView>(R.id.tituloMisAnuncios)
+        if (userRol == "admin") {
+            misAnunciosText.text = "Anuncios en app"
+        }
 
         auth = FirebaseAuth.getInstance()
         anunciosRecyclerView = findViewById(R.id.recyclerViewMisAnuncios)
@@ -60,18 +66,14 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
 
         // Decide qué referencia usar basándote en el rol del usuario
         val currentUser = auth.currentUser
-        val anunciosRef = if (userRol == "admin") {
-            FirebaseDatabase.getInstance().getReference("app/anuncios").orderByChild("timestamp")
-        } else {
-            FirebaseDatabase.getInstance().getReference("app/anuncios")
-        }
+        val anunciosRef = FirebaseDatabase.getInstance().getReference("app/anuncios")
 
         anunciosRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val anuncios = mutableListOf<Anuncio>()
                 dataSnapshot.children.forEach { anuncio ->
                     val anuncioObject = anuncio.getValue(Anuncio::class.java)
-                    if (anuncioObject != null && (anuncioObject.usuarioDueño == currentUser?.uid || anuncioObject.usuarioPaseador == currentUser?.uid)) {
+                    if (anuncioObject != null && (anuncioObject.usuarioDueño == currentUser?.uid || anuncioObject.usuarioPaseador == currentUser?.uid || userRol == "admin")) {
                         anuncios.add(0, anuncioObject) // Agrega al inicio de la lista para mantener el orden de más nuevo a más antiguo
                         anuncioObject.id?.let { anunciosAñadidosIds.add(it) }
                     }
@@ -99,5 +101,10 @@ class MisAnuncios : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAddedLi
     override fun onMascotaAdded(mascota: Mascota) {
         mascotasAñadidasList.add(mascota)
         mascotaAdapter.notifyDataSetChanged()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        FragmentInferior.actividadActual = "MisAnuncios"
     }
 }

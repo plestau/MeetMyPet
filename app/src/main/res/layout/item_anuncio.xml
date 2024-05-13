@@ -143,15 +143,6 @@
                 android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>
-    <ImageView
-        android:id="@+id/ivEditarAnuncio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/baseline_edit_24"
-        android:layout_margin="8dp"
-        android:padding="8dp"
-        android:layout_gravity="bottom|end"
-        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/llBotonesAnuncio"
@@ -212,6 +203,16 @@
             android:src="@drawable/baseline_star_24"
             android:layout_margin="8dp"
             android:padding="8dp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/ivEditarAnuncio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_edit_24"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:layout_gravity="bottom|end"
             android:visibility="gone" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

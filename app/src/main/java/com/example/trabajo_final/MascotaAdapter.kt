@@ -58,6 +58,8 @@ class MascotaAdapter(private var listaMascotas: List<Mascota>, val fragmentManag
         val tvFotoMascota: ImageView = itemView.findViewById(R.id.ivFotoMascota)
         val ivEditarMascota: ImageView = itemView.findViewById(R.id.ivEditarMascota)
         val ivBorrarMascota: ImageView = itemView.findViewById(R.id.ivBorrarMascota)
+        val sharedPref = itemView.context.getSharedPreferences("userRole", Context.MODE_PRIVATE)
+        val userRol = sharedPref.getString("role", "user")
 
         fun bind(mascota: Mascota) {
             tvNombreMascota.text = mascota.nombre
@@ -83,6 +85,11 @@ class MascotaAdapter(private var listaMascotas: List<Mascota>, val fragmentManag
             if (mascota.usuarioId != currentUserId) {
                 ivEditarMascota.visibility = View.GONE
                 ivBorrarMascota.visibility = View.GONE
+            }
+
+            if (userRol == "admin") {
+                ivEditarMascota.visibility = View.VISIBLE
+                ivBorrarMascota.visibility = View.VISIBLE
             }
 
             itemView.setOnClickListener {

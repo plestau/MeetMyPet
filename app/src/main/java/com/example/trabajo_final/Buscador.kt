@@ -533,4 +533,9 @@ class Buscador : AppCompatActivity() {
             }
         })
     }
+
+    override fun onResume() {
+        super.onResume()
+        FragmentInferior.actividadActual = "Buscar"
+    }
 }

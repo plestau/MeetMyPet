@@ -83,6 +83,8 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
         private val ivPerfilPaseador: ImageView = itemView.findViewById(R.id.ivPerfilPaseador)
         private val llPaseadorAnuncio: LinearLayout = itemView.findViewById(R.id.llPaseadorAnuncio)
         private var nombrePaseador: String = ""
+        val sharedPref = itemView.context.getSharedPreferences("userRole", Context.MODE_PRIVATE)
+        val userRol = sharedPref.getString("role", "user")
 
         fun bind(anuncio: Anuncio) {
             tvTituloAnuncio.text = anuncio.titulo
@@ -109,11 +111,13 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                     if (anuncio.usuarioDueño == FirebaseAuth.getInstance().currentUser?.uid) {
                         CoroutineScope(Dispatchers.IO).launch {
                             val nombrePaseador = obtenerNombrePaseador(anuncio.usuarioPaseador).await()
-                            val sharedPref = itemView.context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-                            val userRole = sharedPref.getString("userRole", "user")
                             withContext(Dispatchers.Main) {
-                                if (userRole == "admin" || anuncio.estado == "creado") {
+                                if (anuncio.estado == "creado") {
                                     ivEditarAnuncio.visibility = View.VISIBLE
+                                    ivAprobar.visibility = View.GONE
+                                    ivDenegar.visibility = View.GONE
+                                    llPaseadorAnuncio.visibility = View.GONE
+                                    ivTerminar.visibility = View.GONE
                                 } else if (anuncio.estado == "reservado") {
                                     ivEditarAnuncio.visibility = View.GONE
                                     ivAprobar.visibility = View.VISIBLE
@@ -172,6 +176,9 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                             btnIniciarChat.visibility = View.VISIBLE
                             btnApuntarse.visibility = View.GONE
                             ivValorar.visibility = View.GONE
+                        }
+                        if (userRol == "admin") {
+                            ivEditarAnuncio.visibility = View.VISIBLE
                         }
                     }
                 }

@@ -4,6 +4,7 @@ import FragmentInferior
 import FragmentSuperiorPerfil
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -35,11 +36,19 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
         val context: Context = this
         val añadirMascota = findViewById<LinearLayout>(R.id.añadirMascota)
         val verMascotas = findViewById<LinearLayout>(R.id.verMisMascotas)
+        val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
+        val userRol = sharedPref.getString("role", "user")
+        val verMascotasText = findViewById<TextView>(R.id.verMascotasTxt)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        Log.d("USER_ROLE", userRol.toString())
+        if (userRol == "admin") {
+            verMascotasText.text = "Ver mascotas en app"
         }
 
         val fragmentSuperior = FragmentSuperiorPerfil()
@@ -175,5 +184,10 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
     override fun onMascotaAdded(mascota: Mascota) {
         val mascotasRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${auth.currentUser?.uid}/mascotas")
         mascotasRef.push().setValue(mascota)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        FragmentInferior.actividadActual = "PerfilUsuario"
     }
 }
