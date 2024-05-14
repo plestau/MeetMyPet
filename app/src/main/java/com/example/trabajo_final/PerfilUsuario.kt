@@ -3,6 +3,7 @@ package com.example.trabajo_final
 import FragmentInferior
 import FragmentSuperiorPerfil
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -39,6 +40,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
         val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
         val userRol = sharedPref.getString("role", "user")
         val verMascotasText = findViewById<TextView>(R.id.verMascotasTxt)
+        val verGraficoMascotas = findViewById<TextView>(R.id.verGraficoMascotas)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -102,6 +104,11 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
                 supportFragmentManager.beginTransaction().hide(fragmentSuperiorPerfil).commit()
             }
             findViewById<View>(R.id.scrollView)?.visibility = View.GONE
+        }
+        verGraficoMascotas.setOnClickListener {
+            val intent = Intent(context, GraficoMascotas::class.java)
+            intent.putExtra("USER_ID", userId)
+            startActivity(intent)
         }
     }
 

@@ -1,13 +1,15 @@
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.ImageView
 import android.widget.TextView
-import com.example.trabajo_final.R
 import androidx.cardview.widget.CardView
+import com.example.trabajo_final.R
 import com.example.trabajo_final.Buscador
 import com.example.trabajo_final.MisAnuncios
 import com.example.trabajo_final.PerfilUsuario
@@ -27,6 +29,16 @@ class FragmentInferior : Fragment() {
     private lateinit var cardPerfil: CardView
     private var selectedCard: CardView? = null
     private lateinit var txt_tus_anuncios: TextView
+    private lateinit var iconoBuscar: ImageView
+    private lateinit var textoBuscar: TextView
+    private lateinit var iconoPublicar: ImageView
+    private lateinit var textoPublicar: TextView
+    private lateinit var iconoMisAnuncios: ImageView
+    private lateinit var textoMisAnuncios: TextView
+    private lateinit var iconoMensajes: ImageView
+    private lateinit var textoMensajes: TextView
+    private lateinit var iconoPerfil: ImageView
+    private lateinit var textoPerfil: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +54,16 @@ class FragmentInferior : Fragment() {
         cardMensajes = view.findViewById(R.id.card_mensajes)
         cardPerfil = view.findViewById(R.id.card_perfil)
         txt_tus_anuncios = view.findViewById(R.id.txt_tus_anuncios)
+        iconoBuscar = view.findViewById(R.id.img_buscar)
+        textoBuscar = view.findViewById(R.id.txt_buscar)
+        iconoPublicar = view.findViewById(R.id.img_publicar)
+        textoPublicar = view.findViewById(R.id.txt_publicar)
+        iconoMisAnuncios = view.findViewById(R.id.img_tus_anuncios)
+        textoMisAnuncios = view.findViewById(R.id.txt_tus_anuncios)
+        iconoMensajes = view.findViewById(R.id.img_mensajes)
+        textoMensajes = view.findViewById(R.id.txt_mensajes)
+        iconoPerfil = view.findViewById(R.id.img_perfil)
+        textoPerfil = view.findViewById(R.id.txt_perfil)
 
         if (userRol == "admin") {
             txt_tus_anuncios.text = "Anuncios en app"
@@ -59,6 +81,7 @@ class FragmentInferior : Fragment() {
                 startActivity(intent)
                 FragmentInferior.actividadActual = "Buscar"
                 selectedCardId = R.id.card_buscar
+                actualizarColor()
             }
         }
 
@@ -73,6 +96,7 @@ class FragmentInferior : Fragment() {
                 startActivity(intent)
                 FragmentInferior.actividadActual = "Publicar"
                 selectedCardId = R.id.card_publicar
+                actualizarColor()
             }
         }
 
@@ -87,6 +111,7 @@ class FragmentInferior : Fragment() {
                 startActivity(intent)
                 FragmentInferior.actividadActual = "MisAnuncios"
                 selectedCardId = R.id.card_tus_anuncios
+                actualizarColor()
             }
         }
 
@@ -101,6 +126,7 @@ class FragmentInferior : Fragment() {
                 startActivity(intent)
                 FragmentInferior.actividadActual = "Mensajes"
                 selectedCardId = R.id.card_mensajes
+                actualizarColor()
             }
         }
 
@@ -115,9 +141,52 @@ class FragmentInferior : Fragment() {
                 startActivity(intent)
                 FragmentInferior.actividadActual = "PerfilUsuario"
                 selectedCardId = R.id.card_perfil
+                actualizarColor()
             }
         }
+        actualizarColor()
 
         return view
+    }
+    private fun actualizarColor() {
+        if (FragmentInferior.actividadActual == "Buscar") {
+            textoBuscar.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
+            iconoBuscar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
+        } else {
+            textoBuscar.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            iconoBuscar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
+        }
+        if (FragmentInferior.actividadActual == "Publicar") {
+            textoPublicar.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
+            iconoPublicar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
+        } else {
+            textoPublicar.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            iconoPublicar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
+        }
+        if (FragmentInferior.actividadActual == "MisAnuncios") {
+            textoMisAnuncios.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
+            iconoMisAnuncios.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
+        } else {
+            textoMisAnuncios.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            iconoMisAnuncios.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
+        }
+        if (FragmentInferior.actividadActual == "Mensajes") {
+            textoMensajes.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
+            iconoMensajes.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
+        } else {
+            textoMensajes.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            iconoMensajes.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
+        }
+        if (FragmentInferior.actividadActual == "PerfilUsuario") {
+            textoPerfil.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
+            iconoPerfil.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
+        } else {
+            textoPerfil.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            iconoPerfil.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        actualizarColor()
     }
 }

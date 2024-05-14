@@ -100,7 +100,7 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                 return@setOnClickListener
             }
 
-            if (raza.selectedItem.toString() == "Seleccione raza:") {
+            if (raza.selectedItem.toString() == "Seleccione tipo animal:") {
                 Toast.makeText(requireContext(), "Por favor, selecciona una raza", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

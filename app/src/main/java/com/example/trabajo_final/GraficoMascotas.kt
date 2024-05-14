@@ -25,12 +25,9 @@ class GraficoMascotas : AppCompatActivity() {
         }
 
         val pieChart = findViewById<PieChart>(R.id.pieChart)
-
-        // Obtén una referencia a la base de datos
         val database = FirebaseDatabase.getInstance()
-
-        // Obtén una referencia a los anuncios del usuario paseador
-        val walkerAdsRef = database.getReference("app/anuncios").orderByChild("usuarioPaseador").equalTo(FirebaseAuth.getInstance().currentUser!!.uid)
+        val userId = intent.getStringExtra("USER_ID")
+        val walkerAdsRef = database.getReference("app/anuncios").orderByChild("usuarioPaseador").equalTo(userId)
 
         // Lee los datos de la base de datos
         walkerAdsRef.addValueEventListener(object : ValueEventListener {

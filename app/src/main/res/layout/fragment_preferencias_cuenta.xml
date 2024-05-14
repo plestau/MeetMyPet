@@ -78,7 +78,7 @@
             android:id="@+id/verGraficoMascotas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ver gráfico de mascotas"
+            android:text="Ver gráfico de mascotas cuidadas"
             android:drawableEnd="@drawable/baseline_pie_chart_outline_24"
             android:textColor="@color/texto"
             android:textSize="18sp"

@@ -76,7 +76,7 @@ class FragmentAddMascota : Fragment(), OnBackPressedInFragmentListener {
                 return@setOnClickListener
             }
 
-            if(nombre.isEmpty() || raza == "Seleccione raza:" || sexo == "Seleccione sexo:" || biografia.isEmpty()) {
+            if(nombre.isEmpty() || raza == "Seleccione tipo animal:" || sexo == "Seleccione sexo:" || biografia.isEmpty()) {
                 Toast.makeText(context, "Faltan datos en el formulario", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

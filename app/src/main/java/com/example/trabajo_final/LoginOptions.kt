@@ -1,6 +1,8 @@
 package com.example.trabajo_final
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
@@ -8,6 +10,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -33,6 +37,8 @@ class LoginOptions : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login_options)
+
+        pedirPermisos()
 
         if (ThemeUtils.loadThemeState(this)) {
             setTheme(R.style.Base_Theme_Trabajo_final_Night)
@@ -122,5 +128,20 @@ class LoginOptions : AppCompatActivity() {
     private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    private fun pedirPermisos() {
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.POST_NOTIFICATIONS
+        )
+
+        val hasPermissions = permissions.all { permission ->
+            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        }
+
+        if (!hasPermissions) {
+            ActivityCompat.requestPermissions(this, permissions, 0)
+        }
     }
 }
