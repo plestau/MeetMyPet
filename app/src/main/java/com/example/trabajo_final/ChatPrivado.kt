@@ -1,6 +1,5 @@
 package com.example.trabajo_final
 
-import FragmentInferior
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings

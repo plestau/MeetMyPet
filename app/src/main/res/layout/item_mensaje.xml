@@ -1,55 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    card_view:cardCornerRadius="10sp"
-    android:layout_margin="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <LinearLayout
+        android:id="@+id/layoutMensajeEnviado"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10sp">
-            <ImageView
-                android:id="@+id/fotoPerfilMensaje"
-                android:layout_width="32sp"
-                android:layout_height="32sp"
-                android:src="@mipmap/ic_launcher" />
-        </LinearLayout>
-        <LinearLayout
+        android:layout_gravity="end"
+        android:layout_marginLeft="40dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            card_view:cardCornerRadius="10sp"
+            android:layout_margin="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/nombreMensaje"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent">
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Kevin" />
-                <TextView
-                    android:id="@+id/horaMensaje"
-                    android:layout_width="wrap_content"
+                    android:padding="10sp">
+                    <ImageView
+                        android:id="@+id/fotoPerfilMensajeEnviado"
+                        android:layout_width="32sp"
+                        android:layout_height="32sp"
+                        android:src="@mipmap/ic_launcher" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="00:00" />
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/nombreMensajeEnviado"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Kevin" />
+                        <TextView
+                            android:id="@+id/horaMensajeEnviado"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00:00" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/mensajeMensajeEnviado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hola, bienvenido" />
+                    <ImageView
+                        android:id="@+id/mensajeFotoEnviado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+                </LinearLayout>
             </LinearLayout>
-            <TextView
-                android:id="@+id/mensajeMensaje"
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/layoutMensajeRecibido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="40dp"
+        android:layout_gravity="start"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            card_view:cardCornerRadius="10sp"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hola, bienvenido" />
-            <ImageView
-                android:id="@+id/mensajeFoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-        </LinearLayout>
+                app:layout_constraintTop_toTopOf="parent">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10sp">
+                    <ImageView
+                        android:id="@+id/fotoPerfilMensajeRecibido"
+                        android:layout_width="32sp"
+                        android:layout_height="32sp"
+                        android:src="@mipmap/ic_launcher" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/nombreMensajeRecibido"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Kevin" />
+                        <TextView
+                            android:id="@+id/horaMensajeRecibido"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="00:00" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/mensajeMensajeRecibido"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hola, bienvenido" />
+                    <ImageView
+                        android:id="@+id/mensajeFotoRecibido"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</FrameLayout>

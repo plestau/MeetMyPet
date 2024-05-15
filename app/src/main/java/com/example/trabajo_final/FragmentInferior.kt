@@ -1,4 +1,7 @@
+package com.example.trabajo_final
+
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -149,41 +152,29 @@ class FragmentInferior : Fragment() {
         return view
     }
     private fun actualizarColor() {
-        if (FragmentInferior.actividadActual == "Buscar") {
-            textoBuscar.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
-            iconoBuscar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
-        } else {
-            textoBuscar.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            iconoBuscar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
-        }
-        if (FragmentInferior.actividadActual == "Publicar") {
-            textoPublicar.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
-            iconoPublicar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
-        } else {
-            textoPublicar.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            iconoPublicar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
-        }
-        if (FragmentInferior.actividadActual == "MisAnuncios") {
-            textoMisAnuncios.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
-            iconoMisAnuncios.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
-        } else {
-            textoMisAnuncios.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            iconoMisAnuncios.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
-        }
-        if (FragmentInferior.actividadActual == "Mensajes") {
-            textoMensajes.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
-            iconoMensajes.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
-        } else {
-            textoMensajes.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            iconoMensajes.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
-        }
-        if (FragmentInferior.actividadActual == "PerfilUsuario") {
-            textoPerfil.setTextColor(ContextCompat.getColor(requireContext(), R.color.texto))
-            iconoPerfil.setColorFilter(ContextCompat.getColor(requireContext(), R.color.texto))
-        } else {
-            textoPerfil.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-            iconoPerfil.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
-        }
+        val colorAzul = ContextCompat.getColor(requireContext(), R.color.texto)
+        val colorNegro = ContextCompat.getColor(requireContext(), R.color.black)
+        val colorBlanco = ContextCompat.getColor(requireContext(), R.color.white)
+
+        val isNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+        val colorActual = if (isNightMode) colorBlanco else colorNegro
+        val colorSeleccionado = if (isNightMode) colorAzul else colorAzul
+
+        textoBuscar.setTextColor(if (FragmentInferior.actividadActual == "Buscar") colorSeleccionado else colorActual)
+        iconoBuscar.setColorFilter(if (FragmentInferior.actividadActual == "Buscar") colorSeleccionado else colorActual)
+
+        textoPublicar.setTextColor(if (FragmentInferior.actividadActual == "Publicar") colorSeleccionado else colorActual)
+        iconoPublicar.setColorFilter(if (FragmentInferior.actividadActual == "Publicar") colorSeleccionado else colorActual)
+
+        textoMisAnuncios.setTextColor(if (FragmentInferior.actividadActual == "MisAnuncios") colorSeleccionado else colorActual)
+        iconoMisAnuncios.setColorFilter(if (FragmentInferior.actividadActual == "MisAnuncios") colorSeleccionado else colorActual)
+
+        textoMensajes.setTextColor(if (FragmentInferior.actividadActual == "Mensajes") colorSeleccionado else colorActual)
+        iconoMensajes.setColorFilter(if (FragmentInferior.actividadActual == "Mensajes") colorSeleccionado else colorActual)
+
+        textoPerfil.setTextColor(if (FragmentInferior.actividadActual == "PerfilUsuario") colorSeleccionado else colorActual)
+        iconoPerfil.setColorFilter(if (FragmentInferior.actividadActual == "PerfilUsuario") colorSeleccionado else colorActual)
     }
     override fun onResume() {
         super.onResume()

@@ -1,6 +1,5 @@
 package com.example.trabajo_final
 
-import FragmentInferior
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -8,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Spinner
@@ -15,6 +15,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -47,6 +49,14 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
 
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
+
+        val icon: ImageView = findViewById(R.id.iconoPataPublicar) // replace with your icon's id
+        val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            ContextCompat.getColor(this, R.color.white)
+        } else {
+            ContextCompat.getColor(this, R.color.black)
+        }
+        icon.setColorFilter(color)
 
         val scrollView = findViewById<ScrollView>(R.id.scrollView)
         val titulo = findViewById<EditText>(R.id.titulo)

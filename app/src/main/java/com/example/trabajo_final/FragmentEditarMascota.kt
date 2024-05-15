@@ -14,6 +14,8 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -59,9 +61,17 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
         val esterilizado = view.findViewById<CheckBox>(R.id.esterilizado)
         val biografia = view.findViewById<EditText>(R.id.biografia)
         val guardarDatos = view.findViewById<Button>(R.id.editarMascota)
-        mascotaImageView = view.findViewById(R.id.imagenMascota)
-
+        mascotaImageView = view.findViewById<ImageView>(R.id.imagenMascota)
+        val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            ContextCompat.getColor(requireContext(), R.color.white)
+        } else {
+            ContextCompat.getColor(requireContext(), R.color.black)
+        }
         mascota = arguments?.getParcelable("mascota")!!
+
+        if (mascota.foto.isNullOrEmpty()) {
+            mascotaImageView.setColorFilter(color)
+        }
 
         nombre.setText(mascota.nombre)
         edad.setText(mascota.edad.toString())
@@ -110,10 +120,8 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                 return@setOnClickListener
             }
 
-            val mascotaRef = FirebaseDatabase.getInstance()
-                .getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
-            val stRef =
-                FirebaseStorage.getInstance().getReference("app/usuarios/${mascota.usuarioId}/mascotas")
+            val mascotaRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${mascota.usuarioId}/mascotas/${mascota.id}")
+            val stRef = FirebaseStorage.getInstance().getReference("app/usuarios/${mascota.usuarioId}/mascotas")
 
             CoroutineScope(Dispatchers.IO).launch {
                 val mascotaPicUrl = if (mascotaPic != null && "content" == mascotaPic!!.scheme) {

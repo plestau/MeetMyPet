@@ -1,7 +1,9 @@
 package com.example.trabajo_final
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -33,10 +35,25 @@ class ChatPrivadoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
         val sharedPref = holder.itemView.context.getSharedPreferences("userRole", 0)
         val userRol = sharedPref.getString("role", "user")
         val mensaje = listMensaje[position]
-        holder.nombre.text = mensaje.nombreEmisor
-        holder.mensaje.text = mensaje.contenido
-        holder.hora.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
-        Glide.with(holder.itemView.context).load(mensaje.urlAvatar).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfil)
+        val layoutMensajeEnviado = holder.itemView.findViewById<LinearLayout>(R.id.layoutMensajeEnviado)
+        val layoutMensajeRecibido = holder.itemView.findViewById<LinearLayout>(R.id.layoutMensajeRecibido)
+
+        if (mensaje.idEmisor == idUsuarioActual) {
+            layoutMensajeEnviado.visibility = View.VISIBLE
+            layoutMensajeRecibido.visibility = View.GONE
+            holder.nombreEnviado.text = "Yo"
+            holder.mensajeEnviado.text = mensaje.contenido
+            holder.horaEnviado.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
+            Glide.with(holder.itemView.context).load(mensaje.urlAvatar).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfilEnviado)
+        } else {
+            layoutMensajeEnviado.visibility = View.GONE
+            layoutMensajeRecibido.visibility = View.VISIBLE
+            holder.nombreRecibido.text = mensaje.nombreEmisor
+            holder.mensajeRecibido.text = mensaje.contenido
+            holder.horaRecibido.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
+            Glide.with(holder.itemView.context).load(mensaje.urlAvatar).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfilRecibido)
+        }
+
         if (userRol == "admin") {
             holder.itemView.setOnLongClickListener {
                 val builder = AlertDialog.Builder(holder.itemView.context)
@@ -44,7 +61,6 @@ class ChatPrivadoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
                 builder.setMessage("¿Qué quieres hacer con este mensaje?")
                 builder.setPositiveButton("Eliminar") { dialog, _ ->
                     val mensajeRef = FirebaseDatabase.getInstance().getReference("app/chats_privados/${mensaje.idsEmisorReceptor}/${mensaje.id}")
-                    // cambia el estado del mensaje a eliminado
                     mensajeRef.child("estado_noti").setValue(Estado.ELIMINADO)
                     mensajeRef.child("user_notificacion").setValue(mensaje.idEmisor)
                 }

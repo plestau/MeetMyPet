@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.facebook.AccessToken
@@ -24,6 +27,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
 
 class RegisterOptions : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -38,6 +42,14 @@ class RegisterOptions : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_register_options)
+
+        val emailBtn = findViewById<ImageView>(R.id.emailIcon)
+        val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            ContextCompat.getColor(this, R.color.white)
+        } else {
+            ContextCompat.getColor(this, R.color.black)
+        }
+        emailBtn.setColorFilter(color)
 
         val googleLoginButton = findViewById<LinearLayout>(R.id.googleLoginButton)
         val emailLoginButton = findViewById<LinearLayout>(R.id.emailLoginButton)
@@ -86,14 +98,16 @@ class RegisterOptions : AppCompatActivity() {
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
+        val db_ref = FirebaseDatabase.getInstance().reference
+        val lista_usuarios = Utilidades.obtenerListaUsuarios(db_ref)
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
-                    val intent = Intent(this, Register::class.java).apply {
-                        putExtra("email", user?.email)
+                    val email = user?.email
+                    if (Utilidades.existeUsuario(lista_usuarios, email!!)) {
+                        Toast.makeText(baseContext, "Ya existe un usuario con ese correo", Toast.LENGTH_SHORT).show()
                     }
-                    startActivity(intent)
                 } else {
                     Toast.makeText(baseContext, "Fallo al autenticar",
                         Toast.LENGTH_SHORT).show()

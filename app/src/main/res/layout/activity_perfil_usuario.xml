@@ -164,6 +164,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tituloMascotas">
 
                 <ImageView
+                    android:id="@+id/añadirMascotaImg"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginHorizontal="10dp"
@@ -207,6 +208,7 @@
                 app:layout_constraintTop_toBottomOf="@id/separator3">
 
                 <ImageView
+                    android:id="@+id/verMisMascotasImg"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginHorizontal="10dp"

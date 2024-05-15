@@ -1,6 +1,5 @@
 package com.example.trabajo_final
 
-import FragmentInferior
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText

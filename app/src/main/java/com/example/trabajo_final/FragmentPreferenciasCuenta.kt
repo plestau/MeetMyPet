@@ -1,6 +1,5 @@
 package com.example.trabajo_final
 
-import FragmentInferior
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -66,7 +65,7 @@ class FragmentPreferenciasCuenta : Fragment() {
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), GoogleSignInOptions.DEFAULT_SIGN_IN)
 
         themeSwitch = view.findViewById(R.id.cambiarTema)
-        themeSwitch.isChecked = ThemeUtils.loadThemeState(requireContext())
+        themeSwitch.isChecked = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         themeSwitch.setOnClickListener {
             val isChecked = themeSwitch.isChecked
             AlertDialog.Builder(requireContext())
@@ -130,9 +129,7 @@ class FragmentPreferenciasCuenta : Fragment() {
             val editor = sharedPref.edit()
             editor.remove("role")
             editor.apply()
-            requireActivity().finishAffinity()
-            val intent = Intent(requireContext(), LoginOptions::class.java)
-            startActivity(intent)
+
 
             // Restablecer el color de la tarjeta de usuario en FragmentInferior
             val fragmentInferior = parentFragmentManager.findFragmentById(R.id.fragment_inferior) as? FragmentInferior
@@ -144,6 +141,9 @@ class FragmentPreferenciasCuenta : Fragment() {
                 imgPerfil.setColorFilter(originalColor)
                 txtPerfil.setTextColor(originalColor)
             }
+            requireActivity().finishAffinity()
+            val intent = Intent(requireContext(), LoginOptions::class.java)
+            startActivity(intent)
         }
 
         return view

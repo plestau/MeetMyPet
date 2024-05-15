@@ -13,6 +13,8 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
@@ -80,6 +82,14 @@ class MascotaAdapter(private var listaMascotas: List<Mascota>, val fragmentManag
                     .into(tvFotoMascota)
                     .apply { Utilidades.opcionesGlide(itemView.context) }
             }
+
+            val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+                ContextCompat.getColor(itemView.context, R.color.white)
+            } else {
+                ContextCompat.getColor(itemView.context, R.color.black)
+            }
+            ivEditarMascota.setColorFilter(color)
+            ivBorrarMascota.setColorFilter(color)
 
             // Si la mascota no es del usuario actual, no se pueden editar ni borrar
             if (mascota.usuarioId != currentUserId) {

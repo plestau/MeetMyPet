@@ -3,13 +3,16 @@ package com.example.trabajo_final
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.Image
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.CallbackManager
@@ -45,6 +48,14 @@ class LoginOptions : AppCompatActivity() {
         } else {
             setTheme(R.style.Base_Theme_Trabajo_final_Light)
         }
+
+        val emailIcon = findViewById<ImageView>(R.id.emailIcon)
+        val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            ContextCompat.getColor(this, R.color.white)
+        } else {
+            ContextCompat.getColor(this, R.color.black)
+        }
+        emailIcon.setColorFilter(color)
 
         val googleLoginButton = findViewById<LinearLayout>(R.id.googleLoginButton)
         val emailLoginButton = findViewById<LinearLayout>(R.id.emailLoginButton)

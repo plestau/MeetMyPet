@@ -1,7 +1,5 @@
 package com.example.trabajo_final
 
-import FragmentInferior
-import FragmentSuperiorPerfil
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -14,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
@@ -41,6 +41,16 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
         val userRol = sharedPref.getString("role", "user")
         val verMascotasText = findViewById<TextView>(R.id.verMascotasTxt)
         val verGraficoMascotas = findViewById<TextView>(R.id.verGraficoMascotas)
+        val imgAñadirMascotas = findViewById<ImageView>(R.id.añadirMascotaImg)
+        val imgVerMascotas = findViewById<ImageView>(R.id.verMisMascotasImg)
+
+        val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            ContextCompat.getColor(context, R.color.white)
+        } else {
+            ContextCompat.getColor(context, R.color.black)
+        }
+        imgAñadirMascotas.setColorFilter(color)
+        imgVerMascotas.setColorFilter(color)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

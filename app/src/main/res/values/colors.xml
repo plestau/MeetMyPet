@@ -20,9 +20,5 @@
     <color name="transparente">#7EFFEB3B</color>
     <color name="grisclaro">#DDDDDD</color>
     <color name="colorAccent">#E736F4</color>
-    <color name="menu_color_light">#FFFFFF</color>
-    <color name="menu_color_dark">#808080</color>
-    <color name="colorFragmentInferiorDark">#000000</color>
-    <color name="colorFragmentInferiorLight">#FFFFFF</color>
     <color name="lightgray">#49454F</color>
 </resources>

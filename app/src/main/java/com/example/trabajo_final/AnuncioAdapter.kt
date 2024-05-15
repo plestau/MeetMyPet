@@ -17,6 +17,8 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
@@ -101,9 +103,24 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
             tvRazaMascotaAnuncio.text = anuncio.razaMascota?.joinToString()
             tvEdadMascotaAnuncio.text = anuncio.edadMascota?.joinToString() + " años"
             tvValoracionMascotaAnuncio.text = anuncio.valoracionMascota?.joinToString()
+            val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+                ContextCompat.getColor(itemView.context, R.color.white)
+            } else {
+                ContextCompat.getColor(itemView.context, R.color.black)
+            }
             // carga la imagen de la mascota o las imagenes de las mascotas en caso de que haya mas de una
             rvImagenMascotaAnuncio.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             rvImagenMascotaAnuncio.adapter = ImagenMascotaAdapter(anuncio.imagenMascota!!)
+
+            ivEditarAnuncio.setColorFilter(color)
+            btnApuntarse.setColorFilter(color)
+            btnIniciarChat.setColorFilter(color)
+            tvValoracionMascotaAnuncio.setTextColor(color)
+            ivValorar.setColorFilter(color)
+            ivPerfilPaseador.setColorFilter(color)
+            ivTerminar.setColorFilter(color)
+            ivAprobar.setColorFilter(color)
+            ivDenegar.setColorFilter(color)
 
             when (activityName) {
                 "MisAnuncios" -> {

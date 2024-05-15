@@ -11,6 +11,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.trabajo_final.R
 import com.example.trabajo_final.Utilidades
@@ -53,6 +55,12 @@ class Register : AppCompatActivity() {
         }
 
         profilePicImageView = findViewById(R.id.imageView)
+        val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            ContextCompat.getColor(this, R.color.white)
+        } else {
+            ContextCompat.getColor(this, R.color.black)
+        }
+        profilePicImageView.setColorFilter(color)
         profilePicImageView.setOnClickListener {
             mostrarDialogoSeleccion()
         }

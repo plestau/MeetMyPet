@@ -20,6 +20,6 @@ data class Usuario(
     var user_notificacion:String? = null,
 ): Parcelable, Comparable<Usuario> {
     override fun compareTo(other: Usuario): Int {
-        return this.nombre!!.compareTo(other.nombre!!)
+        return this.email!!.compareTo(other.email!!)
     }
 }

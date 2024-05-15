@@ -1,3 +1,6 @@
+package com.example.trabajo_final
+
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -38,23 +41,28 @@ class FragmentSuperiorPerfil : Fragment() {
         val txtInfoPersonal: TextView = view.findViewById(R.id.txt_info_personal)
         val color = ContextCompat.getColor(requireContext(), R.color.texto)
         val bold = Typeface.DEFAULT_BOLD
+        val isNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+        val colorActual = if (isNightMode) ContextCompat.getColor(requireContext(), R.color.white) else ContextCompat.getColor(requireContext(), R.color.texto)
+        val colorSeleccionado = if (isNightMode) ContextCompat.getColor(requireContext(), R.color.white) else ContextCompat.getColor(requireContext(), R.color.texto)
+
+        txtInfoPersonal.setTextColor(colorSeleccionado)
+        lineInfoPersonal.setBackgroundColor(colorSeleccionado)
         txtInfoPersonal.setTypeface(bold)
-        txtInfoPersonal.setTextColor(color)
-        lineInfoPersonal.setBackgroundColor(color)
 
         selectedCard = cardInfoPersonal
         selectedText = txtInfoPersonal
         selectedLine = lineInfoPersonal
 
         cardInfoPersonal.setOnClickListener {
-            val originalColor = ContextCompat.getColor(requireContext(), R.color.black)
             val fragment = parentFragmentManager.findFragmentById(R.id.fragment_container)
+            val originalColor = if (isNightMode) ContextCompat.getColor(requireContext(), R.color.white) else ContextCompat.getColor(requireContext(), R.color.black)
             selectedText?.setTextColor(originalColor)
             selectedLine?.setBackgroundColor(Color.TRANSPARENT)
             selectedText?.setTypeface(Typeface.DEFAULT)
 
-            txtInfoPersonal.setTextColor(color)
-            lineInfoPersonal.setBackgroundColor(color)
+            txtInfoPersonal.setTextColor(colorSeleccionado)
+            lineInfoPersonal.setBackgroundColor(colorSeleccionado)
             txtInfoPersonal.setTypeface(bold)
 
             selectedCard = it as CardView
@@ -69,12 +77,13 @@ class FragmentSuperiorPerfil : Fragment() {
         }
 
         cardCuenta.setOnClickListener {
-            val originalColor = ContextCompat.getColor(requireContext(), R.color.black)
+            val originalColor = if (isNightMode) ContextCompat.getColor(requireContext(), R.color.white) else ContextCompat.getColor(requireContext(), R.color.black)
             selectedText?.setTextColor(originalColor)
             selectedLine?.setBackgroundColor(Color.TRANSPARENT)
             selectedText?.setTypeface(Typeface.DEFAULT)
-            txtCuenta.setTextColor(color)
-            lineCuenta.setBackgroundColor(color)
+
+            txtCuenta.setTextColor(colorSeleccionado)
+            lineCuenta.setBackgroundColor(colorSeleccionado)
             txtCuenta.setTypeface(bold)
 
             // Actualizar la tarjeta seleccionada
