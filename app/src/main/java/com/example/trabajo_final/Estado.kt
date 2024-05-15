@@ -9,5 +9,6 @@ class Estado {
         const val TERMINADO=4
         const val VALORADO=5
         const val EnCurso=6
+        const val EDITADO=7
     }
 }

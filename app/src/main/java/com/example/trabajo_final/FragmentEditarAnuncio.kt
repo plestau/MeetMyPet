@@ -275,7 +275,9 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 razaMascota = mascotasRazaList,
                 edadMascota = mascotasEdadList,
                 valoracionMascota = mascotasValoracionList,
-                imagenMascota = mascotasImagenList
+                imagenMascota = mascotasImagenList,
+                estado_noti = Estado.EDITADO,
+                user_notificacion = anuncio.usuarioDueño
             ))
 
             Toast.makeText(context, "Anuncio editado correctamente", Toast.LENGTH_SHORT).show()

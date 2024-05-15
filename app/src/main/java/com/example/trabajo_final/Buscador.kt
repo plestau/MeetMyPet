@@ -516,6 +516,16 @@ class Buscador : AppCompatActivity() {
                         MisAnuncios::class.java
                     )
                 }
+                if (anuncio!!.estado_noti == Estado.EDITADO && anuncio.usuarioDueño == idUsuarioActual) {
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
+                    generarNotificacion(
+                        generador.getAndIncrement(),
+                        anuncio,
+                        "Se ha editado tu anuncio ${anuncio.titulo}",
+                        "Anuncio editado",
+                        MisAnuncios::class.java
+                    )
+                }
                 snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
             }
 
@@ -591,8 +601,18 @@ class Buscador : AppCompatActivity() {
                         FragmentVerMisMascotas::class.java
                     )
                 }
-                if (mascota!!.estado_noti == Estado.ELIMINADO) {
+                if (mascota!!.estado_noti == Estado.ELIMINADO && mascota.usuarioId == userId) {
                     snapshot.ref.removeValue()
+                }
+                if (mascota.estado_noti == Estado.EDITADO && mascota.usuarioId == userId) {
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
+                    generarNotificacion(
+                        generador.getAndIncrement(),
+                        mascota,
+                        "Se ha editado a tu mascota ${mascota.nombre}",
+                        "Mascota editada",
+                        PerfilUsuario::class.java
+                    )
                 }
             }
 
