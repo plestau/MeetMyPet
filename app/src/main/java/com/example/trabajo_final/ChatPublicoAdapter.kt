@@ -1,5 +1,6 @@
 package com.example.trabajo_final
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.trabajo_final.Java.HolderMensaje
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -40,6 +44,22 @@ class ChatPublicoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
         val mensaje = listMensaje[position]
         val layoutMensajeEnviado = holder.itemView.findViewById<LinearLayout>(R.id.layoutMensajeEnviado)
         val layoutMensajeRecibido = holder.itemView.findViewById<LinearLayout>(R.id.layoutMensajeRecibido)
+        val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${mensaje.idEmisor}")
+        userRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val updatedProfilePicUrl = dataSnapshot.child("profilePic").getValue(String::class.java)
+                // Actualiza la foto de perfil del usuario en el mensaje
+                if (mensaje.idEmisor == idUsuarioActual) {
+                    Glide.with(holder.itemView.context).load(updatedProfilePicUrl).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfilEnviado)
+                } else {
+                    Glide.with(holder.itemView.context).load(updatedProfilePicUrl).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfilRecibido)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w("ChatPublicoAdapter", "loadPost:onCancelled", databaseError.toException())
+            }
+        })
 
         if (mensaje.idEmisor == idUsuarioActual) {
             layoutMensajeEnviado.visibility = View.VISIBLE
