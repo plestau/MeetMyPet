@@ -34,7 +34,6 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
         enableEdgeToEdge()
         setContentView(R.layout.activity_perfil_usuario)
 
-        val context: Context = this
         val añadirMascota = findViewById<LinearLayout>(R.id.añadirMascota)
         val verMascotas = findViewById<LinearLayout>(R.id.verMisMascotas)
         val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
@@ -45,9 +44,9 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
         val imgVerMascotas = findViewById<ImageView>(R.id.verMisMascotasImg)
 
         val color: Int = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            ContextCompat.getColor(context, R.color.white)
+            ContextCompat.getColor(this, R.color.white)
         } else {
-            ContextCompat.getColor(context, R.color.black)
+            ContextCompat.getColor(this, R.color.black)
         }
         imgAñadirMascotas.setColorFilter(color)
         imgVerMascotas.setColorFilter(color)
@@ -84,7 +83,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
             if (userId != null) {
                 loadUserData(userId!!)
             } else {
-                Toast.makeText(context, "Error al cargar los datos del usuario", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error al cargar los datos del usuario", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -116,9 +115,19 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
             findViewById<View>(R.id.scrollView)?.visibility = View.GONE
         }
         verGraficoMascotas.setOnClickListener {
-            val intent = Intent(context, GraficoMascotas::class.java)
+            val intent = Intent(this, GraficoMascotas::class.java)
             intent.putExtra("USER_ID", userId)
             startActivity(intent)
+        }
+    }
+
+    private fun loadUserProfilePicture(userId: String) {
+        val profilePicRef = FirebaseStorage.getInstance().getReference("app/usuarios/$userId/profile_pic.jpg")
+        profilePicRef.downloadUrl.addOnSuccessListener { uri ->
+            val imageView = findViewById<ImageView>(R.id.fotoPerfil)
+            Glide.with(this@PerfilUsuario).load(uri).placeholder(Utilidades.animacion_carga(this@PerfilUsuario)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(this@PerfilUsuario) }
+        }.addOnFailureListener {
+            Toast.makeText(this@PerfilUsuario, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -142,7 +151,6 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
                         val imageView = findViewById<ImageView>(R.id.fotoPerfil)
                         Glide.with(this@PerfilUsuario).load(uri).placeholder(Utilidades.animacion_carga(this@PerfilUsuario)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(this@PerfilUsuario) }
                     }.addOnFailureListener {
-                        // Manejo de errores al cargar la imagen de perfil
                         Toast.makeText(this@PerfilUsuario, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
                     }
 
@@ -159,6 +167,15 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
                             supportFragmentManager.beginTransaction().remove(fragmentSuperiorPerfil).commit()
                         }
                     }
+                    userRef.child("profilePic").addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            loadUserProfilePicture(userId)
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Toast.makeText(this@PerfilUsuario, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                 } else {
                     // Manejo de errores si no se encuentra el usuario
                     Toast.makeText(this@PerfilUsuario, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
