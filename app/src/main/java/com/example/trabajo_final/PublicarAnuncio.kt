@@ -250,7 +250,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                                     "precio" to precioText.toDouble(),
                                     "usuarioPaseador" to "",
                                     "idmascota" to mascotasIdList,
-                                    "nombreMascota" to mascotasAñadidasList.map { it.nombre!! },
+                                    "nombreMascota" to mascotasAñadidasList.map { it.nombre!!.lowercase() },
                                     "razaMascota" to mascotasAñadidasList.map { it.raza!! },
                                     "edadMascota" to mascotasAñadidasList.map { it.edad!! },
                                     "valoracionMascota" to mascotasAñadidasList.map { it.valoraciones?.average() ?: 0.0 },

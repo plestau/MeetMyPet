@@ -12,7 +12,7 @@ data class MensajePrivado(
     val fechaHora: Date = Date(),
     val idEmisor: String = "",
     val idAdaptador: Int = 0,
-    val urlAvatar: String = "",
+    var urlAvatar: String = "",
     val nombreEmisor: String = "",
     val tituloAnuncio: String = "",
     var estado_noti:Int? = null,

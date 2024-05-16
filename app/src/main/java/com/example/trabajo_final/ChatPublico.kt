@@ -28,7 +28,7 @@ class ChatPublico : AppCompatActivity() {
         val fragmentInferior = FragmentInferior()
         supportFragmentManager.beginTransaction().add(R.id.fragment_inferior, fragmentInferior).commit()
 
-        adapter = ChatPublicoAdapter(idUsuarioActual)
+        adapter = ChatPublicoAdapter(idUsuarioActual, findViewById(R.id.rvMensajes))
         val rvMensajes = findViewById<RecyclerView>(R.id.rvMensajes)
         rvMensajes.layoutManager = LinearLayoutManager(this)
         rvMensajes.adapter = adapter

@@ -6,9 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -28,7 +33,6 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
 
     override fun onBindViewHolder(holder: PrivateChatViewHolder, position: Int) {
         val privateChat = privateChats[position]
-        Glide.with(holder.itemView.context).load(privateChat.urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(holder.itemView.context)).into(holder.ivAvatar)
         holder.tvContenido.text = privateChat.contenido
         holder.tvFechaHora.text = privateChat.fechaHora.toString()
         holder.tvTituloAnuncio.text = privateChat.tituloAnuncio
@@ -45,6 +49,30 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
             intent.putExtra("idChatPrivado", idChatPrivado)
             holder.itemView.context.startActivity(intent)
         }
+
+        val lastMessageRef = FirebaseDatabase.getInstance().getReference("app/chats_privados/${privateChat.idsEmisorReceptor}")
+        lastMessageRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val lastMessage = dataSnapshot.children.lastOrNull()?.getValue(MensajePrivado::class.java)
+                if (lastMessage != null) {
+                    val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${lastMessage.idEmisor}")
+                    userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val urlAvatar = dataSnapshot.child("profilePic").getValue(String::class.java) ?: ""
+                            Glide.with(holder.itemView.context).load(urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(holder.itemView.context)).into(holder.ivAvatar)
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Toast.makeText(holder.itemView.context, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(holder.itemView.context, "Error al cargar el último mensaje", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun getItemCount() = privateChats.size

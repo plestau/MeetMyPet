@@ -1,5 +1,7 @@
 package com.example.trabajo_final
 
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,12 +15,13 @@ import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ChatPrivadoAdapter(private val idUsuarioActual: String) : RecyclerView.Adapter<HolderMensaje>() {
+class ChatPrivadoAdapter(private val idUsuarioActual: String, private val recyclerView: RecyclerView) : RecyclerView.Adapter<HolderMensaje>() {
     private var listMensaje: MutableList<MensajePrivado> = ArrayList()
 
     fun addMensaje(m: MensajePrivado) {
         listMensaje.add(m)
         notifyItemInserted(listMensaje.size)
+        recyclerView.scrollToPosition(listMensaje.size - 1)
     }
 
     fun clear() {
@@ -37,7 +40,8 @@ class ChatPrivadoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
         val mensaje = listMensaje[position]
         val layoutMensajeEnviado = holder.itemView.findViewById<LinearLayout>(R.id.layoutMensajeEnviado)
         val layoutMensajeRecibido = holder.itemView.findViewById<LinearLayout>(R.id.layoutMensajeRecibido)
-
+        Log.d("mensajeEmisor",mensaje.contenido +" "+ mensaje.idEmisor)
+        Log.d("idUsuarioActual", idUsuarioActual)
         if (mensaje.idEmisor == idUsuarioActual) {
             layoutMensajeEnviado.visibility = View.VISIBLE
             layoutMensajeRecibido.visibility = View.GONE
@@ -52,6 +56,11 @@ class ChatPrivadoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
             holder.mensajeRecibido.text = mensaje.contenido
             holder.horaRecibido.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
             Glide.with(holder.itemView.context).load(mensaje.urlAvatar).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfilRecibido)
+            holder.fotoMensajePerfilRecibido.setOnClickListener {
+                val intent = Intent(holder.itemView.context, PerfilUsuario::class.java)
+                intent.putExtra("USER_ID", mensaje.idEmisor)
+                holder.itemView.context.startActivity(intent)
+            }
         }
 
         if (userRol == "admin") {

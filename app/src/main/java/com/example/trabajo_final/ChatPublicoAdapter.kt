@@ -1,5 +1,6 @@
 package com.example.trabajo_final
 
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,12 +21,13 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ChatPublicoAdapter(private val idUsuarioActual: String) : RecyclerView.Adapter<HolderMensaje>() {
+class ChatPublicoAdapter(private val idUsuarioActual: String, private val recyclerView: RecyclerView) : RecyclerView.Adapter<HolderMensaje>() {
     private var listMensaje: MutableList<MensajePublico> = ArrayList()
 
     fun addMensaje(m: MensajePublico) {
         listMensaje.add(m)
         notifyItemInserted(listMensaje.size)
+        recyclerView.scrollToPosition(listMensaje.size - 1)
     }
 
     fun clear() {
@@ -48,7 +50,6 @@ class ChatPublicoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
         userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val updatedProfilePicUrl = dataSnapshot.child("profilePic").getValue(String::class.java)
-                // Actualiza la foto de perfil del usuario en el mensaje
                 if (mensaje.idEmisor == idUsuarioActual) {
                     Glide.with(holder.itemView.context).load(updatedProfilePicUrl).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfilEnviado)
                 } else {
@@ -75,6 +76,11 @@ class ChatPublicoAdapter(private val idUsuarioActual: String) : RecyclerView.Ada
             holder.mensajeRecibido.text = mensaje.contenido
             holder.horaRecibido.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
             Glide.with(holder.itemView.context).load(mensaje.urlAvatar).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfilRecibido)
+            holder.fotoMensajePerfilRecibido.setOnClickListener {
+                val intent = Intent(holder.itemView.context, PerfilUsuario::class.java)
+                intent.putExtra("USER_ID", mensaje.idEmisor)
+                holder.itemView.context.startActivity(intent)
+            }
         }
 
         if (userRol == "admin") {

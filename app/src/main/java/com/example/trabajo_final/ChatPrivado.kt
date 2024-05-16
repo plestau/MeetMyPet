@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.util.Util
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -37,8 +38,7 @@ class ChatPrivado : AppCompatActivity() {
         setContentView(R.layout.activity_chat_privado)
 
         val idUsuarioDueñoAnuncio = intent.getStringExtra("idUsuarioDueñoAnuncio") ?: ""
-        val idChatPrivado = intent.getStringExtra("idChatPrivado") ?: ""
-        val idUsuarioActual = idChatPrivado.split("@")[0]
+        val idUsuarioActual = FirebaseAuth.getInstance().currentUser!!.uid
         val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
         val userRol = sharedPref.getString("role", "user")
         val llEnviarMensaje = findViewById<LinearLayout>(R.id.llEnviarMensaje)
@@ -60,7 +60,7 @@ class ChatPrivado : AppCompatActivity() {
             val fragmentInferior = FragmentInferior()
             supportFragmentManager.beginTransaction().add(R.id.fragment_inferior, fragmentInferior).commit()
 
-            adapter = ChatPrivadoAdapter(idUsuarioActual)
+            adapter = ChatPrivadoAdapter(idUsuarioActual, findViewById(R.id.rvMensajes))
             val rvMensajes = findViewById<RecyclerView>(R.id.rvMensajes)
             rvMensajes.layoutManager = LinearLayoutManager(this)
             rvMensajes.adapter = adapter
@@ -126,19 +126,37 @@ class ChatPrivado : AppCompatActivity() {
     }
 
     private fun leerMensajes() {
-        database.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                adapter.clear()
-                for (postSnapshot in dataSnapshot.children) {
-                    val mensaje = postSnapshot.getValue(MensajePrivado::class.java)
-                    if (mensaje != null) {
-                        adapter.addMensaje(mensaje)
-                    }
+        database.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+                val mensaje = dataSnapshot.getValue(MensajePrivado::class.java)
+                if (mensaje != null) {
+                    // Get the sender's current profile picture URL
+                    val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${mensaje.idEmisor}")
+                    userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val urlAvatar = dataSnapshot.child("profilePic").getValue(String::class.java) ?: ""
+                            // Update the message's profile picture URL
+                            mensaje.urlAvatar = urlAvatar
+                            adapter.addMensaje(mensaje)
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Toast.makeText(this@ChatPrivado, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                 }
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle possible errors.
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onCancelled(error: DatabaseError) {
             }
         })
     }

@@ -158,7 +158,7 @@ class Buscador : AppCompatActivity() {
                         spinnerRazaMascota.visibility = View.GONE
                         datePickerDialog.show()
                     }
-                    "Raza de mascota" -> {
+                    "Tipo de mascota" -> {
                         editTextBusqueda.visibility = View.GONE
                         spinnerTipoAnuncio.visibility = View.GONE
                         spinnerRazaMascota.visibility = View.VISIBLE
@@ -188,7 +188,7 @@ class Buscador : AppCompatActivity() {
                         return@setOnClickListener
                     }
                 }
-                "Raza de mascota" -> {
+                "Tipo de mascota" -> {
                     if (spinnerRazaMascota.selectedItemPosition != 0) {
                         textoBusqueda = spinnerRazaMascota.selectedItem.toString()
                     } else {
@@ -229,7 +229,7 @@ class Buscador : AppCompatActivity() {
                         spinnerTipoAnuncio.visibility = View.GONE
                         editTextBusqueda.visibility = View.VISIBLE
                     }
-                    if (filtroSeleccionado == "Raza de mascota") {
+                    if (filtroSeleccionado == "Tipo de mascota") {
                         spinnerRazaMascota.visibility = View.GONE
                         editTextBusqueda.visibility = View.VISIBLE
                     }

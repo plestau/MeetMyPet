@@ -29,7 +29,7 @@
         <item>Fecha</item>
         <item>Ubicación</item>
         <item>Nombre de mascota</item>
-        <item>Raza de mascota</item>
+        <item>Tipo de mascota</item>
         <item>Precio</item>
         <item>Título</item>
     </string-array>

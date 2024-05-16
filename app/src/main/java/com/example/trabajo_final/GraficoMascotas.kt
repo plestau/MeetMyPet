@@ -1,6 +1,8 @@
 package com.example.trabajo_final
 
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -24,6 +26,7 @@ class GraficoMascotas : AppCompatActivity() {
             insets
         }
 
+        val tvNoData = findViewById<TextView>(R.id.tvNoData)
         val pieChart = findViewById<PieChart>(R.id.pieChart)
         val database = FirebaseDatabase.getInstance()
         val userId = intent.getStringExtra("USER_ID")
@@ -43,7 +46,8 @@ class GraficoMascotas : AppCompatActivity() {
                     // Comprueba si el estado es "En curso", "terminado" o "valorado"
                     if (estado in listOf("En curso", "terminado", "valorado")) {
                         // Obtiene la lista de tipos de mascota
-                        val petTypes = adSnapshot.child("razaMascota").getValue<ArrayList<String>>() ?: continue
+                        val petTypes = adSnapshot.child("razaMascota").getValue<ArrayList<String>>()
+                            ?: continue
 
                         // Incrementa el contador para este tipo de mascota
                         for (petType in petTypes) {
@@ -57,17 +61,23 @@ class GraficoMascotas : AppCompatActivity() {
                 val entries = petCounts.map { (type, count) -> PieEntry(count, type) }
 
                 // Crea el conjunto de datos y configura el gráfico
-                val dataSet = PieDataSet(entries, "")
-                dataSet.colors = ColorTemplate.COLORFUL_COLORS.toList()
+                if (entries.isEmpty()) {
+                    pieChart.visibility = View.GONE
+                    tvNoData.visibility = View.VISIBLE
+                } else {
+                    // Crea el conjunto de datos y configura el gráfico
+                    val dataSet = PieDataSet(entries, "")
+                    dataSet.colors = ColorTemplate.COLORFUL_COLORS.toList()
 
-                val data = PieData(dataSet)
-                pieChart.data = data
-                pieChart.invalidate()
+                    val data = PieData(dataSet)
+                    pieChart.data = data
+                    pieChart.invalidate()
 
-                pieChart.description.isEnabled = false
-                pieChart.animateY(1000)
-                pieChart.centerText = "Mascotas cuidadas"
-                pieChart.invalidate()
+                    pieChart.description.isEnabled = false
+                    pieChart.animateY(1000)
+                    pieChart.centerText = "Mascotas cuidadas"
+                    pieChart.invalidate()
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

@@ -122,7 +122,6 @@ class FragmentPreferenciasCuenta : Fragment() {
         cerrarSesion.setOnClickListener {
             auth.signOut()
             googleSignInClient.signOut()
-            requireActivity().finish()
             // Eliminar el rol del usuario de SharedPreferences
             val sharedPref = requireActivity().getSharedPreferences("userRole", 0)
             FragmentInferior.actividadActual = "Buscar"
@@ -141,6 +140,7 @@ class FragmentPreferenciasCuenta : Fragment() {
                 imgPerfil.setColorFilter(originalColor)
                 txtPerfil.setTextColor(originalColor)
             }
+            requireActivity().finish()
             requireActivity().finishAffinity()
             val intent = Intent(requireContext(), LoginOptions::class.java)
             startActivity(intent)

@@ -84,6 +84,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
         private var ivValorar: ImageView = itemView.findViewById(R.id.ivValorar)
         private val ivPerfilPaseador: ImageView = itemView.findViewById(R.id.ivPerfilPaseador)
         private val llPaseadorAnuncio: LinearLayout = itemView.findViewById(R.id.llPaseadorAnuncio)
+        private val ivPerfilDueño: ImageView = itemView.findViewById(R.id.ivPerfilDueño)
         private var nombrePaseador: String = ""
         val sharedPref = itemView.context.getSharedPreferences("userRole", Context.MODE_PRIVATE)
         val userRol = sharedPref.getString("role", "user")
@@ -121,6 +122,13 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
             ivTerminar.setColorFilter(color)
             ivAprobar.setColorFilter(color)
             ivDenegar.setColorFilter(color)
+            ivPerfilDueño.setColorFilter(color)
+
+            ivPerfilDueño.setOnClickListener {
+                val intent = Intent(it.context, PerfilUsuario::class.java)
+                intent.putExtra("USER_ID", anuncio.usuarioDueño)
+                it.context.startActivity(intent)
+            }
 
             when (activityName) {
                 "MisAnuncios" -> {
@@ -140,28 +148,28 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                                     ivAprobar.visibility = View.VISIBLE
                                     ivDenegar.visibility = View.VISIBLE
                                     llPaseadorAnuncio.visibility = View.VISIBLE
-                                    tvNombrePaseador.text = nombrePaseador
+                                    tvNombrePaseador.text = "Reservador por: " + nombrePaseador
                                     btnApuntarse.visibility = View.GONE
                                 } else if (anuncio.estado == "En curso") {
                                     ivEditarAnuncio.visibility = View.GONE
                                     ivAprobar.visibility = View.GONE
                                     ivDenegar.visibility = View.GONE
                                     llPaseadorAnuncio.visibility = View.VISIBLE
-                                    tvNombrePaseador.text = nombrePaseador
+                                    tvNombrePaseador.text = "Paseador: " + nombrePaseador
                                     ivTerminar.visibility = View.VISIBLE
                                 } else if (anuncio.estado == "terminado") {
                                     ivEditarAnuncio.visibility = View.GONE
                                     ivAprobar.visibility = View.GONE
                                     ivDenegar.visibility = View.GONE
                                     llPaseadorAnuncio.visibility = View.VISIBLE
-                                    tvNombrePaseador.text = nombrePaseador
+                                    tvNombrePaseador.text = "Paseador: " + nombrePaseador
                                     ivValorar.visibility = View.GONE
                                 } else if (anuncio.estado == "valorado") {
                                     ivEditarAnuncio.visibility = View.GONE
                                     ivAprobar.visibility = View.GONE
                                     ivDenegar.visibility = View.GONE
                                     llPaseadorAnuncio.visibility = View.VISIBLE
-                                    tvNombrePaseador.text = nombrePaseador
+                                    tvNombrePaseador.text = "Paseador: " + nombrePaseador
                                     ivValorar.visibility = View.GONE
                                 } else {
                                     ivEditarAnuncio.visibility = View.GONE

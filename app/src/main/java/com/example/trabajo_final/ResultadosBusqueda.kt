@@ -38,6 +38,7 @@ class ResultadosBusqueda : AppCompatActivity() {
                     val anuncio = postSnapshot.getValue(Anuncio::class.java)
                     if (anuncio != null) {
                         // Filtrar anuncios según los filtros recibidos
+                        // si solo quiero mostrar anuncios que no han sido aceptados ni terminados, puedo hacerlo con && anuncio.estado == "creado"
                         if (cumpleConFiltros(anuncio, filtros)) {
                             anuncios.add(anuncio)
                         }
@@ -72,7 +73,7 @@ class ResultadosBusqueda : AppCompatActivity() {
                 }
                 "Ubicación" -> if (anuncio.lugar?.lowercase(Locale.getDefault()) != filtro.second.lowercase(Locale.getDefault())) return false
                 "Nombre de mascota" -> if (!anuncio.nombreMascota?.contains(filtro.second.lowercase())!!) return false
-                "Raza de mascota" -> if (!anuncio.razaMascota?.contains(filtro.second)!!) return false
+                "Tipo de mascota" -> if (!anuncio.razaMascota?.contains(filtro.second)!!) return false
                 "Precio" -> if (anuncio.precio?.toDouble() != filtro.second.toDouble()) return false
                 "Título" -> if (!anuncio.titulo?.lowercase(Locale.getDefault())?.contains(filtro.second.lowercase(Locale.getDefault()))!!) return false
             }
