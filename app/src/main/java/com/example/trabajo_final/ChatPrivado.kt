@@ -1,6 +1,7 @@
 package com.example.trabajo_final
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -50,39 +51,49 @@ class ChatPrivado : AppCompatActivity() {
         // Actualizar la vista con los datos del usuario receptor
         val tvNombreReceptor = findViewById<TextView>(R.id.nombreReceptor)
         val ivFotoPerfilReceptor = findViewById<ImageView>(R.id.fotoPerfilReceptor)
-        val nombreReceptor = intent.getStringExtra("nombreReceptor") ?: ""
-        val urlAvatar = intent.getStringExtra("urlAvatar") ?: ""
-        tvNombreReceptor.text = nombreReceptor
-        Glide.with(this@ChatPrivado).load(urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(this@ChatPrivado)).into(ivFotoPerfilReceptor)
-
-        // Verificar si el usuario actual es uno de los usuarios del chat
-        if (idUsuarioActual == idUsuarioDueñoAnuncio || idUsuarioActual == idUsuarioActual) {
-            val fragmentInferior = FragmentInferior()
-            supportFragmentManager.beginTransaction().add(R.id.fragment_inferior, fragmentInferior).commit()
-
-            adapter = ChatPrivadoAdapter(idUsuarioActual, findViewById(R.id.rvMensajes))
-            val rvMensajes = findViewById<RecyclerView>(R.id.rvMensajes)
-            rvMensajes.layoutManager = LinearLayoutManager(this)
-            rvMensajes.adapter = adapter
-
-            val idChatPrivado = intent.getStringExtra("idChatPrivado") ?: ""
-            Log.d("ChatPrivado", "ID chat privado: $idChatPrivado")
-            database = FirebaseDatabase.getInstance().getReference("app/chats_privados/$idChatPrivado")
-
-            txtMensaje = findViewById(R.id.txtMensaje)
-            btnEnviar = findViewById(R.id.btnEnviar)
-            btnEnviar.setOnClickListener {
-                val mensaje = txtMensaje.text.toString()
-                if (mensaje.isNotEmpty()) {
-                    enviarMensaje(mensaje)
-                    txtMensaje.text.clear()
+        val idChatPrivado = intent.getStringExtra("idChatPrivado") ?: ""
+        val idReceptor = if (idUsuarioActual == idChatPrivado.split("@")[0]) idChatPrivado.split("@")[1] else idChatPrivado.split("@")[0]
+        val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/$idReceptor")
+        val llTituloChatPrivado = findViewById<LinearLayout>(R.id.lltituloChatPrivado)
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val nombreReceptor = dataSnapshot.child("nombre").getValue(String::class.java) ?: ""
+                val urlAvatar = dataSnapshot.child("profilePic").getValue(String::class.java) ?: ""
+                tvNombreReceptor.text = nombreReceptor
+                Glide.with(this@ChatPrivado).load(urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(this@ChatPrivado)).into(ivFotoPerfilReceptor)
+                llTituloChatPrivado.setOnClickListener {
+                    val intent = Intent(this@ChatPrivado, PerfilUsuario::class.java)
+                    intent.putExtra("USER_ID", idReceptor)
+                    startActivity(intent)
                 }
             }
-            leerMensajes()
-        } else {
-            Toast.makeText(this, "No tienes permiso para ver esta conversación", Toast.LENGTH_SHORT).show()
-            finish()
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(this@ChatPrivado, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+
+        val fragmentInferior = FragmentInferior()
+        supportFragmentManager.beginTransaction().add(R.id.fragment_inferior, fragmentInferior).commit()
+
+        adapter = ChatPrivadoAdapter(idUsuarioActual, findViewById(R.id.rvMensajes))
+        val rvMensajes = findViewById<RecyclerView>(R.id.rvMensajes)
+        rvMensajes.layoutManager = LinearLayoutManager(this)
+        rvMensajes.adapter = adapter
+
+        database = FirebaseDatabase.getInstance().getReference("app/chats_privados/$idChatPrivado")
+
+        txtMensaje = findViewById(R.id.txtMensaje)
+        btnEnviar = findViewById(R.id.btnEnviar)
+        btnEnviar.setOnClickListener {
+            val mensaje = txtMensaje.text.toString()
+            if (mensaje.isNotEmpty()) {
+                enviarMensaje(mensaje)
+                txtMensaje.text.clear()
+            }
         }
+        leerMensajes()
     }
 
     private fun enviarMensaje(contenido: String) {
