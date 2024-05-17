@@ -24,6 +24,7 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
         val tvContenido: TextView = itemView.findViewById(R.id.tv_contenido)
         val tvFechaHora: TextView = itemView.findViewById(R.id.tv_fecha_hora)
         val tvTituloAnuncio: TextView = itemView.findViewById(R.id.tv_titulo_anuncio)
+        val ivUltimoMensaje: ImageView = itemView.findViewById(R.id.iv_ultimo_mensaje)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrivateChatViewHolder {
@@ -73,6 +74,11 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
                 Toast.makeText(holder.itemView.context, "Error al cargar el último mensaje", Toast.LENGTH_SHORT).show()
             }
         })
+
+        if(privateChat.contenido.startsWith("https://") || privateChat.contenido.startsWith("http://")) {
+            Glide.with(holder.itemView.context).load(privateChat.contenido).override(500, 500).into(holder.ivUltimoMensaje)
+            holder.tvContenido.visibility = View.GONE
+        }
     }
 
     override fun getItemCount() = privateChats.size

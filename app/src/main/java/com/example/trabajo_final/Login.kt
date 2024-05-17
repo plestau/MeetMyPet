@@ -21,7 +21,6 @@ class Login : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         val btnLogin = findViewById<Button>(R.id.btnLogin)
-        val btnPassOlvidada = findViewById<TextView>(R.id.btnPassOlvidada)
 
         btnLogin.setOnClickListener {
             val email = findViewById<EditText>(R.id.email).text.toString()
@@ -82,11 +81,6 @@ class Login : AppCompatActivity() {
                         }
                     }
                 }
-        }
-
-        btnPassOlvidada.setOnClickListener {
-            // recuperar la contraseña
-
         }
     }
 }

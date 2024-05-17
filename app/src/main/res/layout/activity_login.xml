@@ -83,16 +83,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_layout" />
-
-    <TextView
-        android:id="@+id/btnPassOlvidada"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="46dp"
-        android:textSize="20sp"
-        android:text="Contraseña olvidada"
-        android:textColor="@color/texto"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
 </androidx.constraintlayout.widget.ConstraintLayout>

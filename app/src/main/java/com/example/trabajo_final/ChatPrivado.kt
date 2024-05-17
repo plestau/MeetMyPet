@@ -2,7 +2,9 @@ package com.example.trabajo_final
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -12,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +28,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 import java.util.Date
+import java.util.UUID
 
 class ChatPrivado : AppCompatActivity() {
     private lateinit var adapter: ChatPrivadoAdapter
@@ -38,7 +44,6 @@ class ChatPrivado : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_privado)
 
-        val idUsuarioDueñoAnuncio = intent.getStringExtra("idUsuarioDueñoAnuncio") ?: ""
         val idUsuarioActual = FirebaseAuth.getInstance().currentUser!!.uid
         val sharedPref = getSharedPreferences("userRole", Context.MODE_PRIVATE)
         val userRol = sharedPref.getString("role", "user")
@@ -59,8 +64,12 @@ class ChatPrivado : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val nombreReceptor = dataSnapshot.child("nombre").getValue(String::class.java) ?: ""
                 val urlAvatar = dataSnapshot.child("profilePic").getValue(String::class.java) ?: ""
-                tvNombreReceptor.text = nombreReceptor
-                Glide.with(this@ChatPrivado).load(urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(this@ChatPrivado)).into(ivFotoPerfilReceptor)
+                if (userRol == "admin") {
+                    tvNombreReceptor.text = "Chat privado"
+                    ivFotoPerfilReceptor.visibility = View.GONE
+                } else {
+                    tvNombreReceptor.text = nombreReceptor
+                    Glide.with(this@ChatPrivado).load(urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(this@ChatPrivado)).into(ivFotoPerfilReceptor)                }
                 llTituloChatPrivado.setOnClickListener {
                     val intent = Intent(this@ChatPrivado, PerfilUsuario::class.java)
                     intent.putExtra("USER_ID", idReceptor)
@@ -93,6 +102,10 @@ class ChatPrivado : AppCompatActivity() {
                 txtMensaje.text.clear()
             }
         }
+        val btnImagen = findViewById<ImageView>(R.id.imageBtn)
+        btnImagen.setOnClickListener {
+            mostrarDialogoSeleccion()
+        }
         leerMensajes()
     }
 
@@ -106,11 +119,6 @@ class ChatPrivado : AppCompatActivity() {
                 val urlAvatar = dataSnapshot.child("profilePic").getValue(String::class.java) ?: ""
                 val idChatPrivado = intent.getStringExtra("idChatPrivado") ?: ""
                 val tituloAnuncio = intent.getStringExtra("tituloAnuncio") ?: ""
-
-                val fotoPerfilReceptor = findViewById<ImageView>(R.id.fotoPerfilReceptor)
-                val nombreReceptor = findViewById<TextView>(R.id.nombreReceptor)
-                nombreReceptor.text = nombreEmisor
-                Glide.with(this@ChatPrivado).load(urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(this@ChatPrivado)).into(fotoPerfilReceptor)
 
                 // Verificar si ya existe un chat privado
                 val chatPrivadoRef = FirebaseDatabase.getInstance().getReference("app/chats_privados/$idChatPrivado")
@@ -158,10 +166,30 @@ class ChatPrivado : AppCompatActivity() {
                 }
             }
 
+
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
             }
 
-            override fun onChildRemoved(snapshot: DataSnapshot) {
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                val mensaje = dataSnapshot.getValue(MensajePrivado::class.java)
+                if (mensaje != null) {
+                    val index = adapter.listMensaje.indexOfFirst { it.id == mensaje.id }
+                    if (index != -1) {
+                        adapter.listMensaje.removeAt(index)
+                        adapter.notifyItemRemoved(index)
+                        // eliminar el mensaje de la base de datos
+                        val idChatPrivado = intent.getStringExtra("idChatPrivado") ?: ""
+                        val mensajeRef = FirebaseDatabase.getInstance().getReference("app/chats_privados/$idChatPrivado/${mensaje.id}")
+                        mensajeRef.removeValue()
+                        // elimina la foto del mensaje si existe
+                        if (mensaje.contenido.startsWith("https://") || mensaje.contenido.startsWith("http://")) {
+                            val storage = FirebaseStorage.getInstance()
+                            val storageRef = storage.reference
+                            val ref = storageRef.child("app/chats_privados/$idChatPrivado/${mensaje.id}")
+                            ref.delete()
+                        }
+                    }
+                }
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -170,5 +198,70 @@ class ChatPrivado : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
             }
         })
+    }
+
+    private fun mostrarDialogoSeleccion() {
+        val opciones = arrayOf("Cámara", "Galería")
+        val builder = AlertDialog.Builder(this).apply {
+            setTitle("Seleccionar imagen")
+            setItems(opciones) { dialog, which ->
+                when (which) {
+                    0 -> tomarFoto()
+                    1 -> seleccionarDeGaleria()
+                }
+            }
+        }
+        builder.show()
+    }
+
+    private fun tomarFoto() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(intent, 0)
+    }
+
+    private fun seleccionarDeGaleria() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, 1)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            val uri = data?.data
+            if (requestCode == 0) {
+                val bitmap = data?.extras?.get("data") as Bitmap
+                val baos = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                val data = baos.toByteArray()
+                val storage = FirebaseStorage.getInstance()
+                val storageRef = storage.reference
+                val idChatPrivado = intent.getStringExtra("idChatPrivado") ?: ""
+                val ref = storageRef.child("app/chats_privados/$idChatPrivado/" + UUID.randomUUID().toString())
+                val uploadTask = ref.putBytes(data)
+                uploadTask.addOnSuccessListener {
+                    ref.downloadUrl.addOnSuccessListener {
+                        val url = it.toString()
+                        enviarMensaje(url)
+                    }
+                }
+            } else if (requestCode == 1) {
+                val storage = FirebaseStorage.getInstance()
+                val storageRef = storage.reference
+                val ref = storageRef.child("app/chats_privados/" + UUID.randomUUID().toString())
+                val uploadTask = ref.putFile(uri!!)
+                uploadTask.addOnSuccessListener {
+                    ref.downloadUrl.addOnSuccessListener {
+                        val url = it.toString()
+                        enviarMensaje(url)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        FragmentInferior.actividadActual = "Mensajes"
     }
 }

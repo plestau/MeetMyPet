@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class ChatPrivadoAdapter(private val idUsuarioActual: String, private val recyclerView: RecyclerView) : RecyclerView.Adapter<HolderMensaje>() {
-    private var listMensaje: MutableList<MensajePrivado> = ArrayList()
+    var listMensaje: MutableList<MensajePrivado> = ArrayList()
 
     fun addMensaje(m: MensajePrivado) {
         listMensaje.add(m)
@@ -45,6 +45,18 @@ class ChatPrivadoAdapter(private val idUsuarioActual: String, private val recycl
         if (mensaje.idEmisor == idUsuarioActual) {
             layoutMensajeEnviado.visibility = View.VISIBLE
             layoutMensajeRecibido.visibility = View.GONE
+            // Verificar si el mensaje es una URL de imagen
+            if (mensaje.contenido.startsWith("https://") || mensaje.contenido.startsWith("http://")) {
+                // Es una URL de imagen, cargar la imagen
+                holder.mensajeEnviado.visibility = View.GONE
+                holder.fotoMensajeEnviado.visibility = View.VISIBLE
+                Glide.with(holder.itemView.context).load(mensaje.contenido).override(500, 500).into(holder.fotoMensajeEnviado)
+            } else {
+                // No es una URL de imagen, mostrar el texto
+                holder.mensajeEnviado.visibility = View.VISIBLE
+                holder.fotoMensajeEnviado.visibility = View.GONE
+                holder.mensajeEnviado.text = mensaje.contenido
+            }
             holder.nombreEnviado.text = "Yo"
             holder.mensajeEnviado.text = mensaje.contenido
             holder.horaEnviado.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
@@ -52,6 +64,17 @@ class ChatPrivadoAdapter(private val idUsuarioActual: String, private val recycl
         } else {
             layoutMensajeEnviado.visibility = View.GONE
             layoutMensajeRecibido.visibility = View.VISIBLE
+            if (mensaje.contenido.startsWith("https://") || mensaje.contenido.startsWith("http://")) {
+                // Es una URL de imagen, cargar la imagen
+                holder.mensajeRecibido.visibility = View.GONE
+                holder.fotoMensajeRecibido.visibility = View.VISIBLE
+                Glide.with(holder.itemView.context).load(mensaje.contenido).override(500, 500).into(holder.fotoMensajeRecibido)
+            } else {
+                // No es una URL de imagen, mostrar el texto
+                holder.mensajeRecibido.visibility = View.VISIBLE
+                holder.fotoMensajeRecibido.visibility = View.GONE
+                holder.mensajeRecibido.text = mensaje.contenido
+            }
             holder.nombreRecibido.text = mensaje.nombreEmisor
             holder.mensajeRecibido.text = mensaje.contenido
             holder.horaRecibido.text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(mensaje.fechaHora)
