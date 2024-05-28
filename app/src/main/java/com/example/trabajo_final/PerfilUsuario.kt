@@ -134,7 +134,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
     private fun loadUserData(userId: String) {
         auth = FirebaseAuth.getInstance()
         val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/$userId")
-        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val usuario = dataSnapshot.getValue(Usuario::class.java)
                 if (usuario != null) {
@@ -145,7 +145,7 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
                     findViewById<TextView>(R.id.telefono).text = "Teléfono: ${usuario.n_telefono}"
                     findViewById<TextView>(R.id.fechaRegistro).text = "Fecha de registro: ${usuario.fecha_registro}"
                     findViewById<RatingBar>(R.id.valoracion).rating = usuario.valoraciones?.average()?.toFloat() ?: 0f
-                    findViewById<TextView>(R.id.biografia).text = "Biografía: ${usuario.biografia}"
+                    findViewById<TextView>(R.id.biografia).text = "${usuario.biografia}"
 
                     profilePicRef.downloadUrl.addOnSuccessListener { uri ->
                         val imageView = findViewById<ImageView>(R.id.fotoPerfil)

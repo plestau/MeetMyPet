@@ -101,7 +101,8 @@ class FragmentInferior : Fragment() {
             val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${user?.uid}")
 
             userRef.get().addOnSuccessListener { dataSnapshot ->
-                val mascotas = dataSnapshot.child("mascotas").value as ArrayList<String>?
+                val mascotasMap = dataSnapshot.child("mascotas").value as HashMap<String, String>?
+                val mascotas = mascotasMap?.values?.toList()
 
                 if (mascotas.isNullOrEmpty()) {
                     Toast.makeText(context, "Primero debes añadir una mascota en Perfil", Toast.LENGTH_SHORT).show()
