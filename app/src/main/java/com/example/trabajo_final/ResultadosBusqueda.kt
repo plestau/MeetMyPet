@@ -1,6 +1,8 @@
 package com.example.trabajo_final
 
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,12 +39,15 @@ class ResultadosBusqueda : AppCompatActivity() {
                 for (postSnapshot in snapshot.children) {
                     val anuncio = postSnapshot.getValue(Anuncio::class.java)
                     if (anuncio != null) {
-                        // Filtrar anuncios según los filtros recibidos
-                        // si solo quiero mostrar anuncios que no han sido aceptados ni terminados, puedo hacerlo con && anuncio.estado == "creado"
                         if (cumpleConFiltros(anuncio, filtros)) {
                             anuncios.add(anuncio)
                         }
                     }
+                }
+                if (anuncios.isEmpty()) {
+                    findViewById<TextView>(R.id.tvNoHayAnuncios).visibility = View.VISIBLE
+                } else {
+                    findViewById<TextView>(R.id.tvNoHayAnuncios).visibility = View.GONE
                 }
                 anuncioAdapter.notifyDataSetChanged()
             }

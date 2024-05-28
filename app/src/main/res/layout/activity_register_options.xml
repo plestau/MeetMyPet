@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:textSize="25sp"
             android:gravity="center_vertical"
-            android:text="Continuar con Google"
+            android:text="Registro con Google"
             android:textAllCaps="false" />
 
         <ImageView
@@ -88,7 +88,7 @@
             android:layout_weight="1"
             android:textSize="25sp"
             android:gravity="center_vertical"
-            android:text="Continuar con Email"
+            android:text="Registro con Email"
             android:textAllCaps="false" />
 
         <ImageView

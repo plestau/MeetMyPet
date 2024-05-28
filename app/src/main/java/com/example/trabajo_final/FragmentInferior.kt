@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import com.example.trabajo_final.R
 import com.example.trabajo_final.Buscador
@@ -18,6 +19,8 @@ import com.example.trabajo_final.MisAnuncios
 import com.example.trabajo_final.PerfilUsuario
 import com.example.trabajo_final.PublicarAnuncio
 import com.example.trabajo_final.SelectorChats
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class FragmentInferior : Fragment() {
     companion object {
@@ -94,12 +97,23 @@ class FragmentInferior : Fragment() {
 
             selectedCard = it as CardView
 
-            if (FragmentInferior.actividadActual != "Publicar") {
-                val intent = Intent(context, PublicarAnuncio::class.java)
-                startActivity(intent)
-                FragmentInferior.actividadActual = "Publicar"
-                selectedCardId = R.id.card_publicar
-                actualizarColor()
+            val user = FirebaseAuth.getInstance().currentUser
+            val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${user?.uid}")
+
+            userRef.get().addOnSuccessListener { dataSnapshot ->
+                val mascotas = dataSnapshot.child("mascotas").value as ArrayList<String>?
+
+                if (mascotas.isNullOrEmpty()) {
+                    Toast.makeText(context, "Primero debes añadir una mascota en Perfil", Toast.LENGTH_SHORT).show()
+                } else {
+                    if (FragmentInferior.actividadActual != "Publicar") {
+                        val intent = Intent(context, PublicarAnuncio::class.java)
+                        startActivity(intent)
+                        FragmentInferior.actividadActual = "Publicar"
+                        selectedCardId = R.id.card_publicar
+                        actualizarColor()
+                    }
+                }
             }
         }
 
