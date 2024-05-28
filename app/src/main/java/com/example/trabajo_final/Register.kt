@@ -94,39 +94,63 @@ class Register : AppCompatActivity() {
                             val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${user?.uid}")
                             val role = if (email == "admin@admin.com" && password == "administrador") { "admin" } else { "user" }
                             CoroutineScope(Dispatchers.IO).launch {
+                                var profilePicUrl = ""
                                 if (profilePic != null) {
                                     // Guarda la imagen de perfil en una carpeta con el nombre del ID del usuario
                                     val profilePicRef = FirebaseStorage.getInstance().getReference("app/usuarios/${user?.uid}/profile_pic.jpg")
-                                    profilePicRef.putFile(profilePic!!).addOnSuccessListener {
-                                        profilePicRef.downloadUrl.addOnSuccessListener { uri ->
-                                            val profilePicUrl = uri.toString()
-                                            Log.d("Register", "URL de la foto de perfil: $profilePicUrl")
+                                    val uploadTask = profilePicRef.putFile(profilePic!!)
+                                    uploadTask.await() // Espera a que la foto de perfil se suba a Firebase Storage
+                                    profilePicRef.downloadUrl.addOnSuccessListener { uri ->
+                                        profilePicUrl = uri.toString()
 
-                                            val userInfo = mapOf(
-                                                "id" to user?.uid,
-                                                "nombre" to name,
-                                                "email" to email,
-                                                "password" to password,
-                                                "tipo" to role,
-                                                "profilePic" to profilePicUrl,
-                                                "biografia" to "",
-                                                "n_telefono" to "",
-                                                "valoraciones" to arrayListOf<Float>(),
-                                                "mascotas" to arrayListOf<String>(),
-                                                "fecha_registro" to Utilidades.obtenerFechaActual(),
-                                                "estado_noti" to Estado.CREADO,
-                                                "user_notificacion" to "",
-                                            )
-                                            userRef.setValue(userInfo)
+                                        val userInfo = mapOf(
+                                            "id" to user?.uid,
+                                            "nombre" to name,
+                                            "email" to email,
+                                            "password" to password,
+                                            "tipo" to role,
+                                            "profilePic" to profilePicUrl,
+                                            "biografia" to "",
+                                            "n_telefono" to "",
+                                            "valoraciones" to arrayListOf<Float>(),
+                                            "mascotas" to arrayListOf<String>(),
+                                            "fecha_registro" to Utilidades.obtenerFechaActual(),
+                                            "estado_noti" to Estado.CREADO,
+                                            "user_notificacion" to "",
+                                        )
+                                        userRef.setValue(userInfo)
 
-                                            val intent = Intent(this@Register, Login::class.java)
-                                            startActivity(intent)
-                                        }
+                                        Toast.makeText(baseContext, "Usuario registrado con éxito",
+                                            Toast.LENGTH_SHORT).show()
+
+                                        val intent = Intent(this@Register, Login::class.java)
+                                        startActivity(intent)
                                     }.await()
+                                } else {
+                                    val userInfo = mapOf(
+                                        "id" to user?.uid,
+                                        "nombre" to name,
+                                        "email" to email,
+                                        "password" to password,
+                                        "tipo" to role,
+                                        "profilePic" to profilePicUrl,
+                                        "biografia" to "",
+                                        "n_telefono" to "",
+                                        "valoraciones" to arrayListOf<Float>(),
+                                        "mascotas" to arrayListOf<String>(),
+                                        "fecha_registro" to Utilidades.obtenerFechaActual(),
+                                        "estado_noti" to Estado.CREADO,
+                                        "user_notificacion" to "",
+                                    )
+                                    userRef.setValue(userInfo)
+
                                     withContext(Dispatchers.Main) {
                                         Toast.makeText(baseContext, "Usuario registrado con éxito",
                                             Toast.LENGTH_SHORT).show()
                                     }
+
+                                    val intent = Intent(this@Register, Login::class.java)
+                                    startActivity(intent)
                                 }
                             }
                         } else {
@@ -178,6 +202,31 @@ class Register : AppCompatActivity() {
                             Toast.makeText(baseContext, "Usuario registrado con éxito",
                                 Toast.LENGTH_SHORT).show()
                         }
+                    } else {
+                        val userInfo = mapOf(
+                            "id" to user?.uid,
+                            "nombre" to name,
+                            "email" to email,
+                            "password" to password,
+                            "tipo" to role,
+                            "profilePic" to profilePicUrl,
+                            "biografia" to "",
+                            "n_telefono" to "",
+                            "valoraciones" to arrayListOf<Float>(),
+                            "mascotas" to arrayListOf<String>(),
+                            "fecha_registro" to Utilidades.obtenerFechaActual(),
+                            "estado_noti" to Estado.CREADO,
+                            "user_notificacion" to "",
+                        )
+                        userRef.setValue(userInfo)
+
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(baseContext, "Usuario registrado con éxito",
+                                Toast.LENGTH_SHORT).show()
+                        }
+
+                        val intent = Intent(this@Register, LoginOptions::class.java)
+                        startActivity(intent)
                     }
                 }
             }

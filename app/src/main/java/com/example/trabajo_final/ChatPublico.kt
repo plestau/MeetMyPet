@@ -56,7 +56,10 @@ class ChatPublico : AppCompatActivity() {
         userRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val nombreEmisor = dataSnapshot.child("nombre").getValue(String::class.java) ?: ""
-                val urlAvatar = dataSnapshot.child("profilePic").getValue(String::class.java) ?: ""
+                var urlAvatar = dataSnapshot.child("profilePic").getValue(String::class.java)
+                if (urlAvatar.isNullOrEmpty()) {
+                    urlAvatar = ""
+                }
                 val mensaje = MensajePublico(id!!, contenido, fechaHora, idUsuarioActual, 0, urlAvatar, nombreEmisor)
                 database.child(id).setValue(mensaje)
             }

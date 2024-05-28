@@ -23,6 +23,7 @@ import java.util.Locale
 
 class ChatPublicoAdapter(private val idUsuarioActual: String, private val recyclerView: RecyclerView) : RecyclerView.Adapter<HolderMensaje>() {
     private var listMensaje: MutableList<MensajePublico> = ArrayList()
+    private var isViewAttached = false
 
     fun addMensaje(m: MensajePublico) {
         listMensaje.add(m)
@@ -40,6 +41,16 @@ class ChatPublicoAdapter(private val idUsuarioActual: String, private val recycl
         return HolderMensaje(v)
     }
 
+    override fun onViewAttachedToWindow(holder: HolderMensaje) {
+        super.onViewAttachedToWindow(holder)
+        isViewAttached = true
+    }
+
+    override fun onViewDetachedFromWindow(holder: HolderMensaje) {
+        super.onViewDetachedFromWindow(holder)
+        isViewAttached = false
+    }
+
     override fun onBindViewHolder(holder: HolderMensaje, position: Int) {
         val sharedPref = holder.itemView.context.getSharedPreferences("userRole", 0)
         val userRol = sharedPref.getString("role", "user")
@@ -49,7 +60,10 @@ class ChatPublicoAdapter(private val idUsuarioActual: String, private val recycl
         val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/${mensaje.idEmisor}")
         userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val updatedProfilePicUrl = dataSnapshot.child("profilePic").getValue(String::class.java)
+                var updatedProfilePicUrl = dataSnapshot.child("profilePic").getValue(String::class.java)
+                if (updatedProfilePicUrl.isNullOrEmpty()) {
+                    updatedProfilePicUrl = ""
+                }
                 if (mensaje.idEmisor == idUsuarioActual) {
                     Glide.with(holder.itemView.context).load(updatedProfilePicUrl).placeholder(Utilidades.animacion_carga(holder.itemView.context)).transform(CircleCrop()).into(holder.fotoMensajePerfilEnviado)
                 } else {
@@ -58,7 +72,7 @@ class ChatPublicoAdapter(private val idUsuarioActual: String, private val recycl
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w("ChatPublicoAdapter", "loadPost:onCancelled", databaseError.toException())
+                Log.e("ChatPublicoAdapter", "Error al cargar la foto de perfil del usuario")
             }
         })
 

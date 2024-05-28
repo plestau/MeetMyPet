@@ -55,9 +55,35 @@ class SelectorChats : AppCompatActivity() {
                 val ultimoMensaje = dataSnapshot.children.lastOrNull()?.getValue(MensajePublico::class.java)
                 findViewById<TextView>(R.id.tv_last_public_message).text = ultimoMensaje?.contenido
                 findViewById<TextView>(R.id.tv_fecha_hora).text = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ultimoMensaje?.fechaHora ?: Date())
-                val urlAvatar = ultimoMensaje?.urlAvatar ?: ""
-                val ivAvatar = findViewById<ImageView>(R.id.iv_avatar)
-                Glide.with(this@SelectorChats).load(urlAvatar).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(this@SelectorChats)).into(ivAvatar)
+
+                // Get the ID of the user who sent the last message
+                val idUltimoEmisor = ultimoMensaje?.idEmisor
+
+                // Check if the activity is still valid
+                if (!this@SelectorChats.isFinishing && !this@SelectorChats.isDestroyed) {
+                    // Create a ValueEventListener for the user node
+                    val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/$idUltimoEmisor")
+                    userRef.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            // Get the updated profile picture URL
+                            val updatedProfilePicUrl = dataSnapshot.child("profilePic").getValue(String::class.java)
+
+                            // Load the updated profile picture URL into the ImageView
+                            val ivAvatar = findViewById<ImageView>(R.id.iv_avatar)
+                            Glide.with(this@SelectorChats).load(updatedProfilePicUrl).transform(CircleCrop()).placeholder(Utilidades.animacion_carga(this@SelectorChats)).into(ivAvatar)
+
+                            // Get the name of the user who sent the last message
+                            val nombreUltimoEmisor = dataSnapshot.child("nombre").getValue(String::class.java)
+
+                            // Set the name of the user who sent the last message in the TextView
+                            findViewById<TextView>(R.id.tv_nombre_emisor).text = nombreUltimoEmisor
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Log.e("SelectorChats", "Error al cargar la foto de perfil actualizada del usuario")
+                        }
+                    })
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
