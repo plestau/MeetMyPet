@@ -21,10 +21,9 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
 
     class PrivateChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivAvatar: ImageView = itemView.findViewById(R.id.iv_avatar)
-        val tvContenido: TextView = itemView.findViewById(R.id.tv_contenido)
+        val tvNombreEmisor: TextView = itemView.findViewById(R.id.tv_nombre_emisor)
         val tvFechaHora: TextView = itemView.findViewById(R.id.tv_fecha_hora)
-        val tvTituloAnuncio: TextView = itemView.findViewById(R.id.tv_titulo_anuncio)
-        val ivUltimoMensaje: ImageView = itemView.findViewById(R.id.iv_ultimo_mensaje)
+        val tvContenido: TextView = itemView.findViewById(R.id.tv_contenido)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrivateChatViewHolder {
@@ -35,8 +34,7 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
     override fun onBindViewHolder(holder: PrivateChatViewHolder, position: Int) {
         val privateChat = privateChats[position]
         holder.tvContenido.text = privateChat.contenido
-        holder.tvFechaHora.text = privateChat.fechaHora.toString()
-        holder.tvTituloAnuncio.text = privateChat.tituloAnuncio
+        holder.tvNombreEmisor.text = privateChat.nombreEmisor
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val formattedDate = dateFormat.format(privateChat.fechaHora)
         holder.tvFechaHora.text = formattedDate
@@ -76,7 +74,7 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
         })
 
         if(privateChat.contenido.startsWith("https://") || privateChat.contenido.startsWith("http://")) {
-            Glide.with(holder.itemView.context).load(privateChat.contenido).override(500, 500).into(holder.ivUltimoMensaje)
+            Glide.with(holder.itemView.context).load(privateChat.contenido).override(500, 500).into(holder.ivAvatar)
             holder.tvContenido.visibility = View.GONE
         }
     }

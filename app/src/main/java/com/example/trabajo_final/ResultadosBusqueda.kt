@@ -45,9 +45,9 @@ class ResultadosBusqueda : AppCompatActivity() {
                     }
                 }
                 if (anuncios.isEmpty()) {
-                    findViewById<TextView>(R.id.tvNoHayAnuncios).visibility = View.VISIBLE
+                    findViewById<TextView>(R.id.tvNoResultados).visibility = View.VISIBLE
                 } else {
-                    findViewById<TextView>(R.id.tvNoHayAnuncios).visibility = View.GONE
+                    findViewById<TextView>(R.id.tvNoResultados).visibility = View.GONE
                 }
                 anuncioAdapter.notifyDataSetChanged()
             }

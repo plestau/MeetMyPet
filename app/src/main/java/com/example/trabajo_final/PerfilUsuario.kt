@@ -124,8 +124,17 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
     private fun loadUserProfilePicture(userId: String) {
         val profilePicRef = FirebaseStorage.getInstance().getReference("app/usuarios/$userId/profile_pic.jpg")
         profilePicRef.downloadUrl.addOnSuccessListener { uri ->
-            val imageView = findViewById<ImageView>(R.id.fotoPerfil)
-            Glide.with(this@PerfilUsuario).load(uri).placeholder(Utilidades.animacion_carga(this@PerfilUsuario)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(this@PerfilUsuario) }
+            if (!isDestroyed) {
+                val imageView = findViewById<ImageView>(R.id.fotoPerfil)
+                Glide.with(this@PerfilUsuario)
+                    .load(uri)
+                    .placeholder(Utilidades.animacion_carga(this@PerfilUsuario))
+                    .transform(CircleCrop())
+                    .into(imageView)
+                    .apply { Utilidades.opcionesGlide(this@PerfilUsuario) }
+            } else {
+                Log.d("PerfilUsuario", "Activity is already destroyed. Cannot load image.")
+            }
         }.addOnFailureListener {
             Toast.makeText(this@PerfilUsuario, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
         }
@@ -136,23 +145,16 @@ class PerfilUsuario : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdded
         val userRef = FirebaseDatabase.getInstance().getReference("app/usuarios/$userId")
         userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (isDestroyed) return
                 val usuario = dataSnapshot.getValue(Usuario::class.java)
                 if (usuario != null) {
-                    val profilePicRef = FirebaseStorage.getInstance().getReference("app/usuarios/$userId/profile_pic.jpg")
-
                     findViewById<TextView>(R.id.nombreUsuario).text = usuario.nombre
                     findViewById<TextView>(R.id.correo).text = "Correo: ${usuario.email}"
                     findViewById<TextView>(R.id.telefono).text = "Teléfono: ${usuario.n_telefono}"
                     findViewById<TextView>(R.id.fechaRegistro).text = "Fecha de registro: ${usuario.fecha_registro}"
                     findViewById<RatingBar>(R.id.valoracion).rating = usuario.valoraciones?.average()?.toFloat() ?: 0f
                     findViewById<TextView>(R.id.biografia).text = "${usuario.biografia}"
-
-                    profilePicRef.downloadUrl.addOnSuccessListener { uri ->
-                        val imageView = findViewById<ImageView>(R.id.fotoPerfil)
-                        Glide.with(this@PerfilUsuario).load(uri).placeholder(Utilidades.animacion_carga(this@PerfilUsuario)).transform(CircleCrop()).into(imageView).apply { Utilidades.opcionesGlide(this@PerfilUsuario) }
-                    }.addOnFailureListener {
-                        Toast.makeText(this@PerfilUsuario, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
-                    }
+                    loadUserProfilePicture(userId)
 
                     val currentUserId = auth.currentUser?.uid
 

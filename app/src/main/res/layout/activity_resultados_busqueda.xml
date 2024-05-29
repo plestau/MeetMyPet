@@ -8,38 +8,35 @@
     tools:context=".ResultadosBusqueda">
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/tvTitulo"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Resultados de la búsqueda"
+        android:text="Resultados de búsqueda"
         android:textSize="24sp"
-        android:textAlignment="center"
-        android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/tvNoHayAnuncios"
+        android:id="@+id/tvNoResultados"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No hay anuncios con tus criterios de búsqueda"
+        android:text="No hay resultados"
         android:textSize="18sp"
-        android:textAlignment="center"
-        android:padding="16dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitulo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAnunciosFiltrados"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tvNoResultados"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/item_anuncio" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
