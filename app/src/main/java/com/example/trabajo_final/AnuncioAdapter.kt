@@ -90,8 +90,9 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
         val userRol = sharedPref.getString("role", "user")
 
         fun bind(anuncio: Anuncio) {
-            tvTituloAnuncio.text = anuncio.titulo
-            tvTituloAnuncio.text = anuncio.titulo?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString()}
+            anuncio.titulo?.let {
+                tvTituloAnuncio.text = it.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            }
             tvDescrpicionAnuncio.text = anuncio.descripcion
             tvFechaAnuncio.text = anuncio.fecha
             tvHoraAnuncio.text = anuncio.hora
@@ -204,6 +205,12 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         }
                         if (userRol == "admin") {
                             ivEditarAnuncio.visibility = View.VISIBLE
+                            ivValorar.visibility = View.GONE
+                            btnIniciarChat.visibility = View.GONE
+                            btnApuntarse.visibility = View.GONE
+                            ivTerminar.visibility = View.GONE
+                            ivAprobar.visibility = View.GONE
+                            ivDenegar.visibility = View.GONE
                         }
                     }
                 }

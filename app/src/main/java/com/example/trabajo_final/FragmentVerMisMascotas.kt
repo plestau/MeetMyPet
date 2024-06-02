@@ -60,7 +60,7 @@ class FragmentVerMisMascotas : Fragment() {
         }
 
         val fromPublicarAnuncio = arguments?.getBoolean("fromPublicarAnuncio", false) ?: false
-        val userId = arguments?.getString("USER_ID") // Obtiene el ID del usuario del bundle
+        val userId = arguments?.getString("USER_ID")
 
         if (userRole == "admin") {
             val usersRef = database.getReference("app/usuarios")

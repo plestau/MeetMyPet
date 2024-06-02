@@ -128,4 +128,13 @@
         android:layout_marginHorizontal="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tituloRegister" />
+
+    <ImageView
+        android:id="@+id/logo_tfg"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:src="@drawable/logo_tfg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/register" />
 </androidx.constraintlayout.widget.ConstraintLayout>

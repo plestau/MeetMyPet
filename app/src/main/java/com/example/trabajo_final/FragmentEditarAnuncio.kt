@@ -110,6 +110,7 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 arguments = Bundle().apply {
                     putBoolean("fromPublicarAnuncio", true)
                     putBoolean("mascotasClicables", true)
+                    putString("USER_ID", auth.currentUser?.uid) // Pass the user ID
                     putParcelableArrayList("mascotasAñadidasList", ArrayList(mascotasAñadidasList))
                 }
                 setTargetFragment(this@FragmentEditarAnuncio, 0)
