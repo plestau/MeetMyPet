@@ -128,24 +128,15 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 .setMessage("¿Estás seguro de que quieres borrar este anuncio?")
                 .setPositiveButton("Sí") { _, _ ->
                     val database = FirebaseDatabase.getInstance()
-                    // anuncioRef es la referencia al anuncio que se desea borrar que coge el id del anuncio de Firebase
                     val anuncioRef = database.getReference("app/anuncios").child(anuncio.id!!)
-                    anuncioRef.removeValue().addOnCompleteListener { task ->
+                    anuncioRef.child("user_notificacion").setValue(anuncio.usuarioDueño)
+                    anuncioRef.child("estado_noti").setValue(Estado.ELIMINADO).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(
-                                requireContext(),
-                                "Anuncio borrado correctamente",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            // cambia el valor de userNotification al dueño del anuncio
-                            val userNotificationRef = database.getReference("app/anuncios/${anuncio.id}")
-                            userNotificationRef.child("userNotificacion").setValue(anuncio.usuarioDueño)
-                            userNotificationRef.child("estado_noti").setValue(Estado.ELIMINADO)
                             activity?.onBackPressed()
                         } else {
                             Toast.makeText(
                                 requireContext(),
-                                "Error al borrar el anuncio",
+                                "Error al marcar el anuncio como borrado",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

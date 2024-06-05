@@ -462,16 +462,7 @@ class Buscador : AppCompatActivity() {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val anuncio = snapshot.getValue(Anuncio::class.java)
-                if (anuncio != null && anuncio.usuarioDueño == idUsuarioActual && anuncio.estado_noti == Estado.ELIMINADO) {
-                    generarNotificacion(
-                        generador.getAndIncrement(),
-                        anuncio,
-                        "Un adminsitrador ha borrado tu anuncio ${anuncio.titulo}",
-                        "Anuncio borrado",
-                        MisAnuncios::class.java
-                    )
-                }
+                // No action needed
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -502,6 +493,7 @@ class Buscador : AppCompatActivity() {
                         "Has sido aceptado",
                         MisAnuncios::class.java
                     )
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
                 } else if (anuncio != null && anuncio.usuarioPaseador == idUsuarioActual && anuncio.estado == "creado" && anuncio.estado_noti == Estado.CREADO) {
                     snapshot.ref.child("usuarioPaseador").setValue("")
                     anuncio.usuarioPaseador = ""
@@ -512,9 +504,9 @@ class Buscador : AppCompatActivity() {
                         "Has sido denegado",
                         MisAnuncios::class.java
                     )
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
                 }
                 if (anuncio!!.estado_noti == Estado.EDITADO && anuncio.usuarioDueño == idUsuarioActual) {
-                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
                     generarNotificacion(
                         generador.getAndIncrement(),
                         anuncio,
@@ -522,8 +514,20 @@ class Buscador : AppCompatActivity() {
                         "Anuncio editado",
                         MisAnuncios::class.java
                     )
+                    snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
                 }
-                snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
+                if (anuncio!!.estado_noti == Estado.ELIMINADO) {
+                    if (anuncio.usuarioDueño == idUsuarioActual) {
+                        generarNotificacion(
+                            generador.getAndIncrement(),
+                            anuncio,
+                            "Se ha eliminado tu anuncio ${anuncio.titulo}",
+                            "Anuncio eliminado",
+                            MisAnuncios::class.java
+                        )
+                    }
+                    snapshot.ref.removeValue()
+                }
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -598,10 +602,7 @@ class Buscador : AppCompatActivity() {
                         FragmentVerMisMascotas::class.java
                     )
                 }
-                if (mascota!!.estado_noti == Estado.ELIMINADO && mascota.usuarioId == userId) {
-                    snapshot.ref.removeValue()
-                }
-                if (mascota.estado_noti == Estado.EDITADO && mascota.usuarioId == userId) {
+                if (mascota?.estado_noti == Estado.EDITADO && mascota.usuarioId == userId) {
                     snapshot.ref.child("estado_noti").setValue(Estado.NOTIFICADO)
                     generarNotificacion(
                         generador.getAndIncrement(),
@@ -611,19 +612,22 @@ class Buscador : AppCompatActivity() {
                         PerfilUsuario::class.java
                     )
                 }
+                if (mascota?.estado_noti == Estado.ELIMINADO) {
+                    if(mascota?.usuarioId == userId){
+                        generarNotificacion(
+                            generador.getAndIncrement(),
+                            mascota,
+                            "Se ha eliminado a tu mascota ${mascota.nombre}",
+                            "Mascota eliminada",
+                            PerfilUsuario::class.java
+                        )
+                    }
+                    snapshot.ref.removeValue()
+                }
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val mascota = snapshot.getValue(Mascota::class.java)
-                if (mascota != null && mascota.usuarioId == userId && mascota.estado_noti == Estado.ELIMINADO) {
-                    generarNotificacion(
-                        generador.getAndIncrement(),
-                        mascota,
-                        "Se ha borrado a tu mascota ${mascota.nombre}",
-                        "Mascota borrada",
-                        PerfilUsuario::class.java
-                    )
-                }
+                // No action needed
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {

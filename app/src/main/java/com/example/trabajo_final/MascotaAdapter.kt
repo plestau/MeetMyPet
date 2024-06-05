@@ -148,8 +148,9 @@ class MascotaAdapter(private var listaMascotas: List<Mascota>, val fragmentManag
         }
     }
     private fun borrarMascota(mascota: Mascota, context: Context) {
-        // si el atributo borrable de la mascota es falso, no se puede borrar
-        if (!mascota.borrable!!) {
+        val sharedPref = context.getSharedPreferences("userRole", Context.MODE_PRIVATE)
+        val userRol = sharedPref.getString("role", "user")
+        if (!mascota.borrable!! && userRol != "admin") {
             Toast.makeText(
                 context,
                 "La mascota está en un anuncio y no se puede borrar",
