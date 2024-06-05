@@ -253,7 +253,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                 val activity = itemView.context as AppCompatActivity
                 activity.findViewById<View>(R.id.llMisAnuncios).visibility = View.GONE
 
-                // edita el valor de user_notification en FirebaseDatabase
+                // edita el valor de user_notificacion en FirebaseDatabase
                 val androidId = Settings.Secure.getString(itemView.context.contentResolver, Settings.Secure.ANDROID_ID)
                 val userNotificationRef = database.getReference("app/usuarios/${FirebaseAuth.getInstance().currentUser?.uid}/user_notification")
                 userNotificationRef.setValue(androidId)
@@ -307,7 +307,7 @@ class AnuncioAdapter(private var listaAnuncios: List<Anuncio>, val fragmentManag
                         anuncio.estado_noti = Estado.CREADO
                         anuncio.user_notificacion = ""
                         database.getReference("app/anuncios/${anuncio.id}").setValue(anuncio)
-                        database.getReference("app/anuncios/${anuncio.id}/user_notification").setValue("")
+                        database.getReference("app/anuncios/${anuncio.id}/user_notificacion").setValue("")
                         database.getReference("app/anuncios/${anuncio.id}/estado_noti").setValue(Estado.CREADO)
                         ivAprobar.visibility = View.GONE
                         ivDenegar.visibility = View.GONE

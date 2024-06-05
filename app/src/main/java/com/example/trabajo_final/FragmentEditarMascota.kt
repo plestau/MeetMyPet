@@ -168,7 +168,7 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                     parentFragmentManager.popBackStack()
                 }
 
-                // Recorrer todos los anuncios en la base de datos y actualizar los atributos imagenMascota, nombreMascota y razaMascota de la mascota asociada
+                // Recorrer todos los anuncios en la base de datos y actualizar los atributos imagenMascota, edadMascota, nombreMascota y razaMascota de la mascota asociada
                 val anunciosRef = FirebaseDatabase.getInstance().getReference("app/anuncios")
                 CoroutineScope(Dispatchers.IO).launch {
                     val anunciosSnapshot = anunciosRef.get().await()
@@ -187,6 +187,7 @@ class FragmentEditarMascota : Fragment(), OnBackPressedInFragmentListener {
                                 val mascotaIndex = anuncio.idmascota!!.indexOf(mascota.id)
                                 mutableNombreMascota?.set(mascotaIndex, nombre.text.toString())
                                 mutableRazaMascota?.set(mascotaIndex, raza.selectedItem.toString())
+                                mutableEdadMascota?.set(mascotaIndex, edadInt)
                                 if (mascotaPicUrl != null) {
                                     mutableImagenMascota?.set(mascotaIndex, mascotaPicUrl)
                                 } else {

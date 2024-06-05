@@ -129,14 +129,25 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
                 .setPositiveButton("Sí") { _, _ ->
                     val database = FirebaseDatabase.getInstance()
                     val anuncioRef = database.getReference("app/anuncios").child(anuncio.id!!)
-                    anuncioRef.child("user_notificacion").setValue(anuncio.usuarioDueño)
+                    // Primero cambia el estado_noti a "ELIMINADO"
                     anuncioRef.child("estado_noti").setValue(Estado.ELIMINADO).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            activity?.onBackPressed()
+                            // Luego elimina el anuncio
+                            anuncioRef.removeValue().addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    activity?.onBackPressed()
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Error al borrar el anuncio",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         } else {
                             Toast.makeText(
                                 requireContext(),
-                                "Error al marcar el anuncio como borrado",
+                                "Error al cambiar el estado del anuncio",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

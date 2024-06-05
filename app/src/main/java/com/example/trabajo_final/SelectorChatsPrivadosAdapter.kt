@@ -33,8 +33,6 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
 
     override fun onBindViewHolder(holder: PrivateChatViewHolder, position: Int) {
         val privateChat = privateChats[position]
-        holder.tvContenido.text = privateChat.contenido
-        holder.tvNombreEmisor.text = privateChat.nombreEmisor
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val formattedDate = dateFormat.format(privateChat.fechaHora)
         holder.tvFechaHora.text = formattedDate
@@ -65,6 +63,16 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
                             Toast.makeText(holder.itemView.context, "Error al cargar la imagen de perfil", Toast.LENGTH_SHORT).show()
                         }
                     })
+
+                    // Verificar si el último mensaje es una URL de imagen
+                    if (lastMessage.contenido.startsWith("https://") || lastMessage.contenido.startsWith("http://")) {
+                        // Es una URL de imagen, mostrar "*imagen*"
+                        holder.tvContenido.text = "*imagen*"
+                    } else {
+                        // No es una URL de imagen, mostrar el texto
+                        holder.tvContenido.text = lastMessage.contenido
+                    }
+                    holder.tvNombreEmisor.text = privateChat.nombreEmisor
                 }
             }
 
@@ -72,11 +80,6 @@ class SelectorChatsPrivadosAdapter(private val privateChats: List<SelectorChatsP
                 Toast.makeText(holder.itemView.context, "Error al cargar el último mensaje", Toast.LENGTH_SHORT).show()
             }
         })
-
-        if(privateChat.contenido.startsWith("https://") || privateChat.contenido.startsWith("http://")) {
-            Glide.with(holder.itemView.context).load(privateChat.contenido).override(500, 500).into(holder.ivAvatar)
-            holder.tvContenido.visibility = View.GONE
-        }
     }
 
     override fun getItemCount() = privateChats.size
