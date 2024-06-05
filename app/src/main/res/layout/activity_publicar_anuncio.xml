@@ -44,7 +44,6 @@
                     android:layout_height="wrap_content"
                     android:hint="Título del anuncio"
                     android:inputType="text"
-                    android:textColor="@color/azul"
                     android:textSize="18sp" />
             </com.google.android.material.textfield.TextInputLayout>
             <Spinner
@@ -74,7 +73,6 @@
                     android:layout_height="wrap_content"
                     android:hint="Descripción del anuncio"
                     android:inputType="textMultiLine"
-                    android:textColor="@color/azul"
                     android:lines="3"
                     android:gravity="start"
                     android:textSize="18sp" />
@@ -98,7 +96,6 @@
                     android:layout_height="wrap_content"
                     android:hint="Lugar del anuncio"
                     android:inputType="text"
-                    android:textColor="@color/azul"
                     android:textSize="18sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -120,7 +117,6 @@
                     android:layout_height="wrap_content"
                     android:hint="Fecha del anuncio"
                     android:inputType="date"
-                    android:textColor="@color/azul"
                     android:textSize="18sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -142,7 +138,6 @@
                     android:layout_height="wrap_content"
                     android:hint="Hora del anuncio"
                     android:inputType="time"
-                    android:textColor="@color/azul"
                     android:textSize="18sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -164,7 +159,6 @@
                     android:layout_height="wrap_content"
                     android:hint="Precio del anuncio"
                     android:inputType="numberDecimal"
-                    android:textColor="@color/azul"
                     android:textSize="18sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -226,7 +220,6 @@
                     android:textSize="25sp"
                     android:gravity="center_vertical"
                     android:text="Añadir mascotas"
-                    android:textColor="@color/texto"
                     android:textAllCaps="false" />
 
                 <ImageView

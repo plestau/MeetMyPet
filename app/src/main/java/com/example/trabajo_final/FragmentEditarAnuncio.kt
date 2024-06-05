@@ -260,14 +260,14 @@ class FragmentEditarAnuncio : Fragment(), FragmentVerMisMascotas.OnMascotaAddedL
             val mascotasNombreList = mascotasAñadidasList.map { it.nombre!! }
             val mascotasRazaList = mascotasAñadidasList.map { it.raza!! }
             val mascotasEdadList = mascotasAñadidasList.map { it.edad!! }
-            val mascotasValoracionList = mascotasAñadidasList.map { it.valoraciones!![0] }
+            val mascotasValoracionList = mascotasAñadidasList.map { it.valoraciones?.get(0)?.toFloat() ?: 0f }
             val mascotasImagenList = mascotasAñadidasList.map { it.foto!! }
 
             anuncioRef.setValue(anuncio.copy(
                 titulo = tituloText.lowercase(),
                 descripcion = descripcionText,
                 lugar = lugarText.lowercase(),
-                fecha = fechaText,
+                fecha = Utilidades.convertDateToStandardFormat(fechaText),
                 hora = horaText,
                 precio = precioText.toDouble(),
                 tipoAnuncio = tipoAnuncioText,

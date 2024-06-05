@@ -246,9 +246,8 @@ class Buscador : AppCompatActivity() {
                 val busqueda = filtrosAnadidos.joinToString(separator = " | ") { "${it.first}: ${it.second}" }
                 val intent = Intent(this, ResultadosBusqueda::class.java)
                 intent.putExtra("busqueda", busqueda)
-                intent.putExtra("filtros", filtrosAnadidos.map { Pair(it.first, it.second) }.toTypedArray()) // Pasar filtros como extras
+                intent.putExtra("filtros", filtrosAnadidos.map { Pair(it.first, it.second) }.toTypedArray())
                 startActivity(intent)
-                // Check if the history size is equal to the maximum allowed size and if so, remove the oldest search
                 if (historialBusqueda.size == MAX_HISTORIAL_SIZE) {
                     historialBusqueda.removeAt(historialBusqueda.size - 1)
                 }
@@ -256,7 +255,6 @@ class Buscador : AppCompatActivity() {
                 val historialBusquedaString = historialBusqueda.joinToString("||")
                 sharedPref.edit().putString(userId, historialBusquedaString).apply()
                 historialBusquedaAdapter.notifyDataSetChanged()
-                Log.d("Buscador", "Filtros usados: $busqueda")
 
                 // Limpiar los filtros después de realizar la búsqueda
                 filtrosAnadidos.clear()

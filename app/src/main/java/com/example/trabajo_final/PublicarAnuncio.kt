@@ -242,7 +242,7 @@ class PublicarAnuncio : AppCompatActivity(), FragmentVerMisMascotas.OnMascotaAdd
                                     "titulo" to tituloText,
                                     "descripcion" to descripcionText,
                                     "lugar" to lugarText,
-                                    "fecha" to fechaText,
+                                    "fecha" to Utilidades.convertDateToStandardFormat(fechaText),
                                     "hora" to horaText,
                                     "usuarioDueño" to currentUser.uid,
                                     "estado" to "creado",

@@ -13,7 +13,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class Utilidades {
     companion object{
@@ -66,6 +69,25 @@ class Utilidades {
                 .fallback(R.drawable.error_404)
                 .error(R.drawable.error_404)
             return options
+        }
+
+        fun convertDateToStandardFormat(date: String): String {
+            val inputFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+            var dateObj = inputFormat.parse(date)
+
+            if (dateObj == null) {
+                throw IllegalArgumentException("Invalid date format")
+            } else {
+                val calendar = Calendar.getInstance()
+                calendar.time = dateObj
+                val year = calendar.get(Calendar.YEAR)
+                if (year < 1000) {
+                    calendar.add(Calendar.YEAR, 2000)
+                    dateObj = calendar.time
+                }
+                val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                return outputFormat.format(dateObj)
+            }
         }
     }
 }

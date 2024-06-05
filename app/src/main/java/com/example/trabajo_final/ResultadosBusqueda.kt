@@ -77,11 +77,10 @@ class ResultadosBusqueda : AppCompatActivity() {
                     if (anuncio.fecha != fechaFormatted) return false
                 }
                 "Ubicación" -> if (anuncio.lugar?.lowercase(Locale.getDefault()) != filtro.second.lowercase(Locale.getDefault())) return false
-                "Nombre de mascota" -> if (!anuncio.nombreMascota?.contains(filtro.second.lowercase())!!) return false
-                "Tipo de mascota" -> if (!anuncio.razaMascota?.contains(filtro.second)!!) return false
+                "Nombre de mascota" -> if (anuncio.nombreMascota?.let { it.contains(filtro.second.lowercase()) } != true) return false
+                "Tipo de mascota" -> if (anuncio.razaMascota?.let { it.contains(filtro.second) } != true) return false
                 "Precio" -> if (anuncio.precio?.toDouble() != filtro.second.toDouble()) return false
-                "Título" -> if (!anuncio.titulo?.lowercase(Locale.getDefault())?.contains(filtro.second.lowercase(Locale.getDefault()))!!) return false
-            }
+                "Título" -> if (anuncio.titulo?.lowercase(Locale.getDefault())?.let { it.contains(filtro.second.lowercase(Locale.getDefault())) } != true) return false            }
         }
         return true
     }
